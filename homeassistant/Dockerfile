@@ -5,7 +5,7 @@ ENV VERSION %%HASS_VERSION%%
 ENV LANG C.UTF-8
 
 # install core packages
-RUN apk --no-cache add libuv git linux-headers eudev-dev libusb-dev
+RUN apk --no-cache add libuv git linux-headers eudev-dev libusb-dev libffi-dev
 
 # install component packages
 RUN apk --no-cache add ffmpeg nmap net-tools
