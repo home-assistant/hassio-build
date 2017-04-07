@@ -8,7 +8,7 @@ ENV LANG C.UTF-8
 RUN apk del --no-cache python*
 
 # setup base
-RUN apk add --no-cache python3 git
+RUN apk add --no-cache python3
 
 # update pip
 RUN pip3 install pip --no-cache-dir --upgrade
