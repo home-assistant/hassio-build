@@ -28,7 +28,7 @@ RUN git clone https://github.com/OpenZWave/python-openzwave \
 # install pip module for components
 
 # install home-assistant
-RUN pip3 install --no-cache-dir uvloop homeassistant==%%HASS_VERSION%%
+RUN pip3 install --no-cache-dir cchardet uvloop homeassistant==%%HASS_VERSION%%
 
 # Run hass
 CMD [ "python", "-m", "homeassistant", "--config", "/config" ]
