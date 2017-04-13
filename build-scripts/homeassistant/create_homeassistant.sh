@@ -53,7 +53,7 @@ sed -i "s/%%HASS_VERSION%%/${HASS_VERS}/g" $WORKSPACE/Dockerfile
 
 git https://github.com/home-assistant/home-assistant $HASS_GIT
 cd $HASS_GIT && git checkout $HASS_VERS
-cp $HASS_GIT/requirements.txt $WORKSPACE/
+cp $HASS_GIT/requirements_all.txt $WORKSPACE/
 
 # Run build
 echo "[INFO] start docker build"
