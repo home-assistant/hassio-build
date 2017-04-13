@@ -22,7 +22,7 @@ trap 'cleanup fail' SIGINT SIGTERM
 # Sanity checks
 if [ "$#" -ne 2 ]; then
     echo "Usage: create_hassio_supervisor.sh <ARCH> <TAG>|NONE"
-    echo "Optional environment: BUILD_DIR"
+    echo "Optional environment: BUILD_DIR BRANCH"
     exit 1
 fi
 if [ $1 != 'armhf' ] && [ $1 != 'aarch64' ] && [ $1 != 'i386' ] && [ $1 != 'amd64' ]; then
@@ -41,6 +41,7 @@ DOCKER_TAG=$2
 DOCKER_IMAGE=${ARCH}-hassio-supervisor
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
 WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/hassio-supervisor
+BRANCH=${BRANCH:=master}
 
 # setup docker
 echo "[INFO] Setup docker for supervisor"
@@ -52,6 +53,7 @@ sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" $WORKSPACE/Dockerfile
 sed -i "s/%%SUPERVISOR_TAG%%/${DOCKER_TAG}/g" $WORKSPACE/Dockerfile
 
 git clone https://github.com/pvizeli/hassio $WORKSPACE/hassio_api
+cd $WORKSPACE/hassio_api && git checkout $BRANCH
 
 # Run build
 echo "[INFO] start docker build"
