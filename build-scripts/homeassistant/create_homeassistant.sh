@@ -51,7 +51,7 @@ cp ../../homeassistant/Dockerfile $WORKSPACE/Dockerfile
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" $WORKSPACE/Dockerfile
 sed -i "s/%%HASS_VERSION%%/${HASS_VERS}/g" $WORKSPACE/Dockerfile
 
-git https://github.com/home-assistant/home-assistant $HASS_GIT
+git clone https://github.com/home-assistant/home-assistant $HASS_GIT
 cd $HASS_GIT && git checkout $HASS_VERS
 cp $HASS_GIT/requirements_all.txt $WORKSPACE/
 
