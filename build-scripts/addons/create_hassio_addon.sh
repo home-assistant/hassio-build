@@ -49,7 +49,7 @@ mkdir -p $BUILD_DIR
 
 git clone https://github.com/pvizeli/hassio-addons $WORKSPACE
 
-if [ ! -f $ADDON_WORKSPACE ]; then
+if [ ! -d $ADDON_WORKSPACE ]; then
     echo "Error: $ADDON not found inside Repo!"
     exit 1
 fi
@@ -64,7 +64,7 @@ echo "[INFO] start docker build"
 docker stop $BUILD_CONTAINER_NAME 2> /dev/null || true
 docker rm --volumes $BUILD_CONTAINER_NAME 2> /dev/null || true
 docker run --rm \
-    -v $WORKSPACE:/docker \
+    -v $ADDON_WORKSPACE:/docker \
     -v ~/.docker:/root/.docker \
     -e DOCKER_REPO=$DOCKER_REPO \
     -e DOCKER_IMAGE=$DOCKER_IMAGE \
