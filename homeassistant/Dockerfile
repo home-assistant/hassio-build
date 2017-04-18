@@ -17,7 +17,7 @@ RUN pip3 install --no-cache-dir cython==0.25.2
 
 RUN git clone https://github.com/OpenZWave/python-openzwave \
     && cd python-openzwave \
-    && git checkout v0.3.2 \
+    && git checkout v0.3.3 \
     && make build \
     && make install \
     && mkdir -p /usr/local/share/python-openzwave \
@@ -30,7 +30,7 @@ RUN git clone https://github.com/OpenZWave/python-openzwave \
 # install home-assistant
 COPY requirements_all.txt /tmp/requirements_all.txt
 RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
-RUN pip3 install --no-cache-dir -r /tmp/requirements_all.txt 
+RUN pip3 install --no-cache-dir -r /tmp/requirements_all.txt
 RUN pip3 install --no-cache-dir cchardet uvloop homeassistant==%%HASS_VERSION%%
 
 # Run hass
