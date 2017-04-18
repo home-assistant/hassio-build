@@ -17,7 +17,7 @@ do
     IFS=" " read -r -a parse <<< $cmd
 
     if [ ${parse[0]} == "info" ]; then
-        echo "{ \"level\": 15, \"os\": \"resinos\", \"version\": \"$RESINOS_HASSIO_VERSION\", \"hostname\": \"$CONFIG_HOSTNAME\" }"
+        echo "{ \"level\": 7, \"os\": \"resinos\", \"version\": \"$RESINOS_HASSIO_VERSION\", \"hostname\": \"$CONFIG_HOSTNAME\" }"
         continue
     fi
     if [ ${parse[0]} == "reboot" ]; then
@@ -33,15 +33,6 @@ do
             nohup resinhub --hostos-version ${parse[1]} > /dev/null 2>&1 &
         else
             nohup resinhub > /dev/null 2>&1 &
-        fi
-        echo "OK"
-        continue
-    fi
-    if [ ${parse[0]} == "supervisor-update" ]; then
-        if [ ! -z ${parse[1]} ]; then
-            nohup update-resin-supervisor --supervisor-tag ${parse[1]} > /dev/null 2>&1 &
-        else
-            nohup update-resin-supervisor > /dev/null 2>&1 &
         fi
         echo "OK"
         continue
