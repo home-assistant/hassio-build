@@ -14,7 +14,7 @@ RUN apk add --no-cache python3 git
 RUN pip3 install pip --no-cache-dir --upgrade
 
 # install HassIO
-COPY hassio_api /usr/src/hassio_api
-RUN pip3 install --no-cache-dir /usr/src/hassio_api
+COPY hassio_api /usr/src/hassio
+RUN pip3 install --no-cache-dir /usr/src/hassio && rm -rf /usr/src/hassio
 
 CMD [ "python3", "-m", "hassio" ]
