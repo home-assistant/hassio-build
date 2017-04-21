@@ -116,7 +116,7 @@ function runPreHacks {
     fi
 
     # can't fix label of data partition from container
-    e2label $DATA_MOUNTPOINT resin-data
+    e2label $DATA_MOUNTPOINT resin-data || true
 }
 
 # Test if a version is greater than another
@@ -221,7 +221,7 @@ fi
 
 # Check if update is needed
 log "Detected HassIO version: $RESINOS_HASSIO_VERSION ."
-log "Update HassIO to version: $HOSTOS_HASSIO_VERSION ."
+log "Update HassIO to version: $HOSTOS_VERSION ."
 if [ $RESINOS_HASSIO_VERSION == $HOSTOS_VERSION ]; then
     log "Version $HOSTOS_VERSION is already installed."
     exit 0
@@ -252,11 +252,6 @@ if [ -z "$MACHINE" ]; then
 else
     log "Detected arch: $MACHINE ."
 fi
-
-# We need to stop update-resin-supervisor.timer otherwise it might restart supervisor which
-# will delete downloaded layers. Same for cron jobs.
-systemctl stop update-resin-supervisor.timer > /dev/null 2>&1
-/etc/init.d/crond stop > /dev/null 2>&1 # We might have cron jobs which restart supervisor
 
 # Supervisor update
 if [ ! -z "$UPDATER_SUPERVISOR_TAG" ]; then
