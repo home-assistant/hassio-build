@@ -5,6 +5,7 @@ ARCH=$(uname -m)
 DOCKER_REPO=pvizeli
 URL_VERSION="https://raw.githubusercontent.com/pvizeli/hassio/master/version.json"
 URL_START_HASSIO="https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/misc/hassio-start"
+URL_GENERIC_HC="https://raw.githubusercontent.com/pvizeli/hassio-build/master/generic-hc"
 URL_SERVICE_HASSIO="https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/systemd/hassio-supervisor.service"
 URL_SERVICE_HOSTCONTROLL="https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/systemd/hassio-hc.service"
 
@@ -15,6 +16,7 @@ DATA_SHARE=/usr/share/hassio
 command -v docker > /dev/null 2>&1 || echo "[ERROR] Please install docker first" && exit 1
 command -v jq > /dev/null 2>&1 || echo "[ERROR] Please install jq first" && exit 1
 command -v socat > /dev/null 2>&1 || echo "[ERROR] Please install socat first" && exit 1
+command -v curl > /dev/null 2>&1 || echo "[ERROR] Please install curl first" && exit 1
 
 # Check system options
 if [ command -v systemctl > /dev/null 2>&1 ]; then

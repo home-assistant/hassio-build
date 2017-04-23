@@ -1,0 +1,68 @@
+#!/bin/bash
+set -e
+
+VERSION=0.1
+URL_VERSION="https://raw.githubusercontent.com/pvizeli/hassio/master/version.json"
+URL_GENERIC_HC="https://raw.githubusercontent.com/pvizeli/hassio-build/master/generic-hc"
+
+# Check system options
+if [ command -v systemctl > /dev/null 2>&1 ]; then
+    INIT_SYSTEM=systemd
+else
+    INIT_SYSTEM=sysvinit
+fi
+
+#
+# MAIN loop
+#
+while read cmd
+do
+    IFS=" " read -r -a parse <<< $cmd
+
+    if [ ${parse[0]} == "info" ]; then
+        HOSTNAME=$(hostname)
+        CURRENT=$(curl -s $URL_VERSION | jq -e -r '.generic-hc_version')
+
+        echo "{ \"level\": 7, \"os\": \"generic\", \"version\": \"$VERSION\", \"current\": \"$CURRENT\", \"hostname\": \"$HOSTNAME\" }"
+        continue
+    fi
+    if [ ${parse[0]} == "reboot" ]; then
+        if [ "$INIT_SYSTEM" == "systemd"]; then
+            systemctl reboot && echo "OK" || echo "ERROR"
+        else
+            nohup reboot > /dev/null 2>&1 && echo "OK" || echo "ERROR"
+        fi
+        continue
+    fi
+    if [ ${parse[0]} == "shutdown" ]; then
+        if [ "$INIT_SYSTEM" == "systemd"]; then
+            systemctl poweroff && echo "OK" || echo "ERROR"
+        else
+            nohup halt -p > /dev/null 2>&1 && echo "OK" || echo "ERROR"
+        fi
+        continue
+    fi
+    if [ ${parse[0]} == "host-update" ]; then
+        if [ ! -z ${parse[1]} ]; then
+            VERSION=${parse[1]}
+        else
+            VERSION=$(curl -s $URL_VERSION | jq -e -r '.generic-hc_version')
+        fi
+        CMD_BIN=$(command -v hassio-hc)
+
+        if [ curl -sL "$URL_GENERIC_HC/$VERSION" > "$CMD_BIN" ]; then
+            chmod a+x "$CMD_BIN"
+            echo "OK"
+
+            # restart service
+            if [ "$INIT_SYSTEM" == "systemd"]; then
+                nohup systemctl restart hassio-hc.service > /dev/null 2>&1
+            fi
+        else
+            echo "ERROR"
+        fi
+        continue
+    fi
+
+    echo "WRONG"
+done
