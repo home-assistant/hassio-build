@@ -8,9 +8,9 @@ After=docker.service hassio-hc.service
 Type=simple
 Restart=always
 RestartSec=10s
-ExecStartPre=-@BINDIR@/docker stop hassio_supervisor
-ExecStart=@BINDIR@/hassio-start
-ExecStop=-@BINDIR@/docker stop hassio_supervisor
+ExecStartPre=-/usr/bin/docker stop hassio_supervisor
+ExecStart=%%BIN_DIR%%/hassio-start
+ExecStop=-/usr/bin/docker stop hassio_supervisor
 
 [Install]
 WantedBy=multi-user.target
