@@ -1,6 +1,6 @@
 [Unit]
 Description=HassIO supervisor
-Requires=docker.service, hassio-hc.service
+Requires=docker.service hassio-hc.service
 Wants=hassio-hc.service
 After=docker.service hassio-hc.service
 
