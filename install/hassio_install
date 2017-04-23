@@ -126,7 +126,6 @@ if [ "$INIT_SYSTEM" == "systemd" ]; then
     sed -i "s|%%BIN_DIR%%|$BIN_DIR|g" "/etc/systemd/system/hassio-hc.service"
     sed -i "s|%%BIN_DIR%%|$BIN_DIR|g" "/etc/systemd/system/hassio-supervisor.service"
 
-    systemctl enable hassio-hc.service
     systemctl enable hassio-supervisor.service
 
     systemctl start hassio-hc.service
