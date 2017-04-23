@@ -6,7 +6,7 @@ URL_VERSION="https://raw.githubusercontent.com/pvizeli/hassio/master/version.jso
 URL_GENERIC_HC="https://raw.githubusercontent.com/pvizeli/hassio-build/master/generic-hc"
 
 # Check system options
-if [ command -v systemctl > /dev/null 2>&1 ]; then
+if [ -x $(command -v systemctl) ]; then
     INIT_SYSTEM=systemd
 else
     INIT_SYSTEM=sysvinit

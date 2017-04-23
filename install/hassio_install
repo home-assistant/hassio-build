@@ -19,11 +19,12 @@ command -v socat > /dev/null 2>&1 || { echo "[ERROR] Please install socat first"
 command -v curl > /dev/null 2>&1 || { echo "[ERROR] Please install curl first"; exit 1; }
 
 # Check system options
-if [ command -v systemctl > /dev/null 2>&1 ]; then
+if [ -x $(command -v systemctl) ]; then
     INIT_SYSTEM=systemd
 else
     INIT_SYSTEM=sysvinit
     echo "[ERROR] Only systemd is supprted at the moment"
+    exit 1
 fi
 
 # Parse command line parameters
