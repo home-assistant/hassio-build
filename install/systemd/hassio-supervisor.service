@@ -9,7 +9,7 @@ Type=simple
 Restart=always
 RestartSec=10s
 ExecStartPre=-@BINDIR@/docker stop hassio_supervisor
-ExecStart=@BINDIR@/start-hassio
+ExecStart=@BINDIR@/hassio-start
 ExecStop=-@BINDIR@/docker stop hassio_supervisor
 
 [Install]
