@@ -13,10 +13,10 @@ BIN_DIR=/usr/bin
 DATA_SHARE=/usr/share/hassio
 
 # Check env
-command -v docker > /dev/null 2>&1 || echo "[ERROR] Please install docker first" && exit 1
-command -v jq > /dev/null 2>&1 || echo "[ERROR] Please install jq first" && exit 1
-command -v socat > /dev/null 2>&1 || echo "[ERROR] Please install socat first" && exit 1
-command -v curl > /dev/null 2>&1 || echo "[ERROR] Please install curl first" && exit 1
+command -v docker > /dev/null 2>&1 || { echo "[ERROR] Please install docker first"; exit 1; }
+command -v jq > /dev/null 2>&1 || { echo "[ERROR] Please install jq first"; exit 1; }
+command -v socat > /dev/null 2>&1 || { echo "[ERROR] Please install socat first"; exit 1; }
+command -v curl > /dev/null 2>&1 || { echo "[ERROR] Please install curl first"; exit 1; }
 
 # Check system options
 if [ command -v systemctl > /dev/null 2>&1 ]; then
