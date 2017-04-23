@@ -93,7 +93,7 @@ fi
 
 # Read infos from web
 HASSIO_VERSION=$(curl -s $URL_VERSION | jq -e -r '.hassio_tag')
-GENERIC_HC_VERSION=$(curl -s $URL_VERSION | jq -e -r '.generic-hc_version')
+GENERIC_HC_VERSION=$(curl -s $URL_VERSION | jq -e -r '.generic_hc_version')
 
 ##
 # Install supervisor

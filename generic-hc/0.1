@@ -21,7 +21,7 @@ do
 
     if [ ${parse[0]} == "info" ]; then
         HOSTNAME=$(hostname)
-        CURRENT=$(curl -s $URL_VERSION | jq -e -r '.generic-hc_version')
+        CURRENT=$(curl -s $URL_VERSION | jq -e -r '.generic_hc_version')
 
         echo "{ \"level\": 7, \"os\": \"generic\", \"version\": \"$VERSION\", \"current\": \"$CURRENT\", \"hostname\": \"$HOSTNAME\" }"
         continue
@@ -46,7 +46,7 @@ do
         if [ ! -z ${parse[1]} ]; then
             VERSION=${parse[1]}
         else
-            VERSION=$(curl -s $URL_VERSION | jq -e -r '.generic-hc_version')
+            VERSION=$(curl -s $URL_VERSION | jq -e -r '.generic_hc_version')
         fi
         CMD_BIN=$(command -v hassio-hc)
 
