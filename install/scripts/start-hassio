@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+HASSIO_IMAGE_ID=$(docker inspect --format='{{.Id}}' %%SUPERVISOR_IMAGE%%)
+HASSIO_CONTAINER_IMAGE_ID=$(docker inspect --format='{{.Image}}' hassio_supervisor || echo "")
+
+runSupervisor() {
+    docker rm --force hassio_supervisor || true
+    docker run --name hassio_supervisor \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v /var/run/hassio-hc.sock:/var/run/hassio-hc.sock \
+        -v %%DATA_SHARE%%:/data \
+        -v /var/log/supervisor-log:/var/log \
+        -e SUPERVISOR_SHARE=%%DATA_SHARE%% \
+        -e SUPERVISOR_NAME=hassio_supervisor \
+        -e HOMEASSISTANT_REPOSITORY=%%HOMEASSISTANT_IMAGE%% \
+        %%SUPERVISOR_IMAGE%%
+}
+
+([ "$HASSIO_IMAGE_ID" == "$HASSIO_CONTAINER_IMAGE_ID" ] && docker start --attach hassio_supervisor) || runSupervisor

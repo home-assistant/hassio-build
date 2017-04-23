@@ -1,7 +1,25 @@
 #!/bin/bash
+set -e
 
 ARCH=$(uname -m)
 DOCKER_REPO=pvizeli
+URL_VERSION="https://raw.githubusercontent.com/pvizeli/hassio/master/version.json"
+URL_START_HASSIO="https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/scripts/start-hassio"
+
+BIN_DIR=/usr/bin
+DATA_SHARE=/usr/share/hassio
+
+# Check env
+command -v docker > /dev/null 2>&1 || echo "[ERROR] Please install docker first" && exit 1
+command -v jq > /dev/null 2>&1 || echo "[ERROR] Please install jq first" && exit 1
+command -v socat > /dev/null 2>&1 || echo "[ERROR] Please install socat first" && exit 1
+
+# Check system options
+if [ command -v systemctl > /dev/null 2>&1 ]; then
+    INIT_SYSTEM=systemd
+else
+    INIT_SYSTEM=sysvinit
+fi
 
 # Parse command line parameters
 while [[ $# > 0 ]]; do
@@ -13,6 +31,13 @@ while [[ $# > 0 ]]; do
                 echo "[ERROR] \"$1\" argument needs a value"
             fi
             MACHINE=$2
+            shift
+            ;;
+        -d|--data-share)
+            if [ -z "$2" ]; then
+                echo "[ERROR] \"$1\" argument needs a value"
+            fi
+            DATA_SHARE=$2
             shift
             ;;
         *)
@@ -55,3 +80,24 @@ case $ARCH in
         exit 1
     ;;
 esac
+
+# Init folders
+if [ ! -d "$DATA_SHARE" ]; then
+    mkdir -p "$DATA_SHARE"
+fi
+
+# Read infos from web
+HASSIO_VERSION=$(curl -s $URL_VERSION | jq -e -r '.hassio_tag')
+
+# Install supervisor
+docker pull "$HASSIO_DOCKER:$HASSIO_VERSION"
+docker tag "$HASSIO_DOCKER:$HASSIO_VERSION" "$HASSIO_DOCKER:latest"
+
+# install start-hassio
+curl -sL "$URL_START_HASSIO" > "$BIN_DIR/start-hassio"
+
+sed -i "s/%%SUPERVISOR_IMAGE%%/$HASSIO_DOCKER/g" "$BIN_DIR/start-hassio"
+sed -i "s/%%HOMEASSISTANT_IMAGE%%/$HOMEASSISTANT_DOCKER/g" "$BIN_DIR/start-hassio"
+sed -i "s/%%DATA_SHARE%%/$DATA_SHARE/g" "$BIN_DIR/start-hassio"
+
+chmod a+x "$BIN_DIR/start-hassio"
