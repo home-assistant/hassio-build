@@ -111,9 +111,9 @@ chmod a+x "$BIN_DIR/hassio-hc"
 # install start-hassio
 curl -sL "$URL_START_HASSIO" > "$BIN_DIR/hassio-start"
 
-sed -i "s/%%SUPERVISOR_IMAGE%%/$HASSIO_DOCKER/g" "$BIN_DIR/hassio-start"
-sed -i "s/%%HOMEASSISTANT_IMAGE%%/$HOMEASSISTANT_DOCKER/g" "$BIN_DIR/hassio-start"
-sed -i "s/%%DATA_SHARE%%/$DATA_SHARE/g" "$BIN_DIR/hassio-start"
+sed -i "s|%%SUPERVISOR_IMAGE%%|$HASSIO_DOCKER|g" "$BIN_DIR/hassio-start"
+sed -i "s|%%HOMEASSISTANT_IMAGE%%|$HOMEASSISTANT_DOCKER|g" "$BIN_DIR/hassio-start"
+sed -i "s|%%DATA_SHARE%%|$DATA_SHARE|g" "$BIN_DIR/hassio-start"
 
 chmod a+x "$BIN_DIR/hassio-start"
 
