@@ -4,7 +4,7 @@ set -e
 ARCH=$(uname -m)
 DOCKER_REPO=pvizeli
 URL_VERSION="https://raw.githubusercontent.com/pvizeli/hassio/master/version.json"
-URL_START_HASSIO="https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/scripts/start-hassio"
+URL_START_HASSIO="https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/misc/start-hassio"
 
 BIN_DIR=/usr/bin
 DATA_SHARE=/usr/share/hassio
