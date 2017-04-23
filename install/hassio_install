@@ -5,6 +5,8 @@ ARCH=$(uname -m)
 DOCKER_REPO=pvizeli
 URL_VERSION="https://raw.githubusercontent.com/pvizeli/hassio/master/version.json"
 URL_START_HASSIO="https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/misc/start-hassio"
+URL_SERVICE_HASSIO="https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/systemd/hassio-supervisor.service"
+URL_SERVICE_HOSTCONTROLL="https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/systemd/hassio-hc.service"
 
 BIN_DIR=/usr/bin
 DATA_SHARE=/usr/share/hassio
@@ -19,6 +21,7 @@ if [ command -v systemctl > /dev/null 2>&1 ]; then
     INIT_SYSTEM=systemd
 else
     INIT_SYSTEM=sysvinit
+    echo "[ERROR] Only systemd is supprted at the moment"
 fi
 
 # Parse command line parameters
@@ -89,10 +92,16 @@ fi
 # Read infos from web
 HASSIO_VERSION=$(curl -s $URL_VERSION | jq -e -r '.hassio_tag')
 
+##
 # Install supervisor
 docker pull "$HASSIO_DOCKER:$HASSIO_VERSION"
 docker tag "$HASSIO_DOCKER:$HASSIO_VERSION" "$HASSIO_DOCKER:latest"
 
+##
+# install generic hostcontroll
+
+
+##
 # install start-hassio
 curl -sL "$URL_START_HASSIO" > "$BIN_DIR/start-hassio"
 
@@ -101,3 +110,16 @@ sed -i "s/%%HOMEASSISTANT_IMAGE%%/$HOMEASSISTANT_DOCKER/g" "$BIN_DIR/start-hassi
 sed -i "s/%%DATA_SHARE%%/$DATA_SHARE/g" "$BIN_DIR/start-hassio"
 
 chmod a+x "$BIN_DIR/start-hassio"
+
+##
+# Init system
+if [ "$INIT_SYSTEM" == "systemd" ]; then
+    curl -sL "$URL_SERVICE_HASSIO" > "/etc/systemd/system/hassio-supervisor.service"
+    curl -sL "$URL_SERVICE_HOSTCONTROLL" > "/etc/systemd/system/hassio-hc.service"
+
+    systemctl enable hassio-hc.service
+    systemctl enable hassio-supervisor.service
+
+    systemctl start hassio-hc.service
+    systemctl start hassio-supervisor.service
+fi

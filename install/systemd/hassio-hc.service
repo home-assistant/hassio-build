@@ -1,0 +1,10 @@
+﻿[Unit]
+Description=HassIO HostControll
+Before=hassio-supervisor.service
+
+[Service]
+Type=simple
+ExecStart=socat UNIX-LISTEN:/var/run/hassio-hc.sock,fork EXEC:%%BIN_DIR%%/hassio-hc
+
+[Install]
+WantedBy=multi-user.target

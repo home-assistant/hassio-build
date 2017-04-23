@@ -1,0 +1,16 @@
+[Unit]
+Description=HassIO supervisor
+Requires=docker.service, hassio-hc.service
+Wants=hassio-hc.service
+After=docker.service hassio-hc.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10s
+ExecStartPre=-@BINDIR@/docker stop hassio_supervisor
+ExecStart=@BINDIR@/start-hassio
+ExecStop=-@BINDIR@/docker stop hassio_supervisor
+
+[Install]
+WantedBy=multi-user.target
