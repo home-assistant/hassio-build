@@ -33,12 +33,27 @@ popd > /dev/null 2>&1
 
 HASS_VERS=$1
 MACHINE=$2
-BASE_IMAGE="resin\/${MACHINE}-alpine-python:3.6"
 DOCKER_TAG=$1
 DOCKER_IMAGE=${MACHINE}-homeassistant
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
 WORKSPACE=${BUILD_DIR}/hass
 HASS_GIT=${BUILD_DIR}/hass_git
+
+# generate base image
+case $MACHINE in
+    "raspberrypi1")
+        BASE_IMAGE="resin\/raspberry-pi-alpine-python:3.6"
+    ;;
+    "raspberrypi2")
+        BASE_IMAGE="resin\/raspberry-pi2-alpine-python:3.6"
+    ;;
+    "raspberrypi3")
+        BASE_IMAGE="resin\/raspberry-pi3-alpine-python:3.6"
+    ;;
+    *)
+        BASE_IMAGE="resin\/${MACHINE}-alpine-python:3.6"
+    ;;
+esac
 
 # setup docker
 echo "[INFO] Setup docker for homeassistant"
