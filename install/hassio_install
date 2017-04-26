@@ -93,22 +93,25 @@ if [ ! -d "$DATA_SHARE" ]; then
 fi
 
 # Read infos from web
-HASSIO_VERSION=$(curl -s $URL_VERSION | jq -e -r '.hassio_tag')
-GENERIC_HC_VERSION=$(curl -s $URL_VERSION | jq -e -r '.generic_hc_version')
+HASSIO_VERSION=$(curl -s $URL_VERSION | jq -e -r '.hassio')
+GENERIC_HC_VERSION=$(curl -s $URL_VERSION | jq -e -r '.generic')
 
 ##
 # Install supervisor
-docker pull "$HASSIO_DOCKER:$HASSIO_VERSION"
-docker tag "$HASSIO_DOCKER:$HASSIO_VERSION" "$HASSIO_DOCKER:latest"
+echo "[INFO] Install supervisor docker"
+docker pull "$HASSIO_DOCKER:$HASSIO_VERSION" > /dev/null
+docker tag "$HASSIO_DOCKER:$HASSIO_VERSION" "$HASSIO_DOCKER:latest" > /dev/null
 
 ##
-# install generic hostcontroll
+# install generic hostcontrol
+echo "[INFO] Install generic HostControl"
 curl -sL "$URL_GENERIC_HC/$GENERIC_HC_VERSION" > "$BIN_DIR/hassio-hc"
 
 chmod a+x "$BIN_DIR/hassio-hc"
 
 ##
 # install start-hassio
+echo "[INFO] Install startup scripts"
 curl -sL "$URL_START_HASSIO" > "$BIN_DIR/hassio-start"
 
 sed -i "s|%%SUPERVISOR_IMAGE%%|$HASSIO_DOCKER|g" "$BIN_DIR/hassio-start"
@@ -120,6 +123,7 @@ chmod a+x "$BIN_DIR/hassio-start"
 ##
 # Init system
 if [ "$INIT_SYSTEM" == "systemd" ]; then
+    echo "[INFO] Init systemd"
     curl -sL "$URL_SERVICE_HASSIO" > "/etc/systemd/system/hassio-supervisor.service"
     curl -sL "$URL_SERVICE_HOSTCONTROLL" > "/etc/systemd/system/hassio-hc.service"
 
@@ -128,6 +132,7 @@ if [ "$INIT_SYSTEM" == "systemd" ]; then
 
     systemctl enable hassio-supervisor.service
 
+    echo "[INFO] Start services"
     systemctl start hassio-hc.service
     systemctl start hassio-supervisor.service
 fi

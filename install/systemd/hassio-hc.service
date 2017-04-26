@@ -1,5 +1,5 @@
 ﻿[Unit]
-Description=HassIO HostControll
+Description=HassIO HostControl
 Before=hassio-supervisor.service
 
 [Service]
