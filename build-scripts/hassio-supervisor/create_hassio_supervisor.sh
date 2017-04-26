@@ -52,7 +52,7 @@ cp ../../supervisor/Dockerfile $WORKSPACE/Dockerfile
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" $WORKSPACE/Dockerfile
 sed -i "s/%%SUPERVISOR_TAG%%/${DOCKER_TAG}/g" $WORKSPACE/Dockerfile
 
-git clone https://github.com/pvizeli/hassio $WORKSPACE/hassio_api
+git clone https://github.com/home-assistant/hassio $WORKSPACE/hassio_api
 cd $WORKSPACE/hassio_api && git checkout $BRANCH
 
 # Run build

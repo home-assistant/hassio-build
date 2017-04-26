@@ -15,12 +15,12 @@ curl
 
 Run as root:
 ```bash
-curl -sL https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/hassio_install | bash -
+curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/hassio_install | bash -
 ```
 
 On a special platform they need set a machine type use:
 ```bash
-curl -sL https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/hassio_install | bash - -m MY_MACHINE
+curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/hassio_install | bash - -m MY_MACHINE
 ```
 
 ## Machine
