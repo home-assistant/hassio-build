@@ -23,5 +23,13 @@ On a special platform they need set a machine type use:
 curl -sL https://raw.githubusercontent.com/pvizeli/hassio-build/master/install/hassio_install | bash - -m MY_MACHINE
 ```
 
+## Machine
+
+- raspberrypi
+- raspberrypi2
+- raspberrypi3
+- qemux86-64
+- qemux86
+
 ## HomeAssistant docker images
 On a i386 or amd64 it will use automatic the generic image for that platform. You can also use a specific docker image for that platform.
