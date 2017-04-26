@@ -51,7 +51,8 @@ do
         fi
         CMD_BIN=$(command -v hassio-hc)
 
-        if [ curl -sL "$URL_GENERIC_HC/$VERSION" > "$CMD_BIN" ]; then
+        curl -sL "$URL_GENERIC_HC/$VERSION" > "$CMD_BIN"
+        if [ $? -eq 0 ]; then
             chmod a+x "$CMD_BIN"
             echo "OK"
 
