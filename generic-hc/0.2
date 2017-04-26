@@ -57,7 +57,7 @@ do
             echo "OK"
 
             # restart service
-            if [ "$INIT_SYSTEM" == "systemd"]; then
+            if [ "$INIT_SYSTEM" == "systemd" ]; then
                 nohup systemctl restart hassio-hc.service > /dev/null 2>&1
             fi
         else
