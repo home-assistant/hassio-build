@@ -20,10 +20,11 @@ do
 
     if [ ${parse[0]} == "info" ]; then
         HOSTNAME=$(hostname)
+        OS=$(uname -o)
         LAST=$(curl -s $ENDPOINT | jq -e -r '.resinos')
         FEATURES="[\"shutdown\", \"reboot\", \"update\"]"
 
-        echo "{ \"type\": \"resinos\", \"version\": \"$VERSION\", \"last_version\": \"$LAST\", \"hostname\": \"$HOSTNAME\", \"features\": $FEATURES }"
+        echo "{ \"type\": \"resinos\", \"version\": \"$VERSION\", \"last_version\": \"$LAST\", \"hostname\": \"$HOSTNAME\", \"features\": $FEATURES, \"os\": \"$OS\" }"
         continue
     fi
     if [ ${parse[0]} == "reboot" ]; then

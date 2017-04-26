@@ -47,7 +47,7 @@ ADDON_WORKSPACE=${WORKSPACE}/${ADDON}
 echo "[INFO] Setup docker for addon"
 mkdir -p $BUILD_DIR
 
-git clone https://github.com/pvizeli/hassio-addons $WORKSPACE
+git clone https://github.com/home-assistant/hassio-addons $WORKSPACE
 
 if [ ! -d $ADDON_WORKSPACE ]; then
     echo "Error: $ADDON not found inside Repo!"
