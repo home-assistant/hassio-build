@@ -197,7 +197,7 @@ source /etc/resin-supervisor/supervisor.conf
 
 # Check that HostOS version was provided
 if [ -z "$HOSTOS_VERSION" ]; then
-    if version=$(curl --silent $ENDPOINT | jq -e -r '.resinos_version'); then
+    if version=$(curl --silent $ENDPOINT | jq -e -r '.resinos'); then
         HOSTOS_VERSION=$version
     else
         log ERROR "--hostos-version is required."
@@ -205,7 +205,7 @@ if [ -z "$HOSTOS_VERSION" ]; then
 fi
 
 if [ -z $RESINHUP_VERSION ]; then
-    if version=$(curl --silent $ENDPOINT | jq -e -r '.resinhup_version'); then
+    if version=$(curl --silent $ENDPOINT | jq -e -r '.resinhup'); then
         RESINHUP_VERSION=$version
     else
         log ERROR "--resinhup-version is required."

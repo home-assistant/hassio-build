@@ -27,6 +27,8 @@ do_install() {
     install -d ${D}${bindir}
     install -m 0775 ${WORKDIR}/hassio-hc ${D}${bindir}/hassio-hc
 
+    sed -i -e 's:@RESINOS_HASSIO_VERSION@:${RESINOS_HASSIO_VERSION}:g' ${D}${bindir}/hassio-hc
+
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         install -d ${D}${systemd_unitdir}/system
         install -c -m 0644 ${WORKDIR}/hassio-hc.service ${D}${systemd_unitdir}/system

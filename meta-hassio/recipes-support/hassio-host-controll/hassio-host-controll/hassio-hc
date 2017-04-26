@@ -9,6 +9,8 @@ source /etc/profile
 source /usr/sbin/resin-vars
 source /etc/resin-supervisor/supervisor.conf
 
+VERSION=@RESINOS_HASSIO_VERSION@
+
 #
 # MAIN
 #
@@ -17,7 +19,11 @@ do
     IFS=" " read -r -a parse <<< $cmd
 
     if [ ${parse[0]} == "info" ]; then
-        echo "{ \"level\": 7, \"os\": \"resinos\", \"version\": \"$RESINOS_HASSIO_VERSION\", \"hostname\": \"$CONFIG_HOSTNAME\" }"
+        HOSTNAME=$(hostname)
+        LAST=$(curl -s $ENDPOINT | jq -e -r '.resinos')
+        FEATURES="[\"shutdown\", \"reboot\", \"update\"]"
+
+        echo "{ \"type\": \"resinos\", \"version\": \"$VERSION\", \"last_version\": \"$LAST\", \"hostname\": \"$HOSTNAME\", \"features\": $FEATURES }"
         continue
     fi
     if [ ${parse[0]} == "reboot" ]; then
@@ -28,7 +34,7 @@ do
         systemctl poweroff && echo "OK" || echo "ERROR"
         continue
     fi
-    if [ ${parse[0]} == "host-update" ]; then
+    if [ ${parse[0]} == "update" ]; then
         if [ ! -z ${parse[1]} ]; then
             nohup resinhub --hostos-version ${parse[1]} > /dev/null 2>&1 &
         else

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -o pipefail
 
-SUPERVISOR_CONFIG="/resin-data/config.json"
+USE_LOCAL=no
 
 # Help function
 function update-resin-supervisor-help {
@@ -44,6 +44,9 @@ while [[ $# > 0 ]]; do
             UPDATER_SUPERVISOR_TAG=$2
             shift
             ;;
+        -l|--local-update)
+            USE_LOCAL=yes
+            ;;
         *)
             log ERROR "Unrecognized option $1."
             ;;
@@ -58,11 +61,6 @@ source /etc/resin-supervisor/supervisor.conf
 # A temporary file used until next reboot
 UPDATECONF=/tmp/update-supervisor.conf
 
-if [ -z "$ENDPOINT" -o -z "$CONFIG_PATH" ]; then
-    echo "Environment variables API_ENDPOINT and CONFIG_PATH must be set."
-    exit 1
-fi
-
 function error_handler {
     # If docker pull fails, start the old supervisor again and exit
     rm -rf $UPDATECONF
@@ -72,8 +70,22 @@ function error_handler {
 
 trap 'error_handler $LINENO' ERR
 
+# use HassIO API for update
+if [ "$USE_LOCAL" == "no" ] && [ -f $SUPERVISOR_CONFIG ]; then
+    echo "Update supervisor with HassIO API"
+    hassio_api=$($(jq --raw-output ".api_endpoint // empty" $SUPERVISOR_CONFIG))
+
+    if [ ! -z $UPDATER_SUPERVISOR_TAG ]; then
+        payload="{ \"version\": \"$UPDATER_SUPERVISOR_TAG\" }"
+    else
+        payload="{ \"version\": \"$UPDATER_SUPERVISOR_TAG\" }"
+    fi
+
+    curl -s -X GET -d "$payload" "http://$hassio_api/supervisor/update"
+fi
+
 if [ -f $SUPERVISOR_CONFIG ]; then
-    tag=$(jq --raw-output ".hassio_current // empty" $SUPERVISOR_CONFIG)
+    tag=$(jq --raw-output ".hassio_last // empty" $SUPERVISOR_CONFIG)
     image_name=$SUPERVISOR_IMAGE
 fi
 
@@ -124,5 +136,4 @@ sed --in-place "s|SUPERVISOR_IMAGE=.*|SUPERVISOR_IMAGE=$image_name|" /etc/resin-
 sed --in-place "s|SUPERVISOR_TAG=.*|SUPERVISOR_TAG=$tag|" /etc/resin-supervisor/supervisor.conf
 
 # cleanup old image
-echo "Cleanup old supervisor"
-docker rmi $SUPERVISOR_IMAGE:$SUPERVISOR_TAG || true
+echo "!!! Please cleanup old supervisor manual !!!"
