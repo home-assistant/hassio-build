@@ -2,7 +2,7 @@
 
 set -ev
 
-DOCKER_REPO=pvizeli
+DOCKER_REPO=homeassistant
 DOCKER_IMAGE=yocto-build-env
 
 # Get the absolute script location
