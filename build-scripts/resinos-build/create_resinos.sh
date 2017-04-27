@@ -3,7 +3,7 @@
 set -e
 
 BUILD_CONTAINER_NAME=yocto-build-$$
-DOCKER_REPO=pvizeli
+DOCKER_REPO=homeassistant
 
 cleanup() {
     echo "[INFO] Cleanup."
@@ -91,7 +91,7 @@ docker run --rm \
     -e BUILDER_GID=$(id -g) \
     --name $BUILD_CONTAINER_NAME \
     --privileged \
-    pvizeli/yocto-build-env \
+    homeassistant/yocto-build-env \
     /run-resinos.sh \
         --log \
         --machine "$MACHINE" \

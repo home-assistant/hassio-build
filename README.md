@@ -2,14 +2,14 @@
 
 Build env for hassio
 
-[HassIO](https://github.com/pvizeli/hassio)
-[HassIO-Addons](https://github.com/pvizeli/hassio-addons)
+[HassIO](https://github.com/homeassistant/hassio)
+[HassIO-Addons](https://github.com/homeassistant/hassio-addons)
 
 # Build Server
 
 You need a linux with [AUFS](https://docs.docker.com/engine/userguide/storagedriver/aufs-driver/) and docker support. You need to have the build user in docker group for he can run docker. It is not possible to run this process as root! You need also install `jq`
 
-Builds are published on: https://hub.docker.com/r/pvizeli/
+Builds are published on: https://hub.docker.com/r/homeassistant/
 
 ## Build env
 

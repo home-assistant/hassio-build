@@ -3,7 +3,7 @@
 set -e
 
 BUILD_CONTAINER_NAME=homeassistant-build-$$
-DOCKER_REPO=pvizeli
+DOCKER_REPO=homeassistant
 
 cleanup() {
     echo "[INFO] Cleanup."
@@ -82,7 +82,7 @@ docker run --rm \
     -e DOCKER_TAG=$DOCKER_TAG \
     --name $BUILD_CONTAINER_NAME \
     --privileged \
-    pvizeli/docker-build-env \
+    homeassistant/docker-build-env \
     /run-docker.sh
 
 echo "[INFO] cleanup WORKSPACE"

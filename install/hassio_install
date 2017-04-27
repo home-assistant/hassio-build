@@ -2,7 +2,7 @@
 set -e
 
 ARCH=$(uname -m)
-DOCKER_REPO=pvizeli
+DOCKER_REPO=homeassistant
 URL_VERSION="https://raw.githubusercontent.com/home-assistant/hassio/master/version.json"
 URL_START_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/misc/hassio-start"
 URL_GENERIC_HC="https://raw.githubusercontent.com/home-assistant/hassio-build/master/generic-hc"
