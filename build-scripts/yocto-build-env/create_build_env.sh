@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ev
+set -e
 
 DOCKER_REPO=homeassistant
 DOCKER_IMAGE=yocto-build-env

@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     cpio \
     file \
     python3 \
+    locales \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the locale to UTF-8 for bulding with poky morty
