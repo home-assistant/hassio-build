@@ -45,7 +45,7 @@ case $MACHINE in
         DOCKER_FILE_NAME="Dockerfile.raspberrypi3"
     ;;
     "raspberrypi2")
-        DOCKER_FILE_NAME="Dockerfile.raspberryp-pi2"
+        DOCKER_FILE_NAME="Dockerfile.raspberry-pi2"
     ;;
     "raspberrypi")
         DOCKER_FILE_NAME="Dockerfile.raspberry-pi"
