@@ -48,7 +48,7 @@ case $MACHINE in
         ARCH="armhf"
         RESIN_REPO="https://github.com/resin-os/resin-raspberrypi"
         HOMEASSISTANT_REPOSITORY="$DOCKER_REPO/$MACHINE-homeassistant"
-        RESIN_BRANCH="v2.0.0+rev3"
+        RESIN_BRANCH="v2.0.2+rev1"
     ;;
     *)
         echo "[ERROR] ${MACHINE} unknown!"
