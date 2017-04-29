@@ -22,7 +22,7 @@ trap 'cleanup fail' SIGINT SIGTERM
 # Sanity checks
 if [ "$#" -ne 2 ]; then
     echo "Usage: create_hassio_addon.sh <ARCH> <ADDON_SLUG>"
-    echo "Optional environment: BUILD_DIR"
+    echo "Optional environment: BUILD_DIR BRANCH"
     exit 1
 fi
 if [ $1 != 'armhf' ] && [ $1 != 'aarch64' ] && [ $1 != 'i386' ] && [ $1 != 'amd64' ]; then
@@ -42,12 +42,14 @@ DOCKER_IMAGE=${ARCH}-addon-${ADDON}
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
 WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/hassio-addon
 ADDON_WORKSPACE=${WORKSPACE}/${ADDON}
+BRANCH=${BRANCH:=build}
 
 # setup docker
 echo "[INFO] Setup docker for addon"
 mkdir -p $BUILD_DIR
 
 git clone https://github.com/home-assistant/hassio-addons $WORKSPACE
+cd $WORKSPACE; git checkout $BRANCH
 
 if [ ! -d $ADDON_WORKSPACE ]; then
     echo "Error: $ADDON not found inside Repo!"

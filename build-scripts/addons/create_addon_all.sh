@@ -5,7 +5,7 @@ set -e
 # Sanity checks
 if [ "$#" -ne 1 ]; then
     echo "Usage: create_addon_all.sh <ADDON_SLUG>"
-    echo "Optional environment: BUILD_DIR"
+    echo "Optional environment: BUILD_DIR BRANCH"
     exit 1
 fi
 
