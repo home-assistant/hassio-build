@@ -1,5 +1,4 @@
-#FROM %%BASE_IMAGE%%
-FROM resin/qemux86-64-alpine-python:3.6
+FROM %%BASE_IMAGE%%
 
 # Add version
 ENV VERSION %%HASS_VERSION%%
