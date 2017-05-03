@@ -148,4 +148,4 @@ cp "$BUILD_DEPLOY_DIR/resin.img.bz2" "$SCRIPTPATH/resinos-hassio-$RESINOS_HASSIO
 
 # Cleanup the build directory
 # Keep this after writing all artifacts
-rm -rf $WORKSPACE/build
+rm -rf $WORKSPACE
