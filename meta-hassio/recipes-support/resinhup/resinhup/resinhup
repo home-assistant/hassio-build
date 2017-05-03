@@ -312,6 +312,7 @@ docker run --privileged --rm --net=host $RESINHUP_ENV \
 RESINHUP_EXIT=$?
 
 docker rmi $DOCKER_REPO/resinhup:$MACHINE-$RESINHUP_VERSION || true
+docker rmi $DOCKER_REPO/resinos-hassio:$HOSTOS_VERSION-$MACHINE || true
 # RESINHUP_EXIT
 #   0 - update done
 #   2 - only intermediate step was done and will continue after reboot
