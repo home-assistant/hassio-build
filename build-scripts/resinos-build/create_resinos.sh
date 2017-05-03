@@ -144,7 +144,7 @@ else
 fi
 
 # move image into script dir
-cp "$BUILD_DEPLOY_DIR/resin.img.bz2" "$SCRIPTDIR/resinos-hassio-$RESINOS_HASSIO_VERSION-$MACHINE.img.bz2"
+cp "$BUILD_DEPLOY_DIR/resin.img.bz2" "$SCRIPTPATH/resinos-hassio-$RESINOS_HASSIO_VERSION-$MACHINE.img.bz2"
 
 # Cleanup the build directory
 # Keep this after writing all artifacts
