@@ -36,7 +36,7 @@ HASSIO_VERSION=$2
 RESINOS_HASSIO_VERSION=$3
 PERSISTENT_WORKDIR=${PERSISTENT_WORKDIR:=~/yocto}
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
-WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/resin-board
+WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/resin-$MACHINE
 HASSIO_ROOT=${HASSIO_ROOT:=$SCRIPTPATH/../..}
 DOWNLOAD_DIR=$PERSISTENT_WORKDIR/shared-downloads
 SSTATE_DIR=$PERSISTENT_WORKDIR/$MACHINE/sstate
@@ -48,7 +48,7 @@ case $MACHINE in
         ARCH="armhf"
         RESIN_REPO="https://github.com/resin-os/resin-raspberrypi"
         HOMEASSISTANT_REPOSITORY="$DOCKER_REPO/$MACHINE-homeassistant"
-        RESIN_BRANCH="v2.0.2+rev1"
+        RESIN_BRANCH="v2.0.2+rev2"
     ;;
     *)
         echo "[ERROR] ${MACHINE} unknown!"
@@ -143,7 +143,9 @@ else
     exit 1
 fi
 
+# move image into script dir
+cp "$BUILD_DEPLOY_DIR/resin.img.bz2" "$SCRIPTDIR/resinos-hassio-$RESINOS_HASSIO_VERSION-$MACHINE.img.bz2"
+
 # Cleanup the build directory
 # Keep this after writing all artifacts
-exit 0
 rm -rf $WORKSPACE/build
