@@ -9,7 +9,8 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-for machine in "raspberrypi3" "raspberrypi2" "qemux86" "qemux86-64"
+for machine in "raspberrypi3" "raspberrypi2" "raspberrypi" "qemux86" "qemux86-64"
 do
-    ./create_homeassistant.sh $1 $machine
+    ./create_homeassistant.sh $1 $machine &
 done
+wait
