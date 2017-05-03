@@ -22,7 +22,7 @@ trap 'cleanup fail' SIGINT SIGTERM
 # Sanity checks
 if [ "$#" -ne 3 ]; then
     echo "Usage: create_resinos.sh <MACHINE> <HASSIO_VERSION> <RESINOS_HASSIO_VERSION>"
-    echo "Optional environment: BUILD_DIR, PERSISTENT_WORKDIR, RESIN_BRANCH, HASSIO_ROOT"
+    echo "Optional environment: BUILD_DIR, PERSISTENT_WORKDIR, HASSIO_META"
     exit 1
 fi
 
@@ -37,10 +37,10 @@ RESINOS_HASSIO_VERSION=$3
 PERSISTENT_WORKDIR=${PERSISTENT_WORKDIR:=~/yocto}
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
 WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/resin-$MACHINE
-HASSIO_ROOT=${HASSIO_ROOT:=$SCRIPTPATH/../..}
+HASSIO_META=${HASSIO_ROOT:=$SCRIPTPATH/../..}
 DOWNLOAD_DIR=$PERSISTENT_WORKDIR/shared-downloads
 SSTATE_DIR=$PERSISTENT_WORKDIR/$MACHINE/sstate
-RESIN_BRANCH=${RESIN_BRANCH:=master}
+RESIN_BRANCH=master
 
 # evaluate git repo and arch
 case $MACHINE in
@@ -57,9 +57,9 @@ case $MACHINE in
 esac
 
 echo "[INFO] Checkout repository"
-if [ ! -d $WORKSPACE ]; then
+if [ ! -d "$WORKSPACE" ]; then
     mkdir -p $BUILD_DIR
-    cd $BUILD_DIR && git clone $RESIN_REPO resin-board
+    cd $BUILD_DIR && git clone "$RESIN_REPO" "$WORKSPACE"
     if [ $RESIN_BRANCH != "master" ]; then
         cd $WORKSPACE && git checkout $RESIN_BRANCH
     fi
@@ -67,7 +67,7 @@ if [ ! -d $WORKSPACE ]; then
 fi
 
 echo "[INFO] Inject HassIO yocto layer"
-cp -fr $HASSIO_ROOT/meta-hassio $WORKSPACE/layers/
+cp -fr $HASSIO_META/meta-hassio $WORKSPACE/layers/
 if [ ! -d $WORKSPACE/build/conf ]; then
     sed -i 's%${TOPDIR}/../layers/meta-resin/meta-resin-common \\%${TOPDIR}/../layers/meta-resin/meta-resin-common \\\n${TOPDIR}/../layers/meta-hassio \\%g' $WORKSPACE/layers/*/conf/samples/bblayers.conf.sample
 fi
