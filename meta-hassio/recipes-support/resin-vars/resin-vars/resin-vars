@@ -49,15 +49,9 @@ fi
 # runtime value
 if [ -f $CONFIG_PATH ]
 then
-    ENDPOINT=$(jq --raw-output ".endpoint // empty" $CONFIG_PATH)
-    CONFIG_HOSTNAME=$(jq --raw-output ".hostname // empty" $CONFIG_PATH)
-    PERSISTENT_LOGGING=$(jq --raw-output ".persistentLogging // empty" $CONFIG_PATH)
-    if [ -z "$PERSISTENT_LOGGING" ]; then
-        PERSISTENT_LOGGING=false
-    fi
-    if [ -z "$ENDPOINT" ]; then
-        ENDPOINT="https://raw.githubusercontent.com/home-assistant/hassio/master/version.json"
-    fi
+    ENDPOINT=$(jq --raw-output '.endpoint // "https://raw.githubusercontent.com/home-assistant/hassio/master/version.json"' $CONFIG_PATH)
+    CONFIG_HOSTNAME=$(jq --raw-output '.hostname // "hassio"' $CONFIG_PATH)
+    PERSISTENT_LOGGING=$(jq --raw-output '.persistentLogging // false' $CONFIG_PATH)
 else
     echo "[WARNING] $0 : '$CONFIG_PATH' not found."
 fi
