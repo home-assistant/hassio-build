@@ -41,6 +41,7 @@ do
         else
             nohup resinhup > /dev/null 2>&1 &
         fi
+        sleep 4
         echo "OK"
         continue
     fi
