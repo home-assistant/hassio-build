@@ -37,9 +37,9 @@ do
     fi
     if [ ${parse[0]} == "update" ]; then
         if [ ! -z ${parse[1]} ]; then
-            nohup resinhub --hostos-version ${parse[1]} > /dev/null 2>&1 &
+            nohup resinhup --hostos-version ${parse[1]} > /dev/null 2>&1 &
         else
-            nohup resinhub > /dev/null 2>&1 &
+            nohup resinhup > /dev/null 2>&1 &
         fi
         echo "OK"
         continue
