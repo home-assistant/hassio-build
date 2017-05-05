@@ -1,31 +1,65 @@
 #!/bin/bash
-
 set -e
 
-DOCKER_REPO=homeassistant
-DOCKER_IMAGE=docker-build-env
+DOCKER_IMAGE=${DOCKER_IMAGE:="homeassistant/docker-build-env"}
+DOCKER_PUSH="false"
 
 # Get the absolute script location
-pushd `dirname $0` > /dev/null 2>&1
-SCRIPTPATH=`pwd`
+pushd "$(dirname "$0")" > /dev/null 2>&1
+SCRIPTPATH=$(pwd)
 popd > /dev/null 2>&1
 
-# Sanity checks
-if [ "$#" -ne 1 ]; then
-    echo "Usage: create_build_env.sh [<TAG> | NONE]"
+help () {
+    cat << EOF
+Script for hassio docker build environment
+create_build_env [options]
+
+Options:
+    -h, --help
+        Display this help and exit.
+
+    -t, --tag TAG
+        Version/Tag of $DOCKER_IMAGE.
+    -p, --push
+        Upload the build to docker hub.
+EOF
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    key=$1
+    case $key in
+        -h|--help)
+            help
+            exit 0
+            ;;
+        -t|--tag)
+            DOCKER_TAG=$2
+            shift
+            ;;
+        -p|--push)
+            DOCKER_PUSH="true"
+            ;;
+        *)
+            echo "[WARNING] $0 : Argument '$1' unknown. Ignoring."
+            ;;
+    esac
+    shift
+done
+
+if [ -z "$DOCKER_TAG" ]; then
+    echo "[ERROR] please set a tag!"
+    help
     exit 1
 fi
 
-DOCKER_TAG=$1
-
 # Build
-docker build --pull --tag ${DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG} -f ${SCRIPTPATH}/Dockerfile ${SCRIPTPATH}
+docker build --pull --tag "$DOCKER_IMAGE:$DOCKER_TAG" -f "$SCRIPTPATH/Dockerfile" "$SCRIPTPATH"
 
 # Tag
-docker tag ${DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_REPO}/${DOCKER_IMAGE}:latest
+docker tag "$DOCKER_IMAGE:$DOCKER_TAG" "$DOCKER_IMAGE:latest"
 
-if [ ${DOCKER_TAG} != "NONE" ]; then
-    # push
-    docker push ${DOCKER_REPO}/${DOCKER_IMAGE}:${DOCKER_TAG}
-    docker push ${DOCKER_REPO}/${DOCKER_IMAGE}:latest
+if [ "$DOCKER_PUSH" == "true" ]; then
+    docker push "$DOCKER_IMAGE:$DOCKER_TAG"
+    docker push "$DOCKER_IMAGE:latest"
 fi
