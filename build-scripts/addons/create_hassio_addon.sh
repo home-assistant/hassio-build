@@ -1,9 +1,11 @@
 #!/bin/bash
-
 set -e
 
 BUILD_CONTAINER_NAME=hassio-addons-$$
-DOCKER_REPO=homeassistant
+DOCKER_PUSH="false"
+DOCKER_HUB=homeassistant
+BRANCH=build
+REPOSITORY=https://github.com/home-assistant/hassio-addons
 
 cleanup() {
     echo "[INFO] Cleanup."
@@ -19,66 +21,149 @@ cleanup() {
 }
 trap 'cleanup fail' SIGINT SIGTERM
 
+help () {
+    cat << EOF
+Script for hassio addon docker build
+create_hassio_addon [options]
+
+Options:
+    -h, --help
+        Display this help and exit.
+
+    -r, --repository https://.../addons
+        Set git repository to load addon from.
+    -b, --branch branch_name
+        Set git branch to load addon from.
+    -l, --local /path/to/repository
+        Load addon from a local folder
+    -s, --slug addon_slug
+        Name of folder/slug
+
+    -h, --hub hubname
+        Set user of dockerhub build.
+
+    -a, --arch armhf|aarch64|i386|amd64
+        Arch for addon build.
+    -p, --push
+        Upload the build to docker hub.
+EOF
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    key=$1
+    case $key in
+        -h|--help)
+            help
+            exit 0
+            ;;
+        -h|--hub)
+            DOCKER_HUB=$2
+            shift
+            ;;
+        -r|--repository)
+            REPOSITORY=$2
+            shift
+            ;;
+        -b|--branch)
+            BRANCH=$2
+            shift
+            ;;
+        -l|--local)
+            LOCAL_REPOSITORY=$2
+            shift
+            ;;
+        -s|--slug)
+            SLUG=$2
+            shift
+            ;;
+        -a|--arch)
+            ARCH=$2
+            shift
+            ;;
+        -p|--push)
+            DOCKER_PUSH="true"
+            ;;
+        *)
+            echo "[WARNING] $0 : Argument '$1' unknown. Ignoring."
+            ;;
+    esac
+    shift
+done
+
 # Sanity checks
-if [ "$#" -ne 2 ]; then
-    echo "Usage: create_hassio_addon.sh <ARCH> <ADDON_SLUG>"
-    echo "Optional environment: BUILD_DIR BRANCH"
+if [ "$ARCH" != 'armhf' ] && [ "$ARCH" != 'aarch64' ] && [ "$ARCH" != 'i386' ] && [ "$ARCH" != 'amd64' ]; then
+    echo "Error: $ARCH is not a supported platform for hassio-supervisor!"
+    help
     exit 1
 fi
-if [ $1 != 'armhf' ] && [ $1 != 'aarch64' ] && [ $1 != 'i386' ] && [ $1 != 'amd64' ]; then
-    echo "Error: $1 is not a supported platform for hassio addons!"
+if [ -z "$SLUG" ]; then
+    echo "[ERROR] please set a slug!"
+    help
     exit 1
 fi
 
 # Get the absolute script location
-pushd `dirname $0` > /dev/null 2>&1
-SCRIPTPATH=`pwd`
+pushd "$(dirname "$0")" > /dev/null 2>&1
+SCRIPTPATH=$(pwd)
 popd > /dev/null 2>&1
 
-ARCH=$1
-BASE_IMAGE="resin\/${ARCH}-alpine:3.5"
-ADDON=$2
-DOCKER_IMAGE=${ARCH}-addon-${ADDON}
+BASE_IMAGE="resin\/$ARCH-alpine:3.5"
+DOCKER_IMAGE=$DOCKER_HUB/$ARCH-addon-$SLUG
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
-WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/hassio-addon
-ADDON_WORKSPACE=${WORKSPACE}/${ADDON}
-BRANCH=${BRANCH:=build}
+WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/hassio-supervisor-$ARCH
+ADDON_WORKSPACE=$WORKSPACE/$SLUG
 
 # setup docker
 echo "[INFO] Setup docker for addon"
-mkdir -p $BUILD_DIR
+mkdir -p "$BUILD_DIR"
+mkdir -p "$WORKSPACE"
 
-git clone https://github.com/home-assistant/hassio-addons $WORKSPACE
-cd $WORKSPACE; git checkout $BRANCH
+if [ -z "$LOCAL_REPOSITORY" ]; then
+    git clone "$REPOSITORY" "$WORKSPACE"
+    cd "$WORKSPACE"; git checkout "$BRANCH"
 
-if [ ! -d $ADDON_WORKSPACE ]; then
-    echo "Error: $ADDON not found inside Repo!"
-    exit 1
+    if [ ! -d "$ADDON_WORKSPACE" ]; then
+        echo "Error: $ADDON not found inside Repo!"
+        exit 1
+    fi
+else
+    cp -r "$LOCAL_REPOSITORY/$SLUG" "$ADDON_WORKSPACE"
 fi
 
-VERSION=$(jq --raw-output ".version" $ADDON_WORKSPACE/config.json)
+# Init docker
+echo "[INFO] Setup dockerfile"
 
-sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" $ADDON_WORKSPACE/Dockerfile
-sed -i "s/%%VERSION%%/${VERSION}/g" $ADDON_WORKSPACE/Dockerfile
+sed -i "s/{arch}/${ARCH}/g" "$ADDON_WORKSPACE/config.json"
+DOCKER_TAG=$(jq --raw-output ".version" "$ADDON_WORKSPACE/config.json")
+
+# if set custom image in file
+CUSTOM_IMAGE=$(jq --raw-output ".image // empty" "$ADDON_WORKSPACE/config.json")
+if [ ! -z "$CUSTOM_IMAGE" ]; then
+    DOCKER_IMAGE=$CUSTOM_IMAGE
+fi
+
+sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$ADDON_WORKSPACE/Dockerfile"
+sed -i "s/%%VERSION%%/${DOCKER_TAG}/g" "$ADDON_WORKSPACE/Dockerfile"
 
 # Run build
 echo "[INFO] start docker build"
 docker stop $BUILD_CONTAINER_NAME 2> /dev/null || true
 docker rm --volumes $BUILD_CONTAINER_NAME 2> /dev/null || true
 docker run --rm \
-    -v $ADDON_WORKSPACE:/docker \
+    -v "$ADDON_WORKSPACE":/docker \
     -v ~/.docker:/root/.docker \
-    -e DOCKER_REPO=$DOCKER_REPO \
-    -e DOCKER_IMAGE=$DOCKER_IMAGE \
-    -e DOCKER_TAG=$VERSION \
+    -e DOCKER_PUSH=$DOCKER_PUSH \
+    -e DOCKER_IMAGE="$DOCKER_IMAGE" \
+    -e DOCKER_TAG="$VERSION" \
     --name $BUILD_CONTAINER_NAME \
     --privileged \
     homeassistant/docker-build-env \
     /run-docker.sh
 
 echo "[INFO] cleanup WORKSPACE"
-cd $BUILD_DIR
-rm -rf $WORKSPACE
+cd "$BUILD_DIR"
+rm -rf "$WORKSPACE"
 
-cleanup
+cleanup "okay"
 exit 0
