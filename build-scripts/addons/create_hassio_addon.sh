@@ -155,7 +155,7 @@ docker run --rm \
     -v ~/.docker:/root/.docker \
     -e DOCKER_PUSH=$DOCKER_PUSH \
     -e DOCKER_IMAGE="$DOCKER_IMAGE" \
-    -e DOCKER_TAG="$VERSION" \
+    -e DOCKER_TAG="$DOCKER_TAG" \
     --name $BUILD_CONTAINER_NAME \
     --privileged \
     homeassistant/docker-build-env \
