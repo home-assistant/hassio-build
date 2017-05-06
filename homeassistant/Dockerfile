@@ -59,12 +59,9 @@ WORKDIR /usr/src/
 # install home-assistant
 COPY homeassistant/ homeassistant
 RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
-RUN pip3 install --no-cache-dir -r homeassistant/requirements_all.txt 
-
-# install HomeAssistant & core
-RUN pip3 install --no-cache-dir cchardet uvloop \
-    && cd homeassistant \
-    && python3 setup.py install \
+RUN pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
+    && pip3 install --no-cache-dir cchardet uvloop \
+    && pip3 install --no-cache-dir /usr/src/homeassistant \
     && rm -r homeassistant
 
 # Run hass
