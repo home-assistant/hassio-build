@@ -89,8 +89,8 @@ popd > /dev/null 2>&1
 
 DOCKER_IMAGE=$DOCKER_HUB/$MACHINE-homeassistant
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
-WORKSPACE=$BUILD_DIR/hass
-HASS_GIT=$BUILD_DIR/hass_git
+WORKSPACE=$BUILD_DIR/hass-$MACHINE
+HASS_GIT=$BUILD_DIR/hass_git-$MACHINE
 
 # generate base image
 case $MACHINE in
