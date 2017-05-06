@@ -90,7 +90,7 @@ popd > /dev/null 2>&1
 DOCKER_IMAGE=$DOCKER_HUB/$MACHINE-homeassistant
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
 WORKSPACE=$BUILD_DIR/hass-$MACHINE
-HASS_GIT=$BUILD_DIR/hass_git-$MACHINE
+HASS_GIT=$WORKSPACE/homeassistant
 
 # generate base image
 case $MACHINE in
@@ -121,7 +121,6 @@ sed -i "s/%%HASS_VERSION%%/${DOCKER_TAG}/g" "$WORKSPACE/Dockerfile"
 
 git clone https://github.com/home-assistant/home-assistant "$HASS_GIT"
 cd "$HASS_GIT" && git checkout "$DOCKER_TAG"
-cp "$HASS_GIT/requirements_all.txt" "$WORKSPACE/"
 
 # Run build
 echo "[INFO] start docker build"
@@ -141,7 +140,6 @@ docker run --rm \
 echo "[INFO] cleanup WORKSPACE"
 cd "$BUILD_DIR"
 rm -rf "$WORKSPACE"
-rm -rf "$HASS_GIT"
 
 cleanup "okay"
 exit 0
