@@ -5,6 +5,7 @@ That is only if you want run HassIO on a generic system without our hardware ima
 ## Requrements
 
 ```
+docker
 bash
 socat
 jq
