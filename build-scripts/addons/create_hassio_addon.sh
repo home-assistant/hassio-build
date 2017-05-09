@@ -39,7 +39,7 @@ Options:
     -s, --slug addon_slug
         Name of folder/slug
 
-    -h, --hub hubname
+    -d, --dockerhub hubname
         Set user of dockerhub build.
 
     -a, --arch armhf|aarch64|i386|amd64

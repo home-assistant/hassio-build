@@ -35,7 +35,7 @@ Options:
     -b, --branch branch_name
         Set git repository to load Hass.IO from.
 
-    -h, --hub hubname
+    -d, --dockerhub hubname
         Set user of dockerhub build.
 
     -a, --arch armhf|aarch64|i386|amd64
@@ -55,7 +55,7 @@ while [[ $# -gt 0 ]]; do
             help
             exit 0
             ;;
-        -h|--hub)
+        -d|--dockerhub)
             DOCKER_HUB=$2
             shift
             ;;
