@@ -42,6 +42,17 @@ RUN pip3 install --no-cache-dir cython==0.25.2 \
     && cp -R openzwave/config /usr/local/share/python-openzwave/config \
     && rm -rf /usr/src/python-openzwave
 
+# OpenCV
+RUN git clone https://github.com/opencv/opencv \
+    && cd opencv \
+    && git checkout 3.2.0 \
+    && mkdir -p build \
+    && cd build \
+    && cmake ../ \
+    && make \
+    && make install \
+    && rm -rf /usr/src/opencv
+
 # libcoap
 RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/libcoap \
     && cd libcoap \
