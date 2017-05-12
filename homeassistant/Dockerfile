@@ -16,12 +16,15 @@ RUN apk --no-cache add \
     automake \
     libtool \
     cmake \
-    libcec
+    ncurses-dev \
+    bison \
+    flex
 
 # install component packages
 RUN apk --no-cache add \
     ffmpeg \
     nmap \
+    libcec \
     net-tools
 
 ####
@@ -51,6 +54,30 @@ RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/li
     && make \
     && make install \
     && rm -rf /usr/src/libcoap
+
+# mariadb/mysql - until it support libressl
+RUN git clone https://github.com/MariaDB/server mariadb \
+    && cd mariadb \
+    && git checkout mariadb-10.1.23 \
+    && mkdir -p build \
+    && cd build \
+    && cmake ../ -DCMAKE_BUILD_TYPE=MinSizeRel -DWITHOUT_SERVER=yes -DCMAKE_INSTALL_PREFIX=/usr/local \
+    && make \
+    && make install \
+    && pip3 install --no-cache-dir mysqlclient \
+    && rm -rf /usr/src/mariadb
+
+# postgresql - until it support libressl
+RUN git clone https://github.com/postgres/postgres \
+    && cd postgres \
+    && git checkout REL9_6_3 \
+    && ./configure --prefix /usr --with-openssl \
+    && make \
+    && make -C src/bin install \
+    && make -C src/include install \
+    && make -C src/interfaces install \
+    && pip install --no-cache-dir psycopg2 \
+    && rm -rf /usr/src/postgres
 
 ####
 ## install pip module for components
