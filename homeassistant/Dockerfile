@@ -71,7 +71,7 @@ RUN git clone https://github.com/MariaDB/server mariadb \
 RUN git clone https://github.com/postgres/postgres \
     && cd postgres \
     && git checkout REL9_6_3 \
-    && ./configure --prefix /usr --with-openssl \
+    && ./configure --prefix /usr/local --with-openssl \
     && make \
     && make -C src/bin install \
     && make -C src/include install \
