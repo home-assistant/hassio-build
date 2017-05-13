@@ -21,7 +21,7 @@ SYSTEMD_SERVICE_${PN}_remove = "update-resin-supervisor.service"
 do_install_append () {
     install -d ${D}${sysconfdir}/resin-supervisor
     sed -i -e 's:@HOMEASSISTANT_REPOSITORY@:${HOMEASSISTANT_REPOSITORY}:g' ${D}${sysconfdir}/resin-supervisor/supervisor.conf
-    sed -i -e 's:@MACHINE@:${MACHINE}:g' ${D}${sysconfdir}/resin-supervisor/supervisor.conf
+    sed -i -e 's:@MACHINE@:${HASSIO_MACHINE}:g' ${D}${sysconfdir}/resin-supervisor/supervisor.conf
     sed -i -e 's:@RESINOS_HASSIO_VERSION@:${RESINOS_HASSIO_VERSION}:g' ${D}${sysconfdir}/resin-supervisor/supervisor.conf
 
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
