@@ -31,7 +31,26 @@ pushd `dirname $0` > /dev/null 2>&1
 SCRIPTPATH=`pwd`
 popd > /dev/null 2>&1
 
-MACHINE=$1
+# evaluate git repo and arch
+NAME="$1"
+case "$NAME" in
+    "raspberrypi" | "raspberrypi2" | "raspberrypi3")
+        RESIN_REPO="https://github.com/resin-os/resin-raspberrypi"
+        RESIN_BRANCH="v2.0.2+rev2"
+        MACHINE="$NAME"
+    ;;
+    "intel-nuc")
+        RESIN_REPO="https://github.com/resin-os/resin-intel"
+        RESIN_BRANCH="v2.0.2+rev2"
+        MACHINE="intel-corei7-64"
+    ;;
+    *)
+        echo "[ERROR] $NAME unknown!"
+        exit 1
+    ;;
+esac
+
+HOMEASSISTANT_REPOSITORY="$DOCKER_REPO/$NAME-homeassistant"
 HASSIO_VERSION=$2
 RESINOS_HASSIO_VERSION=$3
 PERSISTENT_WORKDIR=${PERSISTENT_WORKDIR:=~/yocto}
@@ -41,20 +60,6 @@ HASSIO_META=${HASSIO_ROOT:=$SCRIPTPATH/../..}
 DOWNLOAD_DIR=$PERSISTENT_WORKDIR/shared-downloads
 SSTATE_DIR=$PERSISTENT_WORKDIR/$MACHINE/sstate
 RESIN_BRANCH=master
-
-# evaluate git repo and arch
-case $MACHINE in
-    "raspberrypi" | "raspberrypi2" | "raspberrypi3")
-        ARCH="armhf"
-        RESIN_REPO="https://github.com/resin-os/resin-raspberrypi"
-        HOMEASSISTANT_REPOSITORY="$DOCKER_REPO/$MACHINE-homeassistant"
-        RESIN_BRANCH="v2.0.2+rev2"
-    ;;
-    *)
-        echo "[ERROR] ${MACHINE} unknown!"
-        exit 1
-    ;;
-esac
 
 echo "[INFO] Checkout repository"
 if [ ! -d "$WORKSPACE" ]; then
@@ -73,7 +78,7 @@ if [ ! -d $WORKSPACE/build/conf ]; then
 fi
 
 # Additional variables
-BARYS_ARGUMENTS_VAR="-a HASSIO_SUPERVISOR_TAG=$HASSIO_VERSION -a HOMEASSISTANT_REPOSITORY=$HOMEASSISTANT_REPOSITORY -a RESINOS_HASSIO_VERSION=$RESINOS_HASSIO_VERSION"
+BARYS_ARGUMENTS_VAR="-a HASSIO_SUPERVISOR_TAG=$HASSIO_VERSION -a HASSIO_MACHINE=$NAME -a HOMEASSISTANT_REPOSITORY=$HOMEASSISTANT_REPOSITORY -a RESINOS_HASSIO_VERSION=$RESINOS_HASSIO_VERSION"
 
 # Make sure shared directories are in place
 mkdir -p $DOWNLOAD_DIR
@@ -133,7 +138,7 @@ cp $WORKSPACE/build/tmp/deploy/images/$MACHINE/kernel_modules_headers.tar.gz $BU
 
 echo "INFO: Pushing resinhup package to dockerhub"
 DOCKER_IMAGE="$DOCKER_REPO/resinos-hassio"
-DOCKER_TAG="$RESINOS_HASSIO_VERSION-$MACHINE"
+DOCKER_TAG="$RESINOS_HASSIO_VERSION-$NAME"
 if [ -f $BUILD_DEPLOY_DIR/resinhup-$VERSION_HOSTOS.tar ]; then
     docker import $BUILD_DEPLOY_DIR/resinhup-$VERSION_HOSTOS.tar $DOCKER_IMAGE:$DOCKER_TAG
     docker push $DOCKER_IMAGE:$DOCKER_TAG
@@ -144,7 +149,7 @@ else
 fi
 
 # move image into script dir
-cp "$BUILD_DEPLOY_DIR/resin.img.bz2" "$SCRIPTPATH/resinos-hassio-$RESINOS_HASSIO_VERSION-$MACHINE.img.bz2"
+cp "$BUILD_DEPLOY_DIR/resin.img.bz2" "$SCRIPTPATH/resinos-hassio-$RESINOS_HASSIO_VERSION-$NAME.img.bz2"
 
 # Cleanup the build directory
 # Keep this after writing all artifacts
