@@ -58,6 +58,7 @@ done
 echo "[INFO] Docker was initialized"
 
 if [ "$DOCKER_CACHE" == "true" ]; then
+    docker pull "$DOCKER_IMAGE:latest"
     CACHE_CMD="--cache-from $DOCKER_IMAGE:latest"
 fi
 
