@@ -3,6 +3,7 @@ set -e
 
 BUILD_CONTAINER_NAME=homeassistant-build-$$
 DOCKER_PUSH="false"
+DOCKER_CACHE="true"
 DOCKER_HUB=homeassistant
 
 cleanup() {
@@ -37,6 +38,8 @@ Options:
         Version/Tag of HomeAssistant build.
     -p, --push
         Upload the build to docker hub.
+    -n, --no-cache
+        Disable build from cache
 EOF
 }
 
@@ -62,6 +65,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         -p|--push)
             DOCKER_PUSH="true"
+            ;;
+        -n|--no-cache)
+            DOCKER_CACHE="false"
             ;;
         *)
             echo "[WARNING] $0 : Argument '$1' unknown. Ignoring."
@@ -130,6 +136,7 @@ docker run --rm \
     -v "$WORKSPACE":/docker \
     -v ~/.docker:/root/.docker \
     -e DOCKER_PUSH=$DOCKER_PUSH \
+    -e DOCKER_CACHE=$DOCKER_CACHE \
     -e DOCKER_IMAGE="$DOCKER_IMAGE" \
     -e DOCKER_TAG="$DOCKER_TAG" \
     --name $BUILD_CONTAINER_NAME \
