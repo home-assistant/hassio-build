@@ -29,5 +29,6 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY run-docker.sh /
+RUN chmod a+x /run-docker.sh
 
 WORKDIR /docker
