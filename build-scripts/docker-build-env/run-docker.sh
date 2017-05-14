@@ -60,8 +60,8 @@ echo "[INFO] Docker was initialized"
 # Start barys with all the arguments requested
 echo "[INFO] Running build..."
 
-if [ "$DOCKER_CACHE" == "true" ]; then
-    docker pull "$DOCKER_IMAGE:latest"
+if "$DOCKER_CACHE" == "true" && docker pull "$DOCKER_IMAGE:latest" > /dev/null 2>&1
+then
     docker build --pull --tag "$DOCKER_IMAGE:$DOCKER_TAG" --cache-from "$DOCKER_IMAGE:latest" .
 else
     docker build --pull --tag "$DOCKER_IMAGE:$DOCKER_TAG" .
