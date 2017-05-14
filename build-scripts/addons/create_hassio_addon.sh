@@ -3,7 +3,7 @@ set -e
 
 BUILD_CONTAINER_NAME=hassio-addons-$$
 DOCKER_PUSH="false"
-DOCKER_CACHE="false"
+DOCKER_CACHE="true"
 DOCKER_HUB=homeassistant
 BRANCH=build
 REPOSITORY=https://github.com/home-assistant/hassio-addons
@@ -47,8 +47,8 @@ Options:
         Arch for addon build.
     -p, --push
         Upload the build to docker hub.
-    -c, --cache
-        Allow build from cache
+    -n, --no-cache
+        Disable build from cache
 EOF
 }
 
@@ -87,8 +87,8 @@ while [[ $# -gt 0 ]]; do
         -p|--push)
             DOCKER_PUSH="true"
             ;;
-        -c|--cache)
-            DOCKER_CACHE="true"
+        -n|--no-cache)
+            DOCKER_CACHE="false"
             ;;
         *)
             echo "[WARNING] $0 : Argument '$1' unknown. Ignoring."
