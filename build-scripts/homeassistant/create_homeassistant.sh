@@ -124,6 +124,7 @@ cp ../../homeassistant/Dockerfile "$WORKSPACE/Dockerfile"
 
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$WORKSPACE/Dockerfile"
 sed -i "s/%%VERSION%%/${DOCKER_TAG}/g" "$WORKSPACE/Dockerfile"
+echo "LABEL io.hass.version=\"$DOCKER_TAG\"" >> "$WORKSPACE/Dockerfile"
 
 git clone https://github.com/home-assistant/home-assistant "$HASS_GIT"
 cd "$HASS_GIT" && git checkout "$DOCKER_TAG"
