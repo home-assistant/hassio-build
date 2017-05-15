@@ -4,7 +4,6 @@ set -e
 BUILD_CONTAINER_NAME=hassio-addons-$$
 DOCKER_PUSH="false"
 DOCKER_CACHE="true"
-DOCKER_HUB=homeassistant
 BRANCH=build
 REPOSITORY=https://github.com/home-assistant/hassio-addons
 
@@ -40,9 +39,6 @@ Options:
     -s, --slug addon_slug
         Name of folder/slug
 
-    -d, --dockerhub hubname
-        Set user of dockerhub build.
-
     -a, --arch armhf|aarch64|i386|amd64
         Arch for addon build.
     -p, --push
@@ -59,10 +55,6 @@ while [[ $# -gt 0 ]]; do
         -h|--help)
             help
             exit 0
-            ;;
-        -h|--hub)
-            DOCKER_HUB=$2
-            shift
             ;;
         -r|--repository)
             REPOSITORY=$2
@@ -115,7 +107,6 @@ SCRIPTPATH=$(pwd)
 popd > /dev/null 2>&1
 
 BASE_IMAGE="resin\/$ARCH-alpine:3.5"
-DOCKER_IMAGE=$DOCKER_HUB/$ARCH-addon-$SLUG
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
 WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/hassio-supervisor-$ARCH
 ADDON_WORKSPACE=$WORKSPACE/$SLUG
@@ -144,14 +135,11 @@ sed -i "s/{arch}/${ARCH}/g" "$ADDON_WORKSPACE/config.json"
 DOCKER_TAG=$(jq --raw-output ".version" "$ADDON_WORKSPACE/config.json")
 
 # if set custom image in file
-CUSTOM_IMAGE=$(jq --raw-output ".image // empty" "$ADDON_WORKSPACE/config.json")
-if [ ! -z "$CUSTOM_IMAGE" ]; then
-    DOCKER_IMAGE=$CUSTOM_IMAGE
-fi
+DOCKER_IMAGE=$(jq --raw-output ".image // empty" "$ADDON_WORKSPACE/config.json")
 
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$ADDON_WORKSPACE/Dockerfile"
 sed -i "s/%%VERSION%%/${DOCKER_TAG}/g" "$ADDON_WORKSPACE/Dockerfile"
-echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.arch=\"$ARCH\"" >> "$ADDON_WORKSPACE/Dockerfile"
+echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.arch=\"$ARCH\" io.hass.type=\"addon\"" >> "$ADDON_WORKSPACE/Dockerfile"
 
 # Run build
 echo "[INFO] start docker build"
