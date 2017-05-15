@@ -1,7 +1,6 @@
 FROM %%BASE_IMAGE%%
 
-# Add version
-ENV VERSION %%SUPERVISOR_TAG%%
+# add env
 ENV LANG C.UTF-8
 
 # remove several traces of python
