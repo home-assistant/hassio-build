@@ -151,6 +151,7 @@ fi
 
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$ADDON_WORKSPACE/Dockerfile"
 sed -i "s/%%VERSION%%/${DOCKER_TAG}/g" "$ADDON_WORKSPACE/Dockerfile"
+echo 'LABEL io.hass.version="$DOCKER_TAG" io.hass.arch="$ARCH"' >> "$ADDON_WORKSPACE/Dockerfile"
 
 # Run build
 echo "[INFO] start docker build"
