@@ -120,7 +120,6 @@ mkdir -p "$WORKSPACE"
 
 cp ../../supervisor/Dockerfile "$WORKSPACE/Dockerfile"
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$WORKSPACE/Dockerfile"
-sed -i "s/%%SUPERVISOR_TAG%%/${DOCKER_TAG}/g" "$WORKSPACE/Dockerfile"
 echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.arch=\"$ARCH\" io.hass.type=\"supervisor\"" >> "$WORKSPACE/Dockerfile"
 
 git clone "$REPOSITORY" "$WORKSPACE/hassio_api"
