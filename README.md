@@ -2,8 +2,8 @@
 
 Build env for hassio
 
-[HassIO](https://github.com/homeassistant/hassio)
-[HassIO-Addons](https://github.com/homeassistant/hassio-addons)
+[HassIO](https://github.com/home-assistant/hassio)
+[HassIO-Addons](https://github.com/home-assistant/hassio-addons)
 
 # Build Server
 
