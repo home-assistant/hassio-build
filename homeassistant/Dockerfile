@@ -25,7 +25,8 @@ RUN apk --no-cache add \
     ffmpeg \
     nmap \
     libcec \
-    net-tools
+    net-tools \
+    openssh-client
 
 ####
 ## Build library
