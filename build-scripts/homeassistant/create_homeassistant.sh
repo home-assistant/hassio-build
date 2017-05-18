@@ -126,8 +126,7 @@ sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$WORKSPACE/Dockerfile"
 sed -i "s/%%VERSION%%/${DOCKER_TAG}/g" "$WORKSPACE/Dockerfile"
 echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.type=\"homeassistant\" io.hass.machine=\"$MACHINE\"" >> "$WORKSPACE/Dockerfile"
 
-git clone https://github.com/home-assistant/home-assistant "$HASS_GIT"
-cd "$HASS_GIT" && git checkout "$DOCKER_TAG"
+git clone --depth 1 -b "$DOCKER_TAG" https://github.com/home-assistant/home-assistant "$HASS_GIT"
 
 # Run build
 echo "[INFO] start docker build"
