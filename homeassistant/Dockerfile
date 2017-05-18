@@ -34,14 +34,14 @@ WORKDIR /usr/src/
 
 # ssocr
 RUN apk --no-cache add imlib2-dev \
-    && git clone https://github.com/auerswal/ssocr \
+    && git clone --depth 1 https://github.com/auerswal/ssocr \
     && cd ssocr \
     && make \
     && make install \
     && rm -rf /usr/src/ssocr
 
 # OpenCV
-RUN git clone -b 3.2.0 https://github.com/opencv/opencv \
+RUN git clone --depth 1 -b 3.2.0 https://github.com/opencv/opencv \
     && cd opencv \
     && mkdir -p build \
     && cd build \
@@ -51,13 +51,24 @@ RUN git clone -b 3.2.0 https://github.com/opencv/opencv \
     && rm -rf /usr/src/opencv
     
 # Boost & python (Dlib)
-RUN git clone --recursive -b boost-1.64.0 https://github.com/boostorg/boost \
+RUN git clone --depth 1 --recursive -b boost-1.64.0 https://github.com/boostorg/boost \
     && cd boost \
     && ./bootstrap.sh --with-libraries=python \
     && ln -s /usr/local/include/python3.6m /usr/local/include/python3.6 \
     && ./b2 \
     && ./b2 install \
     && rm -rf /usr/src/boost
+
+# OpenAlpr
+RUN apk --no-cache add tesseract-ocr-dev \
+    && git clone --depth 1 -b REL_1_2_0 https://github.com/log4cplus/log4cplus \
+    && ./configure \
+    && sed -i "s/1\.14/1.15/g" aclocal.m4 \
+    && sed -i "s/1\.14/1.15/g" Makefile.in \
+    && make \
+    && make install \
+    && rm -rf /usr/src/log4cplus
+    
 
 # libcoap
 RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/libcoap \
@@ -73,7 +84,7 @@ RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/li
     && rm -rf /usr/src/libcoap
 
 # mariadb/mysql - until it support libressl
-RUN git clone -b mariadb-10.1.23 https://github.com/MariaDB/server mariadb \
+RUN git clone --depth 1 -b mariadb-10.1.23 https://github.com/MariaDB/server mariadb \
     && cd mariadb \
     && mkdir -p build \
     && cd build \
@@ -84,7 +95,7 @@ RUN git clone -b mariadb-10.1.23 https://github.com/MariaDB/server mariadb \
     && rm -rf /usr/src/mariadb
 
 # postgresql - until it support libressl
-RUN git clone -b REL9_6_3 https://github.com/postgres/postgres \
+RUN git clone --depth 1 -b REL9_6_3 https://github.com/postgres/postgres \
     && cd postgres \
     && ./configure --prefix /usr/local --with-openssl \
     && make \
@@ -100,7 +111,7 @@ WORKDIR /usr/src/
 
 # install home-assistant
 COPY homeassistant/ homeassistant
-RUN sed -e "s/# face_recognition/face_recognition/g" homeassistant/requirements_all.txt \
+RUN sed -i "s/# face_recognition/face_recognition/g" homeassistant/requirements_all.txt \
     && ln -s /usr/include/locale.h /usr/include/xlocale.h \
     && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir cchardet uvloop \
