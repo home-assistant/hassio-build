@@ -32,16 +32,13 @@ RUN apk --no-cache add \
 ## Build library
 WORKDIR /usr/src/
 
-# zwave
-RUN pip3 install --no-cache-dir cython==0.25.2 \
-    && git clone https://github.com/OpenZWave/python-openzwave \
-    && cd python-openzwave \
-    && git checkout v0.3.3 \
-    && make build \
+# ssocr
+RUN apk --no-cache add imlib2-dev \
+    && git clone https://github.com/auerswal/ssocr \
+    && cd ssocr \
+    && make \
     && make install \
-    && mkdir -p /usr/local/share/python-openzwave \
-    && cp -R openzwave/config /usr/local/share/python-openzwave/config \
-    && rm -rf /usr/src/python-openzwave
+    && rm -rf /usr/src/ssocr
 
 # OpenCV
 RUN git clone https://github.com/opencv/opencv \
