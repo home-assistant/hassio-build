@@ -41,9 +41,8 @@ RUN apk --no-cache add imlib2-dev \
     && rm -rf /usr/src/ssocr
 
 # OpenCV
-RUN git clone https://github.com/opencv/opencv \
+RUN git clone -b 3.2.0 https://github.com/opencv/opencv \
     && cd opencv \
-    && git checkout 3.2.0 \
     && mkdir -p build \
     && cd build \
     && cmake ../ \
@@ -65,9 +64,8 @@ RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/li
     && rm -rf /usr/src/libcoap
 
 # mariadb/mysql - until it support libressl
-RUN git clone https://github.com/MariaDB/server mariadb \
+RUN git clone -b mariadb-10.1.23 https://github.com/MariaDB/server mariadb \
     && cd mariadb \
-    && git checkout mariadb-10.1.23 \
     && mkdir -p build \
     && cd build \
     && cmake ../ -DCMAKE_BUILD_TYPE=MinSizeRel -DWITHOUT_SERVER=yes -DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -77,9 +75,8 @@ RUN git clone https://github.com/MariaDB/server mariadb \
     && rm -rf /usr/src/mariadb
 
 # postgresql - until it support libressl
-RUN git clone https://github.com/postgres/postgres \
+RUN git clone -b REL9_6_3 https://github.com/postgres/postgres \
     && cd postgres \
-    && git checkout REL9_6_3 \
     && ./configure --prefix /usr/local --with-openssl \
     && make \
     && make -C src/bin install \
