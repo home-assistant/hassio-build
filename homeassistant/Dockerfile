@@ -68,7 +68,14 @@ RUN apk --no-cache add tesseract-ocr-dev \
     && make \
     && make install \
     && rm -rf /usr/src/log4cplus
-    
+RUN git clone --depth 1 -b v2.3.0 https://github.com/openalpr/openalpr \
+    && cd openalpr \
+    && mkdir build \
+    && cd build \
+    && cmake -DWITH_TEST=FALSE -DWITH_BINDING_JAVA=FALSE --DWITH_BINDING_PYTHON=FALSE --DWITH_BINDING_GO=FALSE -DWITH_DAEMON=FALSE -DCMAKE_INSTALL_PREFIX:PATH=/usr/local .. \
+    && make \
+    && make install \
+    && rm -rf /usr/src/openalpr
 
 # libcoap
 RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/libcoap \
