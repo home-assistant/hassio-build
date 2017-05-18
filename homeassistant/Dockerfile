@@ -1,7 +1,6 @@
 FROM %%BASE_IMAGE%%
 
-# Add version
-ENV VERSION %%VERSION%%
+# Add env
 ENV LANG C.UTF-8
 
 # install core & build packages
@@ -49,12 +48,13 @@ RUN git clone --depth 1 -b 3.2.0 https://github.com/opencv/opencv \
     && make \
     && make install \
     && rm -rf /usr/src/opencv
-    
+
 # Boost & python (Dlib)
 RUN git clone --depth 1 --recursive -b boost-1.64.0 https://github.com/boostorg/boost \
     && cd boost \
-    && ./bootstrap.sh --with-libraries=python \
     && ln -s /usr/local/include/python3.6m /usr/local/include/python3.6 \
+    && ./bootstrap.sh --with-libraries=python --with-python=/usr/local/bin/python3.6 \
+    && ./b2 headers \
     && ./b2 \
     && ./b2 install \
     && rm -rf /usr/src/boost
@@ -62,6 +62,7 @@ RUN git clone --depth 1 --recursive -b boost-1.64.0 https://github.com/boostorg/
 # OpenAlpr
 RUN apk --no-cache add tesseract-ocr-dev \
     && git clone --depth 1 -b REL_1_2_0 https://github.com/log4cplus/log4cplus \
+    && cd log4cplus \
     && ./configure \
     && sed -i "s/1\.14/1.15/g" aclocal.m4 \
     && sed -i "s/1\.14/1.15/g" Makefile.in \
@@ -69,10 +70,10 @@ RUN apk --no-cache add tesseract-ocr-dev \
     && make install \
     && rm -rf /usr/src/log4cplus
 RUN git clone --depth 1 -b v2.3.0 https://github.com/openalpr/openalpr \
-    && cd openalpr \
-    && mkdir build \
+    && cd openalpr/src \
+    && mkdir -p build \
     && cd build \
-    && cmake -DWITH_TEST=FALSE -DWITH_BINDING_JAVA=FALSE --DWITH_BINDING_PYTHON=FALSE --DWITH_BINDING_GO=FALSE -DWITH_DAEMON=FALSE -DCMAKE_INSTALL_PREFIX:PATH=/usr/local .. \
+    && cmake ../ -DWITH_TESTS=FALSE -DWITH_BINDING_JAVA=FALSE -DWITH_BINDING_PYTHON=FALSE -DWITH_BINDING_GO=FALSE -DWITH_DAEMON=FALSE -DCMAKE_INSTALL_PREFIX:PATH=/usr/local \
     && make \
     && make install \
     && rm -rf /usr/src/openalpr
