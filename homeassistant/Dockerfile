@@ -100,8 +100,9 @@ WORKDIR /usr/src/
 
 # install home-assistant
 COPY homeassistant/ homeassistant
-RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
-RUN pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
+RUN sed -e "s/# face_recognition/face_recognition/g" homeassistant/requirements_all.txt \
+    && ln -s /usr/include/locale.h /usr/include/xlocale.h \
+    && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir cchardet uvloop \
     && pip3 install --no-cache-dir /usr/src/homeassistant \
     && rm -r homeassistant
