@@ -49,6 +49,15 @@ RUN git clone -b 3.2.0 https://github.com/opencv/opencv \
     && make \
     && make install \
     && rm -rf /usr/src/opencv
+    
+# Boost & python (Dlib)
+RUN git clone --recursive -b boost-1.64.0 https://github.com/boostorg/boost \
+    && cd boost \
+    && ./bootstrap.sh --with-libraries=python \
+    && ln -s /usr/local/include/python3.6m /usr/local/include/python3.6 \
+    && ./b2 \
+    && ./b2 install \
+    && rm -rf /usr/src/boost
 
 # libcoap
 RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/libcoap \
