@@ -8,6 +8,8 @@ LOG=yes
 ONLY_SUPERVISOR=no
 NOREBOOT=no
 DOCKER_REPO=homeassistant
+MACHINE=@MACHINE@
+RESINOS_HASSIO_VERSION=@RESINOS_HASSIO_VERSION@
 
 # Don't run anything before this source as it sets PATH here
 source /etc/profile
@@ -245,13 +247,6 @@ fi
 
 # Run pre hacks
 runPreHacks
-
-# Detect arch
-if [ -z "$MACHINE" ]; then
-    log ERROR "Can't detect machine from resin-vars ."
-else
-    log "Detected arch: $MACHINE ."
-fi
 
 # Supervisor update
 if [ ! -z "$UPDATER_SUPERVISOR_TAG" ]; then

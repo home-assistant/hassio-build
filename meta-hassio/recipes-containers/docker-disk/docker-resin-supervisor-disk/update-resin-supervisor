@@ -78,7 +78,7 @@ if [ "$USE_LOCAL" == "no" ] && [ -f $SUPERVISOR_CONFIG ]; then
     if [ ! -z $UPDATER_SUPERVISOR_TAG ]; then
         payload="{ \"version\": \"$UPDATER_SUPERVISOR_TAG\" }"
     else
-        payload="{ \"version\": \"$UPDATER_SUPERVISOR_TAG\" }"
+        payload="{}"
     fi
 
     curl -s -X GET -d "$payload" "http://$hassio_api/supervisor/update"
