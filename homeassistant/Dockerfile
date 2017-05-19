@@ -40,7 +40,7 @@ RUN apk --no-cache add imlib2-dev \
     && rm -rf /usr/src/ssocr
 
 # OpenCV
-RUN pip3 install --no-cache-dir numpy scipy \
+RUN pip3 install --no-cache-dir numpy \
     && git clone --depth 1 -b 3.2.0 https://github.com/opencv/opencv \
     && cd opencv \
     && mkdir -p build \
