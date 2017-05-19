@@ -44,7 +44,7 @@ RUN git clone --depth 1 -b 3.2.0 https://github.com/opencv/opencv \
     && cd opencv \
     && mkdir -p build \
     && cd build \
-    && cmake ../ \
+    && cmake ../ -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_DOCS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF \
     && make \
     && make install \
     && rm -rf /usr/src/opencv
