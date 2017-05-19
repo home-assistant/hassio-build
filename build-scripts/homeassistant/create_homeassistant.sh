@@ -238,6 +238,7 @@ if [ -z "$DOCKER_TAG" ]; then
     echo "[ERROR] Can't read homeassistant version!"
     exit 1
 fi
+echo "[INFO] build $DOCKER_IMAGE:$DOCKER_TAG"
 
 # Run build
 echo "[INFO] start docker build"
