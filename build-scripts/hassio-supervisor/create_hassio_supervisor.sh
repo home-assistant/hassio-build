@@ -41,8 +41,6 @@ Options:
 
     -a, --arch armhf|aarch64|i386|amd64
         Arch for Hass.IO build.
-    -v, --version X.Y
-        Version/Tag of Hass.IO build.
     -p, --push
         Upload the build to docker hub.
     -n, --no-cache
@@ -74,10 +72,6 @@ while [[ $# -gt 0 ]]; do
             ARCH=$2
             shift
             ;;
-        -v|--version)
-            DOCKER_TAG=$2
-            shift
-            ;;
         -p|--push)
             DOCKER_PUSH="true"
             ;;
@@ -94,11 +88,6 @@ done
 # Sanity checks
 if [ "$ARCH" != 'armhf' ] && [ "$ARCH" != 'aarch64' ] && [ "$ARCH" != 'i386' ] && [ "$ARCH" != 'amd64' ]; then
     echo "Error: $ARCH is not a supported platform for hassio-supervisor!"
-    help
-    exit 1
-fi
-if [ -z "$DOCKER_TAG" ]; then
-    echo "[ERROR] please set a version!"
     help
     exit 1
 fi
@@ -122,8 +111,13 @@ cp ../../supervisor/Dockerfile "$WORKSPACE/Dockerfile"
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$WORKSPACE/Dockerfile"
 echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.arch=\"$ARCH\" io.hass.type=\"supervisor\"" >> "$WORKSPACE/Dockerfile"
 
-git clone "$REPOSITORY" "$WORKSPACE/hassio_api"
-cd "$WORKSPACE/hassio_api" && git checkout "$BRANCH"
+git clone --depth 1 -b "$BRANCH" "$REPOSITORY" "$WORKSPACE/hassio_api"
+DOCKER_TAG="$(python3 "$WORKSPACE/hassio_api/setup.py" -V)"
+
+if [ -z "$DOCKER_TAG" ]; then
+    echo "[ERROR] Can't read hass.io version"
+    exit 1
+fi
 
 # Run build
 echo "[INFO] start docker build"
