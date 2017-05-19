@@ -232,7 +232,7 @@ sed -i "s/%%VERSION%%/${DOCKER_TAG}/g" "$WORKSPACE/Dockerfile"
 echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.type=\"homeassistant\" io.hass.machine=\"$MACHINE\"" >> "$WORKSPACE/Dockerfile"
 
 git clone --depth 1 -b "$DOCKER_TAG" https://github.com/home-assistant/home-assistant "$HASS_GIT"
-DOCKER_TAG="$(python3 "$HASS_GIT/setup.py" -V)"
+DOCKER_TAG="$(python3 "$HASS_GIT/setup.py" -V | sed -e "s:^\(.\...\)\.0$:\1:g" -e "s:^\(.\...\)\.0.dev0$:\1-dev:g")"
 
 if [ -z "$DOCKER_TAG" ]; then
     echo "[ERROR] Can't read homeassistant version!"
