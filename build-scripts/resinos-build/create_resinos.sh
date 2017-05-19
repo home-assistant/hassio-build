@@ -64,11 +64,7 @@ RESIN_BRANCH=master
 echo "[INFO] Checkout repository"
 if [ ! -d "$WORKSPACE" ]; then
     mkdir -p $BUILD_DIR
-    cd $BUILD_DIR && git clone "$RESIN_REPO" "$WORKSPACE"
-    if [ $RESIN_BRANCH != "master" ]; then
-        cd $WORKSPACE && git checkout $RESIN_BRANCH
-    fi
-    cd $WORKSPACE && git submodule update --init --recursive
+    cd $BUILD_DIR && git clone --recursive --depth 1 -b $RESIN_BRANCH "$RESIN_REPO" "$WORKSPACE" 
 fi
 
 echo "[INFO] Inject HassIO yocto layer"
