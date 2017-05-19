@@ -109,7 +109,6 @@ mkdir -p "$WORKSPACE"
 
 cp ../../supervisor/Dockerfile "$WORKSPACE/Dockerfile"
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$WORKSPACE/Dockerfile"
-echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.arch=\"$ARCH\" io.hass.type=\"supervisor\"" >> "$WORKSPACE/Dockerfile"
 
 git clone --depth 1 -b "$BRANCH" "$REPOSITORY" "$WORKSPACE/hassio_api"
 DOCKER_TAG="$(python3 "$WORKSPACE/hassio_api/setup.py" -V)"
@@ -118,6 +117,9 @@ if [ -z "$DOCKER_TAG" ]; then
     echo "[ERROR] Can't read hass.io version"
     exit 1
 fi
+
+echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.arch=\"$ARCH\" io.hass.type=\"supervisor\"" >> "$WORKSPACE/Dockerfile"
+echo "[INFO] prepare $DOCKER_IMAGE:$DOCKER_TAG done"
 
 # Run build
 echo "[INFO] start docker build"
