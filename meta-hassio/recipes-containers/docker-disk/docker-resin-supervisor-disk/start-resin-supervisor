@@ -15,7 +15,7 @@ runSupervisor() {
         -v /var/log/supervisor-log:/var/log \
         -e SUPERVISOR_SHARE=/resin-data \
         -e SUPERVISOR_NAME=resin_supervisor \
-        -e HOMEASSISTANT_REPOSITORY=${HOMEASSISTANT_REPOSITORY} \
+        -e HOMEASSISTANT_REPOSITORY=@HOMEASSISTANT_IMAGE@ \
         ${SUPERVISOR_IMAGE}
 }
 
