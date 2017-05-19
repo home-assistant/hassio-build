@@ -86,8 +86,5 @@ docker run --rm \
     homeassistant/frontend-build-env \
     /run-build.sh
 
-echo "[INFO] cleanup WORKSPACE"
-rm -rf "$WORKSPACE"
-
 cleanup "okay"
 exit 0
