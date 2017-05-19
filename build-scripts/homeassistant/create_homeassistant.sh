@@ -123,16 +123,16 @@ echo "[INFO] load homeassistant"
 cp ../../homeassistant/Dockerfile "$WORKSPACE/Dockerfile"
 
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$WORKSPACE/Dockerfile"
-sed -i "s/%%VERSION%%/${DOCKER_TAG}/g" "$WORKSPACE/Dockerfile"
-echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.type=\"homeassistant\" io.hass.machine=\"$MACHINE\"" >> "$WORKSPACE/Dockerfile"
 
-git clone --depth 1 -b "$DOCKER_TAG" https://github.com/home-assistant/home-assistant "$HASS_GIT" > /dev/null
+git clone --depth 1 -b "$DOCKER_TAG" https://github.com/home-assistant/home-assistant "$HASS_GIT" > /dev/null 2>&1
 DOCKER_TAG="$(python3 "$HASS_GIT/setup.py" -V | sed -e "s:^\(.\...\)\.0$:\1:g" -e "s:^\(.\...\)\.0.dev0$:\1-dev:g")"
 
 if [ -z "$DOCKER_TAG" ]; then
     echo "[ERROR] Can't read homeassistant version!"
     exit 1
 fi
+
+echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.type=\"homeassistant\" io.hass.machine=\"$MACHINE\"" >> "$WORKSPACE/Dockerfile"
 echo "[INFO] prepare done for $DOCKER_IMAGE:$DOCKER_TAG"
 
 # Run build
