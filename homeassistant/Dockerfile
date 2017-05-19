@@ -30,6 +30,7 @@ RUN apk --no-cache add \
 ####
 ## Build library
 WORKDIR /usr/src/
+RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
 
 # ssocr
 RUN apk --no-cache add imlib2-dev \
@@ -115,17 +116,14 @@ RUN git clone --depth 1 -b REL9_6_3 https://github.com/postgres/postgres \
     && rm -rf /usr/src/postgres
 
 ####
-## install pip module for components
-WORKDIR /usr/src/
-
-# install home-assistant
+## install pip module for component
 COPY homeassistant/ homeassistant
 RUN sed -i "s/# face_recognition/face_recognition/g" homeassistant/requirements_all.txt \
-    && ln -s /usr/include/locale.h /usr/include/xlocale.h \
     && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir cchardet uvloop
 RUN pip3 install --no-cache-dir /usr/src/homeassistant \
     && rm -r homeassistant
 
 # Run hass
+WORKDIR /config
 CMD [ "python", "-m", "homeassistant", "--config", "/config" ]
