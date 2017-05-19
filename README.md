@@ -38,5 +38,5 @@ newgrp docker
 
 Other software:
 ```
-sudo apt-get install jq pigz
+sudo apt-get install jq pigz python3-setuptools
 ```
