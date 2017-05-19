@@ -121,8 +121,8 @@ RUN git clone --depth 1 -b REL9_6_3 https://github.com/postgres/postgres \
 COPY homeassistant/ homeassistant
 RUN sed -i "s/# face_recognition/face_recognition/g" homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
-    && pip3 install --no-cache-dir cchardet uvloop
-RUN pip3 install --no-cache-dir /usr/src/homeassistant \
+    && pip3 install --no-cache-dir cchardet uvloop \
+    && pip3 install --no-cache-dir /usr/src/homeassistant \
     && rm -r homeassistant
 
 # Run hass
