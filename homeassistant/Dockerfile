@@ -40,8 +40,10 @@ RUN apk --no-cache add imlib2-dev \
     && make install \
     && rm -rf /usr/src/ssocr
 
-# OpenCV
-RUN git clone --depth 1 -b 3.2.0 https://github.com/opencv/opencv \
+# OpenCV / scipy
+RUN apk --no-cache add lapack-dev \
+    && pip3 install --no-cache-dir numpy==1.12.0 scipy \
+    && git clone --depth 1 -b 3.2.0 https://github.com/opencv/opencv \
     && cd opencv \
     && mkdir -p build \
     && cd build \
