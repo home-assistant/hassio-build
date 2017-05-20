@@ -101,16 +101,16 @@ HASS_GIT=$WORKSPACE/homeassistant
 # generate base image
 case $MACHINE in
     "raspberrypi1")
-        BASE_IMAGE="resin\/raspberry-pi-alpine-python:3.6"
+        BASE_IMAGE="resin\/raspberry-pi-alpine:3.5"
     ;;
     "raspberrypi2")
-        BASE_IMAGE="resin\/raspberry-pi2-alpine-python:3.6"
+        BASE_IMAGE="resin\/raspberry-pi2-alpine:3.5"
     ;;
     "raspberrypi3")
-        BASE_IMAGE="resin\/raspberry-pi3-alpine-python:3.6"
+        BASE_IMAGE="resin\/raspberry-pi3-alpine:3.5"
     ;;
     *)
-        BASE_IMAGE="resin\/${MACHINE}-alpine-python:3.6"
+        BASE_IMAGE="resin\/${MACHINE}-alpine:3.5"
     ;;
 esac
 

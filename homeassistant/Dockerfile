@@ -5,18 +5,31 @@ ENV LANG C.UTF-8
 
 # install core & build packages
 RUN apk --no-cache add \
+    python3 \
+    python3-dev \
     libuv \
+    musl-dev \
     git \
     linux-headers \
     eudev-dev \
     libusb-dev \
     libffi-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libxml2-dev \
+    libxslt-dev \
+    jpeg-dev \
+    freetype-dev \
     autoconf \
     automake \
     libtool \
     cmake \
+    make \
+    g++ \
+    gcc \
     ncurses-dev \
     bison \
+    yaml \
     flex
 
 # install component packages
@@ -25,7 +38,10 @@ RUN apk --no-cache add \
     nmap \
     libcec \
     net-tools \
-    openssh-client
+    mariadb-dev \
+    postgresql-dev \
+    boost-python3 \
+    openssh-client 
 
 ####
 ## Build library
@@ -51,16 +67,6 @@ RUN apk --no-cache add lapack-dev gfortran \
     && make \
     && make install \
     && rm -rf /usr/src/opencv
-
-# Boost & python (Dlib)
-RUN git clone --depth 1 --recursive -b boost-1.64.0 https://github.com/boostorg/boost \
-    && cd boost \
-    && ln -s /usr/local/include/python3.6m /usr/local/include/python3.6 \
-    && ./bootstrap.sh --with-libraries=python --with-python=/usr/local/bin/python3.6 \
-    && ./b2 headers \
-    && ./b2 \
-    && ./b2 install \
-    && rm -rf /usr/src/boost
 
 # OpenAlpr
 RUN apk --no-cache add tesseract-ocr-dev \
@@ -94,33 +100,12 @@ RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/li
     && make install \
     && rm -rf /usr/src/libcoap
 
-# mariadb/mysql - until it support libressl
-RUN git clone --depth 1 -b mariadb-10.1.23 https://github.com/MariaDB/server mariadb \
-    && cd mariadb \
-    && mkdir -p build \
-    && cd build \
-    && cmake ../ -DCMAKE_BUILD_TYPE=MinSizeRel -DWITHOUT_TOKUDB=1 -DWITHOUT_SERVER=yes -DCMAKE_INSTALL_PREFIX=/usr/local \
-    && make \
-    && make install \
-    && pip3 install --no-cache-dir mysqlclient \
-    && rm -rf /usr/src/mariadb
-
-# postgresql - until it support libressl
-RUN git clone --depth 1 -b REL9_6_3 https://github.com/postgres/postgres \
-    && cd postgres \
-    && ./configure --prefix /usr/local --with-openssl \
-    && make \
-    && make -C src/bin install \
-    && make -C src/include install \
-    && make -C src/interfaces install \
-    && pip install --no-cache-dir psycopg2 \
-    && rm -rf /usr/src/postgres
-
 ####
 ## install pip module for component
 COPY homeassistant/ homeassistant
 RUN sed -i "s/# face_recognition/face_recognition/g" homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
+    && pip3 install --no-cache-dir mysqlclient psycopg2 \
     && pip3 install --no-cache-dir cchardet uvloop \
     && pip3 install --no-cache-dir /usr/src/homeassistant \
     && rm -r homeassistant
