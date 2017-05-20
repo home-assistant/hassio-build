@@ -19,6 +19,7 @@ RUN apk --no-cache add \
     libxml2-dev \
     libxslt-dev \
     jpeg-dev \
+    tiff-dev \
     freetype-dev \
     autoconf \
     automake \
@@ -103,8 +104,7 @@ RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/li
 ####
 ## install pip module for component
 COPY homeassistant/ homeassistant
-RUN sed -i "s/# face_recognition/face_recognition/g" homeassistant/requirements_all.txt \
-    && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
+RUN pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir mysqlclient psycopg2 \
     && pip3 install --no-cache-dir cchardet uvloop \
     && pip3 install --no-cache-dir /usr/src/homeassistant \
