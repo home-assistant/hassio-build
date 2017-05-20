@@ -50,7 +50,10 @@ do
             echo "ERROR" && continue
         fi
 
-        hostname "$NEW_HOSTNAME" || echo "ERROR" && continue
+        if ! hostname "$NEW_HOSTNAME"
+        then
+            echo "ERROR" && continue
+        fi
 
         # shellcheck disable=SC2005
         echo "$(jq ".hostname=\"$NEW_HOSTNAME\"" < "$CONFIG_PATH")" > "$CONFIG_PATH"
