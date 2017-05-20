@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 BUILD_CONTAINER_NAME=resinhup-build-$$
@@ -33,7 +32,6 @@ popd > /dev/null 2>&1
 
 MACHINE=$2
 RESINHUP_VER=$1
-BASE_IMAGE="resin\/${MACHINE}-python:3.6"
 DOCKER_TAG=${MACHINE}-${RESINHUP_VER}
 DOCKER_IMAGE=resinhup
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
@@ -49,6 +47,9 @@ case $MACHINE in
     ;;
     "raspberrypi")
         DOCKER_FILE_NAME="Dockerfile.raspberry-pi"
+    ;;
+    "intel-nuc")
+        DOCKER_FILE_NAME="Dockerfile.intel-nuc"
     ;;
     *)
         echo "[ERROR] ${MACHINE} unknown!"
@@ -71,16 +72,16 @@ docker run --rm \
     -v $WORKSPACE:/docker \
     -v ~/.docker:/root/.docker \
     -e DOCKER_REPO=$DOCKER_REPO \
-    -e DOCKER_IMAGE=$DOCKER_IMAGE \
-    -e DOCKER_TAG=$DOCKER_TAG \
+    -e DOCKER_CACHE="false" \
+    -e DOCKER_IMAGE="$DOCKER_IMAGE" \
+    -e DOCKER_TAG="$DOCKER_TAG" \
     --name $BUILD_CONTAINER_NAME \
     --privileged \
     homeassistant/docker-build-env \
     /run-docker.sh
 
 echo "[INFO] cleanup WORKSPACE"
-cd $BUILD_DIR
-rm -rf $WORKSPACE
+rm -rf "$WORKSPACE"
 
-cleanup
+cleanup "okay"
 exit 0
