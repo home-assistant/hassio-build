@@ -99,7 +99,7 @@ RUN git clone --depth 1 -b mariadb-10.1.23 https://github.com/MariaDB/server mar
     && cd mariadb \
     && mkdir -p build \
     && cd build \
-    && cmake ../ -DCMAKE_BUILD_TYPE=MinSizeRel -DWITHOUT_SERVER=yes -DCMAKE_INSTALL_PREFIX=/usr/local \
+    && cmake ../ -DCMAKE_BUILD_TYPE=MinSizeRel -DWITHOUT_TOKUDB=1 -DWITHOUT_SERVER=yes -DCMAKE_INSTALL_PREFIX=/usr/local \
     && make \
     && make install \
     && pip3 install --no-cache-dir mysqlclient \
