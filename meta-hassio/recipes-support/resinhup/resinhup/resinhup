@@ -44,16 +44,6 @@ Options:
         Run the updater for this specific HostOS version.
         This is a mandatory argument.
 
-  --supervisor-registry <SUPERVISOR REGISTRY>
-        Update supervisor getting the image from this registry.
-
-  --supervisor-tag <SUPERVISOR TAG>
-        In the case of a successful host OS update, bring in a newer supervisor too
-        using this tag.
-
-  --only-supervisor
-        Update only the supervisor.
-
   -n, --nolog
         By default tool logs to stdout and file. This flag deactivates log to
         $LOGFILE file.
@@ -163,23 +153,6 @@ while [[ $# > 0 ]]; do
             REMOTE=$2
             shift
             ;;
-        --supervisor-registry)
-            if [ -z "$2" ]; then
-                log ERROR "\"$1\" argument needs a value."
-            fi
-            SUPERVISOR_REGISTRY=$2
-            shift
-            ;;
-        --supervisor-tag)
-            if [ -z "$2" ]; then
-                log ERROR "\"$1\" argument needs a value."
-            fi
-            UPDATER_SUPERVISOR_TAG=$2
-            shift
-            ;;
-        --only-supervisor)
-            ONLY_SUPERVISOR=yes
-            ;;
         -n|--nolog)
             LOG=no
             ;;
@@ -195,7 +168,6 @@ done
 
 # load config
 source /usr/sbin/resin-vars
-source /etc/resin-supervisor/supervisor.conf
 
 # Check that HostOS version was provided
 if [ -z "$HOSTOS_VERSION" ]; then
@@ -247,35 +219,6 @@ fi
 
 # Run pre hacks
 runPreHacks
-
-# Supervisor update
-if [ ! -z "$UPDATER_SUPERVISOR_TAG" ]; then
-    log "Supervisor update requested through arguments ."
-
-    # Default UPDATER_SUPERVISOR_IMAGE to the one in /etc/supervisor.conf
-    if [ -z "$SUPERVISOR_REGISTRY" ]; then
-        UPDATER_SUPERVISOR_IMAGE=$SUPERVISOR_IMAGE
-    else
-        UPDATER_SUPERVISOR_IMAGE="$SUPERVISOR_REGISTRY/resin/$arch-supervisor"
-    fi
-
-    log "Update to supervisor $UPDATER_SUPERVISOR_IMAGE:$UPDATER_SUPERVISOR_TAG..."
-
-    log "Updating supervisor..."
-    /usr/bin/update-resin-supervisor --supervisor-image $UPDATER_SUPERVISOR_IMAGE --supervisor-tag $UPDATER_SUPERVISOR_TAG
-    if [ $? -ne 0 ]; then
-        tryup
-        log ERROR "Could not update supervisor to $UPDATER_SUPERVISOR_IMAGE:$UPDATER_SUPERVISOR_TAG ."
-    fi
-else
-    log "Supervisor update not requested through arguments ."
-fi
-
-# That's it if we only wanted supervisor update
-if [ "$ONLY_SUPERVISOR" == "yes" ]; then
-    log "Update only of the supervisor requested."
-    exit 0
-fi
 
 # Avoid supervisor cleaning up resinhup and stop containers
 log "Stopping all containers..."
