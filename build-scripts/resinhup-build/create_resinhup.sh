@@ -33,7 +33,7 @@ popd > /dev/null 2>&1
 MACHINE=$2
 RESINHUP_VER=$1
 DOCKER_TAG=${MACHINE}-${RESINHUP_VER}
-DOCKER_IMAGE=resinhup
+DOCKER_IMAGE=homeassistant/resinhup
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
 WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/resinhup
 
@@ -71,7 +71,7 @@ docker rm --volumes $BUILD_CONTAINER_NAME 2> /dev/null || true
 docker run --rm \
     -v $WORKSPACE:/docker \
     -v ~/.docker:/root/.docker \
-    -e DOCKER_REPO=$DOCKER_REPO \
+    -e DOCKER_PUSH="true" \
     -e DOCKER_CACHE="false" \
     -e DOCKER_IMAGE="$DOCKER_IMAGE" \
     -e DOCKER_TAG="$DOCKER_TAG" \
