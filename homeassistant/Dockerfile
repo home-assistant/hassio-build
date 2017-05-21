@@ -112,4 +112,4 @@ RUN pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
 
 # Run hass
 WORKDIR /config
-CMD [ "python", "-m", "homeassistant", "--config", "/config" ]
+CMD [ "python3", "-m", "homeassistant", "--config", "/config" ]
