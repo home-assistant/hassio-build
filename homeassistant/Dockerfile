@@ -7,6 +7,7 @@ ENV LANG C.UTF-8
 RUN apk --no-cache add \
     python3 \
     python3-dev \
+    tzdata \
     libuv \
     musl-dev \
     git \
