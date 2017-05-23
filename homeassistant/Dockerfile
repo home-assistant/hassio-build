@@ -29,10 +29,7 @@ RUN apk --no-cache add \
     make \
     g++ \
     gcc \
-    ncurses-dev \
-    bison \
-    yaml \
-    flex
+    ncurses-dev
 
 # install component packages
 RUN apk --no-cache add \
@@ -42,7 +39,7 @@ RUN apk --no-cache add \
     net-tools \
     mariadb-dev \
     postgresql-dev \
-    boost-python3 \
+    bluez-dev \  
     openssh-client 
 
 ####
@@ -59,6 +56,7 @@ RUN apk --no-cache add imlib2-dev \
     && rm -rf /usr/src/ssocr
 
 # OpenCV / scipy
+ENV PYTHONPATH /usr/local/lib/python3.5/site-packages
 RUN apk --no-cache add lapack-dev gfortran \
     && pip3 install --no-cache-dir numpy==1.12.0 scipy \
     && git clone --depth 1 -b 3.2.0 https://github.com/opencv/opencv \
@@ -106,7 +104,7 @@ RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/li
 ## install pip module for component
 COPY homeassistant/ homeassistant
 RUN pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
-    && pip3 install --no-cache-dir mysqlclient psycopg2 \
+    && pip3 install --no-cache-dir mysqlclient psycopg2 pybluez \
     && pip3 install --no-cache-dir cchardet uvloop \
     && pip3 install --no-cache-dir /usr/src/homeassistant \
     && rm -r homeassistant
