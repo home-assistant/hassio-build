@@ -31,6 +31,7 @@ RUN apk --no-cache add \
     gcc \
     ncurses-dev
 
+##
 # install component packages
 RUN apk --no-cache add \
     ffmpeg \
@@ -108,6 +109,10 @@ RUN pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir cchardet uvloop \
     && pip3 install --no-cache-dir /usr/src/homeassistant \
     && rm -r homeassistant
+
+# Install and update certificate
+RUN apk --no-cache add ca-certificates \
+    && update-ca-certificates
 
 # Run hass
 WORKDIR /config
