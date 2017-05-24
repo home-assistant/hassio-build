@@ -40,8 +40,9 @@ RUN apk --no-cache add \
     net-tools \
     mariadb-dev \
     postgresql-dev \
-    bluez-dev \  
-    openssh-client 
+    bluez-dev \
+    curl \
+    openssh-client
 
 ####
 ## Build library
