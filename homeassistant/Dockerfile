@@ -42,6 +42,7 @@ RUN apk --no-cache add \
     postgresql-dev \
     bluez-dev \
     curl \
+    libsodium-dev \
     openssh-client
 
 ####
