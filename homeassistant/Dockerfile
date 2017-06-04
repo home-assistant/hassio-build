@@ -41,6 +41,7 @@ RUN apk --no-cache add \
     mariadb-dev \
     postgresql-dev \
     bluez-dev \
+    bluez \
     curl \
     libsodium-dev \
     openssh-client
