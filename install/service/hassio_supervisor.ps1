@@ -100,7 +100,11 @@ Param(
 
     [Parameter(ParameterSetName='ViewLog', Mandatory=$true)]
     [Switch]
-    $ViewLog
+    $ViewLog,
+
+    [Parameter(ParameterSetName='Attach', Mandatory=$true)]
+    [Switch]
+    $Attach
 )
 
 $scriptVersion = "2017-06-06"
@@ -714,16 +718,16 @@ New-EventLog -LogName $logName -Source $serviceName -ea SilentlyContinue
 $Status = ($PSCmdlet.ParameterSetName -eq 'Status')
 
 # Configuration Path, create if missing and make a default configuration file. 
-$hassIoConfiguration = "$($env:ALLUSERSPROFILE)/hassio"
+$hassIoConfiguration = "$($env:ALLUSERSPROFILE)\hassio"
 if(!(Test-Path -Path $hassIoConfiguration)) {
     New-Item -Path $hassIoConfiguration -ItemType Directory | Out-Null
 
     # Create default configuration. 
-    $defaultConfiguration = "{
-        'datapath':'f:/docker/hassio', 
-        'home_assistant_docker':'homeassistant/amd64-homeassistant',
-        'hassio_supervisor_docker':'homeassistant/i386-hassio-supervisor'
-    }"
+    $defaultConfiguration =  "{
+        `"datapath`":`"/usr/share/hassio`", 
+        `"home_assistant_docker`":`"homeassistant/qemux86-64-homeassistant`",
+        `"hassio_supervisor_docker`":`"homeassistant/amd64-hassio-supervisor`"
+    }"    
     $defaultConfiguration | Set-Content -Path (Join-Path $hassIoConfiguration 'configuration.json') -Encoding UTF8
 }
 
@@ -768,6 +772,9 @@ if($ViewLog) {
     notepad $logFile
 }
 
+if($Attach) {
+    docker start --attach hassio_supervisor
+}
 
 
 if ($Status) {                  # Get the current service status
