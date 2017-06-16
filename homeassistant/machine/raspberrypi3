@@ -1,0 +1,5 @@
+FROM homeassistant/armhf-homeassistant:%%VERSION%%
+
+LABEL io.hass.machine raspberrypi3
+
+RUN apk --no-cache add raspberrypi raspberrypi-libs raspberrypi-dev usbutils

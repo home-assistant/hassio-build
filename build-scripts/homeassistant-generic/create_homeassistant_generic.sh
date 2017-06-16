@@ -78,6 +78,11 @@ if [ -z "$ARCH" ]; then
     help
     exit 1
 fi
+if [ -z "$DOCKER_TAG" ]; then
+    echo "[ERROR] please set a version!"
+    help
+    exit 1
+fi
 
 # Get the absolute script location
 pushd "$(dirname "$0")" > /dev/null 2>&1

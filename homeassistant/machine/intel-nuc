@@ -1,0 +1,5 @@
+FROM homeassistant/amd64-homeassistant:%%VERSION%%
+
+LABEL io.hass.machine intel-nuc
+
+RUN apk --no-cache add usbutils

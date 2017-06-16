@@ -1,0 +1,5 @@
+FROM homeassistant/i386-homeassistant:%%VERSION%%
+
+LABEL io.hass.machine qemux86
+
+RUN apk --no-cache add usbutils
