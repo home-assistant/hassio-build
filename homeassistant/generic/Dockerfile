@@ -2,7 +2,8 @@ FROM %%BASE_IMAGE%%
 
 ## install HomeAssistant
 COPY homeassistant/ homeassistant
-RUN pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
+RUN echo "cryptography==1.9" >> homeassistant/requirements_all.txt \
+    && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir /usr/src/homeassistant \
     && rm -r homeassistant
 
