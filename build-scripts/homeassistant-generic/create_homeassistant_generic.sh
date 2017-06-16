@@ -87,7 +87,7 @@ popd > /dev/null 2>&1
 DOCKER_IMAGE="$DOCKER_HUB/${ARCH}-homeassistant"
 BASE_IMAGE="homeassistant\/${ARCH}-homeassistant-base:latest"
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
-WORKSPACE=$BUILD_DIR/hass-$MACHINE
+WORKSPACE=$BUILD_DIR/hass-$ARCH
 HASS_GIT=$WORKSPACE/homeassistant
 
 # setup docker
