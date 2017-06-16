@@ -105,6 +105,6 @@ RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/li
 
 ####
 ## install pip module for component/homeassistant
-RUN pip3 install --no-cache-dir mysqlclient psycopg2 pybluez cryptography \
+RUN pip3 install --no-cache-dir mysqlclient psycopg2 pybluez \
     && pip3 install --no-cache-dir cchardet uvloop aiodns \
 
