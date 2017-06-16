@@ -1,4 +1,4 @@
-FROM %%BASE_IMAGE%%
+FROM homeassistant/amd64-homeassistant-base:latest
 
 ## install HomeAssistant
 COPY homeassistant/ homeassistant
@@ -12,3 +12,4 @@ RUN update-ca-certificates
 # Run hass
 WORKDIR /config
 CMD [ "python3", "-m", "homeassistant", "--config", "/config" ]
+LABEL io.hass.version="0.47-dev" io.hass.type="homeassistant"
