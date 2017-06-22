@@ -113,7 +113,7 @@ if [ -z "$DOCKER_TAG" ]; then
     exit 1
 fi
 
-echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.type=\"homeassistant\"" >> "$WORKSPACE/Dockerfile"
+echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.type=\"homeassistant\" io.hass.arch=\"$ARCH\"" >> "$WORKSPACE/Dockerfile"
 echo "[INFO] prepare done for $DOCKER_IMAGE:$DOCKER_TAG"
 
 # Run build
