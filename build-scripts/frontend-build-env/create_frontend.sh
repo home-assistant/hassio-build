@@ -54,7 +54,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -b|--branch)
-            BRANCH=$1
+            BRANCH=$2
             shift
             ;;
         *)
