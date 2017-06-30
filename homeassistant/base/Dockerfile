@@ -43,7 +43,9 @@ RUN apk --no-cache add \
     bluez \
     curl \
     libsodium-dev \
-    openssh-client
+    openssh-client \
+    boost-dev \
+    boost-python
 
 ####
 ## Build library
