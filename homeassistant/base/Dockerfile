@@ -11,6 +11,7 @@ RUN apk --no-cache add \
     musl-dev \
     git \
     linux-headers \
+    bsd-compat-headers \
     eudev-dev \
     libusb-dev \
     libffi-dev \
@@ -59,7 +60,7 @@ RUN apk --no-cache add imlib2-dev \
     && rm -rf /usr/src/ssocr
 
 # OpenCV / scipy
-ENV PYTHONPATH /usr/local/lib/python3.5/site-packages
+ENV PYTHONPATH /usr/local/lib/python3.6/site-packages
 RUN apk --no-cache add lapack-dev gfortran \
     && pip3 install --no-cache-dir numpy scipy \
     && git clone --depth 1 -b 3.2.0 https://github.com/opencv/opencv \
