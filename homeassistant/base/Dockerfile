@@ -44,7 +44,8 @@ RUN apk --no-cache add \
     bluez \
     curl \
     libsodium-dev \
-    openssh-client
+    openssh-client \
+    boost-python3
 
 ####
 ## Build library
@@ -71,6 +72,11 @@ RUN apk --no-cache add lapack-dev gfortran \
     && make \
     && make install \
     && rm -rf /usr/src/opencv
+    
+# Dlib
+RUN apk --no-cache add boost-dev \
+    && pip3 install --no-cache-dir dlib
+    && apk --no-cache del boost-dev
 
 # OpenAlpr
 RUN apk --no-cache add tesseract-ocr-dev \
