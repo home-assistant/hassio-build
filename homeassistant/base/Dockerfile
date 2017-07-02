@@ -45,6 +45,7 @@ RUN apk --no-cache add \
     curl \
     libsodium-dev \
     openssh-client \
+    boost \
     boost-python3
 
 ####
@@ -75,7 +76,7 @@ RUN apk --no-cache add lapack-dev gfortran \
     
 # Dlib
 RUN apk --no-cache add boost-dev \
-    && pip3 install --no-cache-dir dlib
+    && pip3 install --no-cache-dir dlib \
     && apk --no-cache del boost-dev
 
 # OpenAlpr
