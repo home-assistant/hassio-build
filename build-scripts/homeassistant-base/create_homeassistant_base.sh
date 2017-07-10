@@ -4,6 +4,7 @@ set -e
 BUILD_CONTAINER_NAME=homeassistant-base-build-$$
 DOCKER_PUSH="false"
 DOCKER_CACHE="true"
+DOCKER_WITH_LATEST="true"
 DOCKER_HUB=homeassistant
 
 cleanup() {
