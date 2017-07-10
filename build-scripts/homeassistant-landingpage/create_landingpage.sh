@@ -3,7 +3,7 @@ set -e
 
 BUILD_CONTAINER_NAME=landingpage-build-$$
 DOCKER_PUSH="false"
-DOCKER_CACHE="true"
+DOCKER_CACHE="false"
 DOCKER_WITH_LATEST="false"
 DOCKER_TAG="landingpage"
 DOCKER_HUB=homeassistant
