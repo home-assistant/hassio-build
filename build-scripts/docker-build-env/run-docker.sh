@@ -66,13 +66,21 @@ then
 else
     docker build --pull --tag "$DOCKER_IMAGE:$DOCKER_TAG" .
 fi
-docker tag "$DOCKER_IMAGE:$DOCKER_TAG" "$DOCKER_IMAGE:latest"
+
+# tag as latest
+if [ "$DOCKER_WITH_LATEST" == "true" ]; then
+    docker tag "$DOCKER_IMAGE:$DOCKER_TAG" "$DOCKER_IMAGE:latest"
+fi
 
 echo "[INFO] Push image"
 if [ "$DOCKER_PUSH" == "true" ]; then
     # push
     docker push "$DOCKER_IMAGE:$DOCKER_TAG"
-    docker push "$DOCKER_IMAGE:latest"
+
+    # latest
+    if [ "$DOCKER_WITH_LATEST" == "true" ]; then
+        docker push "$DOCKER_IMAGE:latest"
+    fi
 fi
 
 cleanup "okay"
