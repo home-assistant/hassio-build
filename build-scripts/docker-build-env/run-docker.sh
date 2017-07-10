@@ -9,12 +9,12 @@ cleanup() {
     # Stop docker gracefully
     echo "[INFO] Stopping in container docker..."
     DOCKERPIDFILE=/var/run/docker.pid
-    if [ -f $DOCKERPIDFILE ] && [ -s $DOCKERPIDFILE ] && pgrep -F $DOCKERPIDFILE; then
+    if [ -f $DOCKERPIDFILE ] && [ -s $DOCKERPIDFILE ] && pgrep -F $DOCKERPIDFILE > /dev/null; then
         kill "$(cat $DOCKERPIDFILE)"
         # Now wait for it to die
         STARTTIME=$(date +%s)
         ENDTIME=$(date +%s)
-        while [ -f $DOCKERPIDFILE ] && [ -s $DOCKERPIDFILE ] && pgrep -F $DOCKERPIDFILE; do
+        while [ -f $DOCKERPIDFILE ] && [ -s $DOCKERPIDFILE ] && pgrep -F $DOCKERPIDFILE > /dev/null; do
             if [ $((ENDTIME - STARTTIME)) -le $DOCKER_TIMEOUT ]; then
                 sleep 1
                 ENDTIME=$(date +%s)
