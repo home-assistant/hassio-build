@@ -2,6 +2,7 @@
 set -e
 
 DOCKER_IMAGE=${DOCKER_IMAGE:="homeassistant/docker-build-env"}
+DOCKER_TAG="$(date +%Y%m%d)"
 DOCKER_PUSH="false"
 
 # Get the absolute script location
@@ -18,8 +19,6 @@ Options:
     -h, --help
         Display this help and exit.
 
-    -t, --tag TAG
-        Version/Tag of $DOCKER_IMAGE.
     -p, --push
         Upload the build to docker hub.
 EOF
@@ -33,10 +32,6 @@ while [[ $# -gt 0 ]]; do
             help
             exit 0
             ;;
-        -t|--tag)
-            DOCKER_TAG=$2
-            shift
-            ;;
         -p|--push)
             DOCKER_PUSH="true"
             ;;
@@ -46,12 +41,6 @@ while [[ $# -gt 0 ]]; do
     esac
     shift
 done
-
-if [ -z "$DOCKER_TAG" ]; then
-    echo "[ERROR] please set a tag!"
-    help
-    exit 1
-fi
 
 # Build
 docker build --pull --tag "$DOCKER_IMAGE:$DOCKER_TAG" -f "$SCRIPTPATH/Dockerfile" "$SCRIPTPATH"
