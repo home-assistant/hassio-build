@@ -7,7 +7,7 @@ ENV LANG C.UTF-8
 RUN apk --no-cache add nginx
 
 # Copy data
-COPY www /usr/share/
+COPY www/ /usr/share/www/
 COPY nginx.conf /etc/
 COPY entry.sh /usr/bin/entry.sh
 
