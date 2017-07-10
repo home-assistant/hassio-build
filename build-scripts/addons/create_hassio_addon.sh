@@ -4,6 +4,7 @@ set -e
 BUILD_CONTAINER_NAME=hassio-addons-$$
 DOCKER_PUSH="false"
 DOCKER_CACHE="true"
+DOCKER_WITH_LATEST="true"
 BRANCH=build
 REPOSITORY=https://github.com/home-assistant/hassio-addons
 
