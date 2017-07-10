@@ -153,6 +153,7 @@ docker run --rm \
     -v ~/.docker:/root/.docker \
     -e DOCKER_PUSH=$DOCKER_PUSH \
     -e DOCKER_CACHE=$DOCKER_CACHE \
+    -e DOCKER_WITH_LATEST=$DOCKER_WITH_LATEST \
     -e DOCKER_IMAGE="$DOCKER_IMAGE" \
     -e DOCKER_TAG="$DOCKER_TAG" \
     --name $BUILD_CONTAINER_NAME \

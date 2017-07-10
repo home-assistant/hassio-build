@@ -1,17 +1,18 @@
 #!/bin/bash
 set -e
 
-BUILD_CONTAINER_NAME=homeassistant-generic-build-$$
+BUILD_CONTAINER_NAME=landingpage-build-$$
 DOCKER_PUSH="false"
-DOCKER_CACHE="false"
-DOCKER_WITH_LATEST="true"
+DOCKER_CACHE="true"
+DOCKER_WITH_LATEST="false"
+DOCKER_TAG="landingpage"
 DOCKER_HUB=homeassistant
 
 cleanup() {
     echo "[INFO] Cleanup."
 
     # Stop docker container
-    echo "[INFO] Cleaning up homeassistant-build container."
+    echo "[INFO] Cleaning up landingpage-build container."
     docker stop $BUILD_CONTAINER_NAME 2> /dev/null || true
     docker rm --volumes $BUILD_CONTAINER_NAME 2> /dev/null || true
 
@@ -23,8 +24,8 @@ trap 'cleanup fail' SIGINT SIGTERM
 
 help () {
     cat << EOF
-Script for homeassistant base docker build
-create_homeassistant_base [options]
+Script for homeassistant landingpage docker build
+create_landingpage [options]
 
 Options:
     -h, --help
@@ -33,11 +34,8 @@ Options:
     -h, --hub hubname
         Set user of dockerhub build.
 
-    -v, --version
-        HomeAssistant branch/tag to build.
-
-    -a, --arch
-        Arch type for HomeAssistant build.
+    -m, --machine name
+        Machine type for HomeAssistant build.
     -p, --push
         Upload the build to docker hub.
 EOF
@@ -55,12 +53,8 @@ while [[ $# -gt 0 ]]; do
             DOCKER_HUB=$2
             shift
             ;;
-        -v|--version)
-            DOCKER_TAG=$2
-            shift
-            ;;
-        -a|--arch)
-            ARCH=$2
+        -m|--machine)
+            MACHINE=$2
             shift
             ;;
         -p|--push)
@@ -74,46 +68,47 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Sanity checks
-if [ -z "$ARCH" ]; then
-    echo "[ERROR] please set a arch!"
+if [ -z "$MACHINE" ]; then
+    echo "[ERROR] please set a machine!"
     help
     exit 1
 fi
-if [ -z "$DOCKER_TAG" ]; then
-    echo "[ERROR] please set a version!"
-    help
-    exit 1
-fi
+
+# evaluate arch
+case $MACHINE in
+    "raspberrypi3" | "raspberrypi2" | "raspberrypi" )
+        ARCH=armhf
+    ;;
+    "intel-nuc" | "qemux86-64")
+        ARCH=amd64
+    ;;
+    "qemux86")
+        ARCH=i386
+    ;;
+    *)
+        echo "[ERROR] ${MACHINE} unknown!"
+        exit 1
+    ;;
+esac
 
 # Get the absolute script location
 pushd "$(dirname "$0")" > /dev/null 2>&1
 SCRIPTPATH=$(pwd)
 popd > /dev/null 2>&1
 
-DOCKER_IMAGE="$DOCKER_HUB/${ARCH}-homeassistant"
-BASE_IMAGE="homeassistant\/${ARCH}-homeassistant-base:latest"
+BASE_IMAGE="$DOCKER_HUB\/${ARCH}-base"
+DOCKER_IMAGE="$DOCKER_HUB/$MACHINE-homeassistant"
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
-WORKSPACE=$BUILD_DIR/hass-$ARCH
-HASS_GIT=$WORKSPACE/homeassistant
+WORKSPACE=$BUILD_DIR/hass-$MACHINE
 
 # setup docker
-echo "[INFO] Setup docker for homeassistant"
+echo "[INFO] Setup docker for homeassistant landingpage"
 mkdir -p "$BUILD_DIR"
-mkdir -p "$WORKSPACE"
 
-echo "[INFO] load homeassistant"
-cp ../../homeassistant/generic/Dockerfile "$WORKSPACE/Dockerfile"
+echo "[INFO] load homeassistant landingpage"
+cp -r "../../homeassistant/landingpage" "$WORKSPACE"
 
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$WORKSPACE/Dockerfile"
-
-git clone --depth 1 -b "$DOCKER_TAG" https://github.com/home-assistant/home-assistant "$HASS_GIT" > /dev/null 2>&1
-DOCKER_TAG="$(python3 "$HASS_GIT/setup.py" -V | sed -e "s:^\(.\...\)\.0$:\1:g" -e "s:^\(.\...\)\.0.dev0$:\1-dev:g")"
-
-if [ -z "$DOCKER_TAG" ]; then
-    echo "[ERROR] Can't read homeassistant version!"
-    exit 1
-fi
-
 echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.type=\"homeassistant\" io.hass.arch=\"$ARCH\"" >> "$WORKSPACE/Dockerfile"
 echo "[INFO] prepare done for $DOCKER_IMAGE:$DOCKER_TAG"
 
