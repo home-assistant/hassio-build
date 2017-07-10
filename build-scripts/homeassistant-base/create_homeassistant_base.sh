@@ -97,7 +97,7 @@ cp ../../homeassistant/base/Dockerfile "$WORKSPACE/Dockerfile"
 
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$WORKSPACE/Dockerfile"
 
-DOCKER_TAG="$(date +%Y%M%d)"
+DOCKER_TAG="$(date +%Y%m%d)"
 
 # Run build
 echo "[INFO] start docker build"
