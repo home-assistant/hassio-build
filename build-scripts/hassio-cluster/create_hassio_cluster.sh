@@ -104,7 +104,7 @@ WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/hassio-cluster-$ARCH
 echo "[INFO] Setup docker for cluster"
 mkdir -p "$BUILD_DIR"
 
-cp -r ../../cluter "$WORKSPACE"
+cp -r ../../cluster "$WORKSPACE"
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$WORKSPACE/Dockerfile"
 
 echo "LABEL io.hass.version=\"$DOCKER_TAG\" io.hass.arch=\"$ARCH\" io.hass.type=\"cluster\"" >> "$WORKSPACE/Dockerfile"
