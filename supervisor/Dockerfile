@@ -3,14 +3,11 @@ FROM %%BASE_IMAGE%%
 # add env
 ENV LANG C.UTF-8
 
-# remove several traces of python
-RUN apk del --no-cache python*
-
 # setup base
-RUN apk add --no-cache python3 git
-
-# update pip
-RUN pip3 install pip --no-cache-dir --upgrade
+RUN apk add --no-cache python3 python3-dev libressl libressl-dev git \
+    && pip3 install --no-cache-dir --upgrade pip
+    && pip3 install --no-cache-dir --upgrade cryptography jwcrypto
+    && apk del python3-dev libressl-dev 
 
 # install HassIO
 COPY hassio_api /usr/src/hassio
