@@ -5,8 +5,8 @@ ENV LANG C.UTF-8
 
 # setup base
 RUN apk add --no-cache python3 python3-dev libressl libressl-dev git \
-    && pip3 install --no-cache-dir --upgrade pip
-    && pip3 install --no-cache-dir --upgrade cryptography jwcrypto
+    && pip3 install --no-cache-dir --upgrade pip \
+    && pip3 install --no-cache-dir --upgrade cryptography jwcrypto \
     && apk del python3-dev libressl-dev 
 
 # install HassIO
