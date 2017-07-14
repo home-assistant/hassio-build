@@ -12,7 +12,7 @@ RUN apk add --no-cache python3 python3-dev \
         git \
     && pip3 install --no-cache-dir --upgrade pip \
     && pip3 install --no-cache-dir --upgrade cryptography jwcrypto \
-    && apk del python3-dev libressl-dev libffi-dev musl-dev
+    && apk del python3-dev libressl-dev libffi-dev musl-dev gcc
 
 # install HassIO
 COPY hassio_api /usr/src/hassio
