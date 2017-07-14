@@ -4,10 +4,10 @@ FROM %%BASE_IMAGE%%
 ENV LANG C.UTF-8
 
 # setup base
-RUN apk add --no-cache python3 python3-dev libressl libressl-dev git \
+RUN apk add --no-cache python3 python3-dev libressl libressl-dev libffi-dev libffi git \
     && pip3 install --no-cache-dir --upgrade pip \
     && pip3 install --no-cache-dir --upgrade cryptography jwcrypto \
-    && apk del python3-dev libressl-dev 
+    && apk del python3-dev libressl-dev libffi-dev
 
 # install HassIO
 COPY hassio_api /usr/src/hassio
