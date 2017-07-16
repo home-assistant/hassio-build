@@ -1,8 +1,15 @@
 #!/bin/bash
 set -e
 
+# install nvm
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
 # build frontend
 cd home-assistant-polymer
+nvm install
+nvm use
 yarn
 ./node_modules/.bin/bower install --allow-root
 yarn run frontend_prod

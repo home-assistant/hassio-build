@@ -73,9 +73,11 @@ BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
 WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/hassio-frontend
 
 echo "[INFO] Checkout hass.io repository"
-git clone "$REPOSITORY" "$WORKSPACE"
-cd "$WORKSPACE" && git checkout "$BRANCH"
-git submodule update --init --recursive
+    if [ ! -d "$WORKSPACE" ]; then
+    git clone "$REPOSITORY" "$WORKSPACE"
+    cd "$WORKSPACE" && git checkout "$BRANCH"
+    git submodule update --init --recursive
+fi
 
 echo "[INFO] Start frontend build"
 docker stop $BUILD_CONTAINER_NAME 2> /dev/null || true
