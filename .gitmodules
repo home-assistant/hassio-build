@@ -1,0 +1,3 @@
+[submodule "meta-hassio"]
+	path = meta-hassio
+	url = https://github.com/pvizeli/meta-resin
