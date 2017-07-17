@@ -75,8 +75,8 @@ WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/hassio-frontend
 echo "[INFO] Checkout hass.io repository"
     if [ ! -d "$WORKSPACE" ]; then
     git clone "$REPOSITORY" "$WORKSPACE"
-    cd "$WORKSPACE" && git checkout "$BRANCH"
-    git submodule update --init --recursive
+    cd "$WORKSPACE" && git checkout -b "$BRANCH"
+    git submodule update --init --recursive --remote
 fi
 
 echo "[INFO] Start frontend build"
