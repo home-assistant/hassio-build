@@ -2,3 +2,7 @@
 	path = meta-hassio
 	url = https://github.com/pvizeli/meta-resin
 	branch = hassio
+[submodule "resinhup"]
+	path = resinhup
+	url = https://github.com/pvizeli/resinhup
+	branch = hassio
