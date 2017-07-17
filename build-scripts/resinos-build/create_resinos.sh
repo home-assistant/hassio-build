@@ -20,8 +20,8 @@ cleanup() {
 trap 'cleanup fail' SIGINT SIGTERM
 
 # Sanity checks
-if [ "$#" -ne 3 ]; then
-    echo "Usage: create_resinos.sh <MACHINE> <HASSIO_VERSION> <RESINOS_HASSIO_VERSION>"
+if [ "$#" -ne 2 ]; then
+    echo "Usage: create_resinos.sh <MACHINE> <RESINOS_HASSIO_VERSION>"
     echo "Optional environment: BUILD_DIR, PERSISTENT_WORKDIR, HASSIO_META"
     exit 1
 fi
@@ -36,12 +36,12 @@ NAME="$1"
 case "$NAME" in
     "raspberrypi" | "raspberrypi2" | "raspberrypi3")
         RESIN_REPO="https://github.com/resin-os/resin-raspberrypi"
-        RESIN_BRANCH="v2.0.5+rev1"
+        RESIN_BRANCH="v2.0.8+rev1"
         MACHINE="$NAME"
     ;;
     "intel-nuc")
         RESIN_REPO="https://github.com/resin-os/resin-intel"
-        RESIN_BRANCH="v2.0.4+rev1"
+        RESIN_BRANCH="v2.0.9+rev1"
         MACHINE="intel-corei7-64"
     ;;
     *)
@@ -51,15 +51,13 @@ case "$NAME" in
 esac
 
 HOMEASSISTANT_IMAGE="$DOCKER_REPO/$NAME-homeassistant"
-HASSIO_VERSION=$2
-RESINOS_HASSIO_VERSION=$3
+RESINOS_HASSIO_VERSION=$2
 PERSISTENT_WORKDIR=${PERSISTENT_WORKDIR:=~/yocto}
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
 WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/resin-$MACHINE
 HASSIO_META=${HASSIO_ROOT:=$SCRIPTPATH/../..}
 DOWNLOAD_DIR=$PERSISTENT_WORKDIR/shared-downloads
 SSTATE_DIR=$PERSISTENT_WORKDIR/$MACHINE/sstate
-RESIN_BRANCH=master
 
 echo "[INFO] Checkout repository"
 if [ ! -d "$WORKSPACE" ]; then
@@ -68,13 +66,11 @@ if [ ! -d "$WORKSPACE" ]; then
 fi
 
 echo "[INFO] Inject HassIO yocto layer"
-cp -fr $HASSIO_META/meta-hassio $WORKSPACE/layers/
-if [ ! -d $WORKSPACE/build/conf ]; then
-    sed -i 's%${TOPDIR}/../layers/meta-resin/meta-resin-common \\%${TOPDIR}/../layers/meta-resin/meta-resin-common \\\n${TOPDIR}/../layers/meta-hassio \\%g' $WORKSPACE/layers/*/conf/samples/bblayers.conf.sample
-fi
+rm -rf "$WORKSPACE/layers/meta-resin"
+cp -rf "$HASSIO_META/meta-hassio" "$WORKSPACE/layers/meta-resin"
 
 # Additional variables
-BARYS_ARGUMENTS_VAR="-a HASSIO_SUPERVISOR_TAG=$HASSIO_VERSION -a HASSIO_MACHINE=$NAME -a HOMEASSISTANT_IMAGE=$HOMEASSISTANT_IMAGE -a RESINOS_HASSIO_VERSION=$RESINOS_HASSIO_VERSION"
+BARYS_ARGUMENTS_VAR="-a HASSIO_MACHINE=$NAME -a HOMEASSISTANT_IMAGE=$HOMEASSISTANT_IMAGE -a RESINOS_HASSIO_VERSION=$RESINOS_HASSIO_VERSION"
 
 # Make sure shared directories are in place
 mkdir -p $DOWNLOAD_DIR
