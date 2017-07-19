@@ -74,7 +74,7 @@ docker run --rm \
     -v ~/.docker:/root/.docker \
     -e DOCKER_PUSH="true" \
     -e DOCKER_CACHE="false" \
-    -e DOCKER_WITH_LATEST="true" \
+    -e DOCKER_WITH_LATEST="false" \
     -e DOCKER_IMAGE="$DOCKER_IMAGE" \
     -e DOCKER_TAG="$DOCKER_TAG" \
     --name $BUILD_CONTAINER_NAME \
