@@ -36,20 +36,21 @@ DOCKER_TAG=${MACHINE}-${RESINHUP_VER}
 DOCKER_IMAGE=homeassistant/resinhup
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
 WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/resinhup
+HASSIO_RESINHUP=${HASSIO_ROOT:=$SCRIPTPATH/../../resinhup}
 
 # evaluate git repo and arch
 case $MACHINE in
     "raspberrypi3")
-        DOCKER_FILE_NAME="Dockerfile.raspberrypi3"
+        DOCKER_FILE_NAME="Dockerfile.armhf"
     ;;
     "raspberrypi2")
-        DOCKER_FILE_NAME="Dockerfile.raspberry-pi2"
+        DOCKER_FILE_NAME="Dockerfile.armhf"
     ;;
     "raspberrypi")
-        DOCKER_FILE_NAME="Dockerfile.raspberry-pi"
+        DOCKER_FILE_NAME="Dockerfile.armhf"
     ;;
     "intel-nuc")
-        DOCKER_FILE_NAME="Dockerfile.intel-nuc"
+        DOCKER_FILE_NAME="Dockerfile.amd64"
     ;;
     *)
         echo "[ERROR] ${MACHINE} unknown!"
@@ -61,8 +62,8 @@ esac
 echo "[INFO] Setup workspace"
 mkdir -p $BUILD_DIR
 
-git clone https://github.com/pvizeli/resinhup $WORKSPACE
-cd $WORKSPACE && cp $DOCKER_FILE_NAME Dockerfile
+cp -rf "$HASSIO_RESINHUP" "$WORKSPACE"
+cp "$WORKSPACE/$DOCKER_FILE_NAME" "$WORKSPACE/Dockerfile"
 
 # Run build
 echo "[INFO] start docker build"
@@ -73,6 +74,7 @@ docker run --rm \
     -v ~/.docker:/root/.docker \
     -e DOCKER_PUSH="true" \
     -e DOCKER_CACHE="false" \
+    -e DOCKER_WITH_LATEST="true" \
     -e DOCKER_IMAGE="$DOCKER_IMAGE" \
     -e DOCKER_TAG="$DOCKER_TAG" \
     --name $BUILD_CONTAINER_NAME \
