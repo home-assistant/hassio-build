@@ -111,8 +111,8 @@ mkdir -p "$WORKSPACE"
 cp ../../supervisor/Dockerfile "$WORKSPACE/Dockerfile"
 sed -i "s/%%BASE_IMAGE%%/${BASE_IMAGE}/g" "$WORKSPACE/Dockerfile"
 
-git clone --depth 1 -b "$BRANCH" "$REPOSITORY" "$WORKSPACE/hassio_api"
-DOCKER_TAG="$(python3 "$WORKSPACE/hassio_api/setup.py" -V)"
+git clone --depth 1 -b "$BRANCH" "$REPOSITORY" "$WORKSPACE/hassio"
+DOCKER_TAG="$(python3 "$WORKSPACE/hassio/setup.py" -V)"
 
 if [ -z "$DOCKER_TAG" ]; then
     echo "[ERROR] Can't read hass.io version"
