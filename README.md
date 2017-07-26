@@ -1,9 +1,6 @@
 # Build environment for HASS.io
 
-This repository contains the relevant files to build [HASS.io]. For the add-ons please check the [Hass.IO-Addons] repository.
-
-[HASS.io](https://github.com/home-assistant/hassio)
-[Hass.IO-Addons](https://github.com/home-assistant/hassio-addons)
+This repository contains the relevant files to build [HASS.io](https://github.com/home-assistant/hassio). For the add-ons please check the [Hass.IO-Addons](https://github.com/home-assistant/hassio-addons) repository.
 
 # Build Server
 
