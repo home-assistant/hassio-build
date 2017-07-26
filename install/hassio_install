@@ -7,7 +7,7 @@ URL_VERSION="https://raw.githubusercontent.com/home-assistant/hassio/master/vers
 URL_START_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/misc/hassio-start"
 URL_GENERIC_HC="https://raw.githubusercontent.com/home-assistant/hassio-build/master/generic-hc"
 URL_SERVICE_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/systemd/hassio-supervisor.service"
-URL_SERVICE_HOSTCONTROLL="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/systemd/hassio-hc.service"
+URL_SERVICE_HOSTCONTROL="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/systemd/hassio-hc.service"
 
 BIN_DIR=/usr/bin
 DATA_SHARE=/usr/share/hassio
@@ -103,14 +103,14 @@ docker pull "$HASSIO_DOCKER:$HASSIO_VERSION" > /dev/null
 docker tag "$HASSIO_DOCKER:$HASSIO_VERSION" "$HASSIO_DOCKER:latest" > /dev/null
 
 ##
-# install generic hostcontrol
+# Install generic hostcontrol
 echo "[INFO] Install generic HostControl"
 curl -sL "$URL_GENERIC_HC/$GENERIC_HC_VERSION" > "$BIN_DIR/hassio-hc"
 
 chmod a+x "$BIN_DIR/hassio-hc"
 
 ##
-# install start-hassio
+# Install start-hassio
 echo "[INFO] Install startup scripts"
 curl -sL "$URL_START_HASSIO" > "$BIN_DIR/hassio-start"
 
@@ -125,7 +125,7 @@ chmod a+x "$BIN_DIR/hassio-start"
 if [ "$INIT_SYSTEM" == "systemd" ]; then
     echo "[INFO] Init systemd"
     curl -sL "$URL_SERVICE_HASSIO" > "/etc/systemd/system/hassio-supervisor.service"
-    curl -sL "$URL_SERVICE_HOSTCONTROLL" > "/etc/systemd/system/hassio-hc.service"
+    curl -sL "$URL_SERVICE_HOSTCONTROL" > "/etc/systemd/system/hassio-hc.service"
 
     sed -i "s|%%BIN_DIR%%|$BIN_DIR|g" "/etc/systemd/system/hassio-hc.service"
     sed -i "s|%%BIN_DIR%%|$BIN_DIR|g" "/etc/systemd/system/hassio-supervisor.service"
