@@ -29,12 +29,12 @@ $HASSIO_DOCKER="$DOCKER_REPO/amd64-hassio-supervisor"
 
 
 Write-Host "`n------------------------------------------" -ForegroundColor White
-Write-Host "- HASS.IO Installer for Windows          -" -ForegroundColor White
-Write-Host "-  This will install the hass.io system  -" -ForegroundColor White
-Write-Host "-  on docker in a windows environemnt.   -" -ForegroundColor White
+Write-Host "-  Hass.io Installer for Windows         -" -ForegroundColor White
+Write-Host "-  This will install a hass.io system    -" -ForegroundColor White
+Write-Host "-  on Docker in a Windows environemnt.   -" -ForegroundColor White
 Write-Host "------------------------------------------" -ForegroundColor White
 
-# Read infos from web
+# Read infos retrieved from the web
 $HASSIO_VERSION= (ConvertFrom-Json  (Invoke-WebRequest -Uri $URL_VERSION).Content).hassio
 $GENERIC_HC_VERSION= (ConvertFrom-Json  (Invoke-WebRequest -Uri $URL_VERSION).Content).generic
 
