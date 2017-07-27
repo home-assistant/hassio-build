@@ -2,7 +2,7 @@
 set -e
 
 BUILD_CONTAINER_NAME=landingpage-build-$$
-DOCKER_PUSH="false"
+DOCKER_PUSH="true"
 DOCKER_CACHE="false"
 DOCKER_WITH_LATEST="false"
 DOCKER_TAG="landingpage"
@@ -36,8 +36,8 @@ Options:
 
     -m, --machine name
         Machine type for HomeAssistant build.
-    -p, --push
-        Upload the build to docker hub.
+    -t, --test
+        Don't upload the build to docker hub.
 EOF
 }
 
@@ -57,8 +57,8 @@ while [[ $# -gt 0 ]]; do
             MACHINE=$2
             shift
             ;;
-        -p|--push)
-            DOCKER_PUSH="true"
+        -t|--test)
+            DOCKER_PUSH="false"
             ;;
         *)
             echo "[WARNING] $0 : Argument '$1' unknown. Ignoring."
