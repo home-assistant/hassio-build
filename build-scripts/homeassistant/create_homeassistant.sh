@@ -2,7 +2,7 @@
 set -e
 
 BUILD_CONTAINER_NAME=homeassistant-build-$$
-DOCKER_PUSH="false"
+DOCKER_PUSH="true"
 DOCKER_CACHE="false"
 DOCKER_WITH_LATEST="true"
 DOCKER_HUB=homeassistant
@@ -37,8 +37,8 @@ Options:
         Machine type for HomeAssistant build.
     -v, --version X.Y
         Version/Tag/branch of HomeAssistant build.
-    -p, --push
-        Upload the build to docker hub.
+    -t, --test
+        Don't upload the build to docker hub.
 EOF
 }
 
@@ -62,8 +62,8 @@ while [[ $# -gt 0 ]]; do
             DOCKER_TAG=$2
             shift
             ;;
-        -p|--push)
-            DOCKER_PUSH="true"
+        -t|--test)
+            DOCKER_PUSH="false"
             ;;
         *)
             echo "[WARNING] $0 : Argument '$1' unknown. Ignoring."
