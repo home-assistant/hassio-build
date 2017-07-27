@@ -2,7 +2,7 @@
 set -e
 
 BUILD_CONTAINER_NAME=hassio-build-$$
-DOCKER_PUSH="false"
+DOCKER_PUSH="true"
 DOCKER_CACHE="true"
 DOCKER_WITH_LATEST="true"
 DOCKER_HUB=homeassistant
@@ -42,8 +42,8 @@ Options:
 
     -a, --arch armhf|aarch64|i386|amd64
         Arch for Hass.IO build.
-    -p, --push
-        Upload the build to docker hub.
+    -t, --test
+        Don't upload the build to docker hub.
     -n, --no-cache
         Disable build from cache
 EOF
@@ -73,8 +73,8 @@ while [[ $# -gt 0 ]]; do
             ARCH=$2
             shift
             ;;
-        -p|--push)
-            DOCKER_PUSH="true"
+        -t|--test)
+            DOCKER_PUSH="false"
             ;;
         -n|--no-cache)
             DOCKER_CACHE="false"
