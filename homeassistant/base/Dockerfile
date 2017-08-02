@@ -1,69 +1,46 @@
-FROM %%BASE_IMAGE%%
+#FROM %%BASE_IMAGE%%
+FROM homeassistant/amd64-base:latest
 
 # Add env
 ENV LANG C.UTF-8
 
-# install core & build packages
+####
+# install core
 RUN apk --no-cache add \
-    python3 \
-    python3-dev \
-    libuv \
-    musl-dev \
-    git \
-    linux-headers \
-    bsd-compat-headers \
-    eudev-dev \
-    libusb-dev \
-    libffi-dev \
-    libjpeg-turbo-dev \
-    libpng-dev \
-    libxml2-dev \
-    libxslt-dev \
-    jpeg-dev \
-    tiff-dev \
-    freetype-dev \
-    autoconf \
-    automake \
-    libtool \
-    cmake \
-    make \
-    g++ \
-    gcc \
-    ncurses-dev
-
-##
-# install component packages
-RUN apk --no-cache add \
-    ffmpeg \
-    nmap \
-    libcec \
-    net-tools \
-    mariadb-dev \
-    postgresql-dev \
-    bluez-dev \
-    bluez \
-    curl \
-    libsodium-dev \
-    openssh-client \
-    boost \
-    boost-python3
+        python3 \
+        git \
+        bsd-compat-headers \
+        libgcc \
+        libstdc++ \
+        libpng \
+        tiff \
+        libjpeg \
+        libjpeg-turbo \
+        musl \
+    && ln -s /usr/include/locale.h /usr/include/xlocale.h
 
 ####
 ## Build library
 WORKDIR /usr/src/
-RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
 
 # ssocr
-RUN apk --no-cache add imlib2-dev \
+RUN apk --no-cache add gcc make musl-dev imlib2-dev imlib2 \
     && git clone --depth 1 https://github.com/auerswal/ssocr \
     && cd ssocr \
     && make \
     && make install \
+    && apk del gcc make imlib2-dev musl-dev \
     && rm -rf /usr/src/ssocr
 
 # OpenCV / scipy
 ENV PYTHONPATH /usr/local/lib/python3.6/site-packages
-RUN apk --no-cache add lapack-dev gfortran \
+RUN apk --no-cache add \
+        gcc g++ musl-dev python3-dev cmake make ncurses linux-headers \
+        lapack-dev lapack \
+        gfortran libgfortran \
+        ffmpeg-dev ffmpeg-libs \
+        libwebp-dev libwebp \
+        libpng-dev libjpeg-turbo-dev tiff-dev \
     && pip3 install --no-cache-dir numpy scipy \
     && git clone --depth 1 -b 3.2.0 https://github.com/opencv/opencv \
     && cd opencv \
@@ -72,15 +49,23 @@ RUN apk --no-cache add lapack-dev gfortran \
     && cmake ../ -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_DOCS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF \
     && make \
     && make install \
+    && apk del \
+        gcc g++ musl-dev python3-dev lapack-dev linux-headers \
+        gfortran cmake make ncurses ffmpeg-dev \
+        libpng-dev libjpeg-turbo-dev tiff-dev libwebp-dev \
     && rm -rf /usr/src/opencv
     
 # Dlib
-RUN apk --no-cache add boost-dev \
+RUN apk --no-cache add \
+        boost boost-python3 boost-dev \
+        cmake ncurses make g++ python3-dev \
     && pip3 install --no-cache-dir dlib \
-    && apk --no-cache del boost-dev
+    && apk del boost-dev cmake ncurses make g++ python3-dev
 
 # OpenAlpr
-RUN apk --no-cache add tesseract-ocr-dev \
+RUN apk --no-cache add \
+        cmake ncurses make g++ tesseract-ocr-dev tesseract-ocr \
+        autoconf automake \
     && git clone --depth 1 -b REL_1_2_0 https://github.com/log4cplus/log4cplus \
     && cd log4cplus \
     && ./configure \
@@ -96,10 +81,15 @@ RUN git clone --depth 1 -b v2.3.0 https://github.com/openalpr/openalpr \
     && cmake ../ -DWITH_TESTS=FALSE -DWITH_BINDING_JAVA=FALSE -DWITH_BINDING_PYTHON=FALSE -DWITH_BINDING_GO=FALSE -DWITH_DAEMON=FALSE -DCMAKE_INSTALL_PREFIX:PATH=/usr/local \
     && make \
     && make install \
+    && apk del \
+        cmake ncurses make g++ tesseract-ocr-dev \
+        autoconf automake \
     && rm -rf /usr/src/openalpr
 
 # libcoap
-RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/libcoap \
+RUN apk --no-cache add \
+        make gcc g++ autoconf automake libtool \
+    && git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/libcoap \
     && cd libcoap \
     && grep -r -l u_int8_t * | xargs sed -i "s/u_int8_t/unsigned char/g" \
     && grep -r -l u_int32_t * | xargs sed -i "s/u_int32_t/unsigned int/g" \
@@ -109,10 +99,34 @@ RUN git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/li
     && ./configure --disable-documentation --disable-shared --without-debug CFLAGS="-D COAP_DEBUG_FD=stderr" \
     && make \
     && make install \
+    && apk del \
+        make gcc g++ autoconf automake libtool \
     && rm -rf /usr/src/libcoap
+
+##
+# install component packages
+RUN apk --no-cache add \
+    ffmpeg \
+    nmap \
+    libcec \
+    net-tools \
+    bluez \
+    curl \
+    libsodium \
+    openssh-client \
+    apcupsd
 
 ####
 ## install pip module for component/homeassistant
-RUN pip3 install --no-cache-dir mysqlclient psycopg2 pybluez \
+RUN apk --no-cache add \
+        gcc g++ musl-dev python3-dev make \
+        mariadb-dev mariadb-libs \
+        postgresql-dev postgresql-libs \
+        freetds-dev freetds \
+    && pip3 install --no-cache-dir mysqlclient psycopg2 \
+    && pip3 install --no-cache-dir https://github.com/wayfair/pymssql/archive/v2.1.3.0.0.1.zip \
     && pip3 install --no-cache-dir cchardet uvloop aiodns \
+    && apk del \
+        mariadb-dev postgresql-dev freetds-dev \
+        gcc g++ musl-dev python3-dev make
 
