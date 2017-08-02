@@ -1,5 +1,4 @@
-#FROM %%BASE_IMAGE%%
-FROM homeassistant/amd64-base:latest
+FROM %%BASE_IMAGE%%
 
 # Add env
 ENV LANG C.UTF-8
