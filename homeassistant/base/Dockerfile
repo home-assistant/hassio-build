@@ -114,7 +114,6 @@ RUN apk --no-cache add \
     curl \
     libsodium \
     openssh-client \
-    apcupsd \
     libffi
 
 ####
