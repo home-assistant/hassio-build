@@ -114,7 +114,8 @@ RUN apk --no-cache add \
     curl \
     libsodium \
     openssh-client \
-    libffi
+    libffi \
+    glib
 
 ####
 ## install pip module for component/homeassistant
