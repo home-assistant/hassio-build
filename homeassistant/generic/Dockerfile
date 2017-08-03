@@ -5,7 +5,7 @@ COPY homeassistant/ homeassistant
 RUN apk add --no-cache \
         gcc g++ python3-dev musl-dev cmake make bluez-dev libffi-dev linux-headers \
         eudev-dev eudev-libs \
-        libxslt-dev libxslt libxml2-dev libxml2
+        libxslt-dev libxslt libxml2-dev libxml2 \
     && echo "cryptography==1.9" >> homeassistant/requirements_all.txt \
     && sed -i "s/# pybluez/pybluez/g" homeassistant/requirements_all.txt \
     && sed -i "s/# RPi.GPIO/RPi.GPIO/g" homeassistant/requirements_all.txt \
