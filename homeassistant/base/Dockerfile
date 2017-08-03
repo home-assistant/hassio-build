@@ -15,6 +15,7 @@ RUN apk --no-cache add \
         tiff \
         libjpeg \
         libjpeg-turbo \
+        libressl \
         musl \
     && ln -s /usr/include/locale.h /usr/include/xlocale.h
 
