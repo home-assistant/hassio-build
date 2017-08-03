@@ -7,6 +7,7 @@ RUN apk add --no-cache \
         libffi-dev linux-headers libressl-dev \
         eudev-dev eudev-libs \
         libxslt-dev libxslt libxml2-dev libxml2 \
+        libpng-dev libjpeg-turbo-dev tiff-dev \
     && echo "cryptography==1.9" >> homeassistant/requirements_all.txt \
     && sed -i "s/# pybluez/pybluez/g" homeassistant/requirements_all.txt \
     && sed -i "s/# RPi.GPIO/RPi.GPIO/g" homeassistant/requirements_all.txt \
@@ -23,6 +24,7 @@ RUN apk add --no-cache \
     && apk del \
         cc g++ python3-dev musl-dev cmake make bluez-dev libffi-dev linux-headers \
         eudev-dev libxslt-dev libxml2-dev libressl-dev \
+        libpng-dev libjpeg-turbo-dev tiff-dev \
     && rm -r homeassistant
 
 # Install and update certificates
