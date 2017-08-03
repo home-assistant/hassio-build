@@ -5,11 +5,13 @@ COPY homeassistant/ homeassistant
 RUN apk add --no-cache \
         gcc g++ python3-dev musl-dev cmake make bluez-dev libffi-dev linux-headers \
         eudev-dev eudev-libs \
+        libxslt-dev libxslt libxml2-dev libxml2
     && echo "cryptography==1.9" >> homeassistant/requirements_all.txt \
     && sed -i "s/# pybluez/pybluez/g" homeassistant/requirements_all.txt \
     && sed -i "s/# RPi.GPIO/RPi.GPIO/g" homeassistant/requirements_all.txt \
     && sed -i "s/# raspihats/raspihats/g" homeassistant/requirements_all.txt \
     && sed -i "s/# rpi-rf/rpi-rf/g" homeassistant/requirements_all.txt \
+    && sed -i "s/# fritzconnection/fritzconnection/g" homeassistant/requirements_all.txt \
     && sed -i "s/# pyuserinput/pyuserinput/g" homeassistant/requirements_all.txt \
     && sed -i "s/# evdev/evdev/g" homeassistant/requirements_all.txt \
     && sed -i "s/# smbus-cffi/smbus-cffi/g" homeassistant/requirements_all.txt \
@@ -19,7 +21,7 @@ RUN apk add --no-cache \
     && pip3 uninstall -y enum34 \
     && apk del \
         cc g++ python3-dev musl-dev cmake make bluez-dev libffi-dev linux-headers \
-        eudev-dev \
+        eudev-dev libxslt-dev libxml2-dev \
     && rm -r homeassistant
 
 # Install and update certificates
