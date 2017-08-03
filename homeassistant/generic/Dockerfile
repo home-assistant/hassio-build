@@ -4,12 +4,13 @@ FROM %%BASE_IMAGE%%
 COPY homeassistant/ homeassistant
 RUN apk add --no-cache \
         gcc g++ python3-dev musl-dev cmake make bluez-dev \
-        libffi-dev linux-headers libressl-dev \
+        libffi-dev linux-headers libressl-dev glib-dev \
         eudev-dev eudev-libs \
         libxslt-dev libxslt libxml2-dev libxml2 \
         libpng-dev libjpeg-turbo-dev tiff-dev \
     && echo "cryptography==1.9" >> homeassistant/requirements_all.txt \
     && sed -i "s/# pybluez/pybluez/g" homeassistant/requirements_all.txt \
+    && sed -i "s/# bluepy/bluepy/g" homeassistant/requirements_all.txt \
     && sed -i "s/# RPi.GPIO/RPi.GPIO/g" homeassistant/requirements_all.txt \
     && sed -i "s/# raspihats/raspihats/g" homeassistant/requirements_all.txt \
     && sed -i "s/# rpi-rf/rpi-rf/g" homeassistant/requirements_all.txt \
@@ -23,7 +24,7 @@ RUN apk add --no-cache \
     && pip3 uninstall -y enum34 \
     && apk del \
         gcc g++ python3-dev musl-dev cmake make bluez-dev libffi-dev linux-headers \
-        eudev-dev libxslt-dev libxml2-dev libressl-dev \
+        eudev-dev libxslt-dev libxml2-dev libressl-dev glib-dev \
         libpng-dev libjpeg-turbo-dev tiff-dev \
     && rm -r homeassistant
 
