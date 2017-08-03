@@ -7,7 +7,6 @@ ENV LANG C.UTF-8
 # install core
 RUN apk --no-cache add \
         python3 \
-        git \
         bsd-compat-headers \
         libgcc \
         libstdc++ \
@@ -24,12 +23,12 @@ RUN apk --no-cache add \
 WORKDIR /usr/src/
 
 # ssocr
-RUN apk --no-cache add gcc make musl-dev imlib2-dev imlib2 \
+RUN apk --no-cache add git gcc make musl-dev imlib2-dev imlib2 \
     && git clone --depth 1 https://github.com/auerswal/ssocr \
     && cd ssocr \
     && make \
     && make install \
-    && apk del gcc make imlib2-dev musl-dev \
+    && apk del git gcc make imlib2-dev musl-dev \
     && rm -rf /usr/src/ssocr
 
 # OpenCV / scipy
@@ -40,7 +39,7 @@ RUN apk --no-cache add \
         gfortran libgfortran \
         ffmpeg-dev ffmpeg-libs \
         libwebp-dev libwebp \
-        libpng-dev libjpeg-turbo-dev tiff-dev \
+        git libpng-dev libjpeg-turbo-dev tiff-dev \
     && pip3 install --no-cache-dir numpy scipy \
     && git clone --depth 1 -b 3.2.0 https://github.com/opencv/opencv \
     && cd opencv \
@@ -52,7 +51,7 @@ RUN apk --no-cache add \
     && apk del \
         gcc g++ musl-dev python3-dev lapack-dev linux-headers \
         gfortran cmake make ncurses ffmpeg-dev \
-        libpng-dev libjpeg-turbo-dev tiff-dev libwebp-dev \
+        git libpng-dev libjpeg-turbo-dev tiff-dev libwebp-dev \
     && rm -rf /usr/src/opencv
     
 # Dlib
@@ -65,7 +64,7 @@ RUN apk --no-cache add \
 # OpenAlpr
 RUN apk --no-cache add \
         cmake ncurses make g++ tesseract-ocr-dev tesseract-ocr \
-        autoconf automake \
+        git autoconf automake \
     && git clone --depth 1 -b REL_1_2_0 https://github.com/log4cplus/log4cplus \
     && cd log4cplus \
     && ./configure \
@@ -83,12 +82,12 @@ RUN git clone --depth 1 -b v2.3.0 https://github.com/openalpr/openalpr \
     && make install \
     && apk del \
         cmake ncurses make g++ tesseract-ocr-dev \
-        autoconf automake \
+        git autoconf automake \
     && rm -rf /usr/src/openalpr
 
 # libcoap
 RUN apk --no-cache add \
-        make gcc g++ autoconf automake libtool \
+        git make gcc g++ autoconf automake libtool \
     && git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/libcoap \
     && cd libcoap \
     && grep -r -l u_int8_t * | xargs sed -i "s/u_int8_t/unsigned char/g" \
@@ -100,7 +99,7 @@ RUN apk --no-cache add \
     && make \
     && make install \
     && apk del \
-        make gcc g++ autoconf automake libtool \
+        git make gcc g++ autoconf automake libtool \
     && rm -rf /usr/src/libcoap
 
 ##
