@@ -22,7 +22,7 @@ RUN apk add --no-cache \
     && pip3 install --no-cache-dir ./homeassistant \
     && pip3 uninstall -y enum34 \
     && apk del \
-        cc g++ python3-dev musl-dev cmake make bluez-dev libffi-dev linux-headers \
+        gcc g++ python3-dev musl-dev cmake make bluez-dev libffi-dev linux-headers \
         eudev-dev libxslt-dev libxml2-dev libressl-dev \
         libpng-dev libjpeg-turbo-dev tiff-dev \
     && rm -r homeassistant
