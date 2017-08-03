@@ -5,7 +5,7 @@ ENV LANG C.UTF-8
 
 ####
 # install core
-RUN apk --no-cache add \
+RUN apk add --no-cache \
         python3 \
         bsd-compat-headers \
         libgcc \
@@ -23,7 +23,7 @@ RUN apk --no-cache add \
 WORKDIR /usr/src/
 
 # ssocr
-RUN apk --no-cache add git gcc make musl-dev imlib2-dev imlib2 \
+RUN apk add --no-cache git gcc make musl-dev imlib2-dev imlib2 \
     && git clone --depth 1 https://github.com/auerswal/ssocr \
     && cd ssocr \
     && make \
@@ -33,7 +33,7 @@ RUN apk --no-cache add git gcc make musl-dev imlib2-dev imlib2 \
 
 # OpenCV / scipy
 ENV PYTHONPATH /usr/local/lib/python3.6/site-packages
-RUN apk --no-cache add \
+RUN apk add --no-cache \
         gcc g++ musl-dev python3-dev cmake make ncurses linux-headers \
         lapack-dev lapack \
         gfortran libgfortran \
@@ -55,14 +55,14 @@ RUN apk --no-cache add \
     && rm -rf /usr/src/opencv
     
 # Dlib
-RUN apk --no-cache add \
+RUN apk add --no-cache \
         boost boost-python3 boost-dev \
         cmake ncurses make g++ python3-dev \
     && pip3 install --no-cache-dir dlib \
     && apk del boost-dev cmake ncurses make g++ python3-dev
 
 # OpenAlpr
-RUN apk --no-cache add \
+RUN apk add --no-cache \
         cmake ncurses make g++ tesseract-ocr-dev tesseract-ocr \
         git autoconf automake \
     && git clone --depth 1 -b REL_1_2_0 https://github.com/log4cplus/log4cplus \
@@ -86,7 +86,7 @@ RUN git clone --depth 1 -b v2.3.0 https://github.com/openalpr/openalpr \
     && rm -rf /usr/src/openalpr
 
 # libcoap
-RUN apk --no-cache add \
+RUN apk add --no-cache \
         git make gcc g++ autoconf automake libtool \
     && git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/libcoap \
     && cd libcoap \
@@ -104,7 +104,7 @@ RUN apk --no-cache add \
 
 ##
 # install component packages
-RUN apk --no-cache add \
+RUN apk add --no-cache \
     ffmpeg \
     nmap \
     libcec \
@@ -118,7 +118,7 @@ RUN apk --no-cache add \
 
 ####
 ## install pip module for component/homeassistant
-RUN apk --no-cache add \
+RUN apk add --no-cache \
         gcc g++ musl-dev python3-dev make \
         mariadb-dev mariadb-libs \
         postgresql-dev postgresql-libs \
