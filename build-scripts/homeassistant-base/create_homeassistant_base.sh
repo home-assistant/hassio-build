@@ -30,7 +30,7 @@ Options:
     -h, --help
         Display this help and exit.
 
-    -h, --hub hubname
+    -d, --dockerhub hubname
         Set user of dockerhub build.
 
     -a, --arch
@@ -50,7 +50,7 @@ while [[ $# -gt 0 ]]; do
             help
             exit 0
             ;;
-        -h|--hub)
+        -d|--dockerhub)
             DOCKER_HUB=$2
             shift
             ;;
