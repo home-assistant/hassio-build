@@ -1,11 +1,10 @@
-
-# HassIO supervisor
+# Hass.io supervisor
 
 - Docker socket for Docker management
-- HassIO HostControll socket for manage host functions
+- Hass.io HostControl socket for manage host functions
 - Persistent volume to store all data
 
-## Run supervisor on a normal docker host
+## Run supervisor on a normal Docker host
 
 ```bash
 docker run --name resin_supervisor \
