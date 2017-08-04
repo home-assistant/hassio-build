@@ -1,6 +1,6 @@
-# Install HassIO
+# Install Hass.io
 
-That is only if you want run HassIO on a generic system without our hardware images.
+Beside the usage of the images it's also possible to run Hass.io on a generic system without flashing an image.
 
 ## Requirements
 
@@ -15,16 +15,18 @@ curl
 ## Run
 
 Run as root:
+
 ```bash
 curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/hassio_install | bash -
 ```
 
 On a special platform they need set a machine type use:
+
 ```bash
 curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/hassio_install | bash - -m MY_MACHINE
 ```
 
-## Machine
+## Supported Machine types
 
 - raspberrypi
 - raspberrypi2
