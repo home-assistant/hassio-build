@@ -4,7 +4,7 @@ FROM %%BASE_IMAGE%%
 ENV LANG C.UTF-8
 
 ####
-# install core
+# Install core
 RUN apk add --no-cache \
         python3 \
         bsd-compat-headers \
@@ -31,7 +31,7 @@ RUN apk add --no-cache git gcc make musl-dev imlib2-dev imlib2 \
     && apk del git gcc make imlib2-dev musl-dev \
     && rm -rf /usr/src/ssocr
 
-# OpenCV / scipy
+# OpenCV/scipy
 ENV PYTHONPATH /usr/local/lib/python3.6/site-packages
 RUN apk add --no-cache \
         gcc g++ musl-dev python3-dev cmake make ncurses linux-headers \
@@ -61,7 +61,7 @@ RUN apk add --no-cache \
     && pip3 install --no-cache-dir dlib \
     && apk del boost-dev cmake ncurses make g++ python3-dev
 
-# OpenAlpr
+# OpenALPR
 RUN apk add --no-cache \
         cmake ncurses make g++ tesseract-ocr-dev tesseract-ocr \
         git autoconf automake \
@@ -103,7 +103,7 @@ RUN apk add --no-cache \
     && rm -rf /usr/src/libcoap
 
 ##
-# install component packages
+# Install component packages
 RUN apk add --no-cache \
     ffmpeg \
     nmap \
@@ -117,7 +117,7 @@ RUN apk add --no-cache \
     glib
 
 ####
-## install pip module for component/homeassistant
+## Install pip module for component/homeassistant
 RUN apk add --no-cache \
         gcc g++ musl-dev python3-dev make \
         mariadb-dev mariadb-libs \
