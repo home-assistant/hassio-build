@@ -120,7 +120,7 @@ RUN apk add --no-cache \
 ## Install pip module for component/homeassistant
 RUN apk add --no-cache \
         gcc g++ musl-dev python3-dev make \
-        mariadb-dev mariadb-libs \
+        mariadb-dev mariadb-client-libs \
         postgresql-dev postgresql-libs \
         freetds-dev freetds \
     && pip3 install --no-cache-dir mysqlclient psycopg2 \
