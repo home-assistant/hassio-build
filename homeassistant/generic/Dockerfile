@@ -3,7 +3,7 @@ FROM %%BASE_IMAGE%%
 ## Install Home Assistant
 COPY homeassistant/ homeassistant
 RUN apk add --no-cache \
-        gcc g++ python3-dev musl-dev cmake make bluez-dev \
+        gcc g++ python3-dev musl-dev cmake make bluez-dev bluez-libs \
         libffi-dev linux-headers libressl-dev glib-dev \
         eudev-dev eudev-libs \
         libxslt-dev libxslt libxml2-dev libxml2 \
