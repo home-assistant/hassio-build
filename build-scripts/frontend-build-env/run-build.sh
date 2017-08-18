@@ -12,7 +12,9 @@ nvm install
 nvm use
 yarn
 ./node_modules/.bin/bower install --allow-root
-yarn run frontend_prod
+npm install -g gulp-cli
+gulp build
+gulp hassio-panel
 
 # prepare data
 cd build-temp/
