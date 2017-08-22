@@ -13,7 +13,6 @@ nvm use
 yarn
 ./node_modules/.bin/bower install --allow-root
 npm install -g gulp-cli
-gulp build
 gulp hassio-panel
 
 # prepare data
