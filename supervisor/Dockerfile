@@ -9,7 +9,7 @@ RUN apk add --no-cache python3 python3-dev \
         libffi libffi-dev \
         musl musl-dev \
         gcc libstdc++ \
-        git \
+        git socat \
     && pip3 install --no-cache-dir --upgrade pip \
     && pip3 install --no-cache-dir --upgrade cryptography jwcrypto \
     && apk del python3-dev libressl-dev libffi-dev musl-dev gcc
