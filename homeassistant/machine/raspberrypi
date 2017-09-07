@@ -5,59 +5,39 @@ LABEL io.hass.machine raspberrypi
 RUN apk --no-cache add raspberrypi raspberrypi-libs raspberrypi-dev usbutils
 
 ##
-# Set symlinks for raspberry pi binaries.
+# Set symlinks for raspberry pi camera binaries.
 RUN ln -sv /opt/vc/bin/raspistill /usr/local/bin/raspistill \
     && ln -sv /opt/vc/bin/raspivid /usr/local/bin/raspivid \
     && ln -sv /opt/vc/bin/raspividyuv /usr/local/bin/raspividyuv \
     && ln -sv /opt/vc/bin/raspiyuv /usr/local/bin/raspiyuv
 
 ##
-# Build libcec with RPi support.
-# Taken and modified (with permission) from https://github.com/jonaseck2/raspberrypi3-homeassistant
-ENV LIBCEC_VERSION=4.0.2 P8_PLATFORM_VERSION=2.1.0.1
-
-WORKDIR /root
-
-ADD https://github.com/Pulse-Eight/libcec/archive/libcec-${LIBCEC_VERSION}.tar.gz https://github.com/Pulse-Eight/platform/archive/p8-platform-${P8_PLATFORM_VERSION}.tar.gz ./
-
-RUN ln -s /usr/bin/python3 /usr/bin/python \
-&& PYTHON_LIBDIR=$(python -c 'from distutils import sysconfig; print(sysconfig.get_config_var("LIBDIR"))') \
-&& PYTHON_LDLIBRARY=$(python -c 'from distutils import sysconfig; print(sysconfig.get_config_var("LDLIBRARY"))') \
-&& PYTHON_LIBRARY="${PYTHON_LIBDIR}/${PYTHON_LDLIBRARY}" \
-&& PYTHON_INCLUDE_DIR=$(python -c 'from distutils import sysconfig; print(sysconfig.get_python_inc())') \
-# Build dependencies
-&& apk update \
-&& apk add libuv \
-&& apk add --virtual build-dependencies eudev-dev cmake liblockfile-dev libuv-dev libxrandr-dev swig git build-base bzip2-dev python3-dev \
-# Platform
-&& tar xvzf p8-platform-${P8_PLATFORM_VERSION}.tar.gz && rm p8-platform-*.tar.gz && mv platform* platform \
-&& mkdir platform/build \
-&& cd platform/build \
-&& cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr \
-   .. \
-&& make \
-&& make install \
-# Libcec
-&& cd \
-&& tar xvzf libcec-${LIBCEC_VERSION}.tar.gz && rm libcec-*.tar.gz && mv libcec* libcec \
-&& mkdir libcec/build \
-&& cd libcec/build \
-&& cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr \
-   -DRPI_INCLUDE_DIR=/opt/vc/include \
-   -DRPI_LIB_DIR=/opt/vc/lib \
-   -DPYTHON_LIBRARY="${PYTHON_LIBRARY}" \
-   -DPYTHON_INCLUDE_DIR="${PYTHON_INCLUDE_DIR}" \
-   .. \
-&& make -j4 \
-&& make install \
-# Cleanup
-&& rm -f /usr/bin/python \
-&& apk del build-dependencies \
-&& rm -rf /var/cache/apk/* \
-&& cd \
-&& rm -rf platform && rm -rf libcec
+# Build libcec with RPi support for HDMI-CEC
+ADD https://github.com/Pulse-Eight/libcec/archive/libcec-4.0.2.tar.gz \
+        https://github.com/Pulse-Eight/platform/archive/p8-platform-2.1.0.1.tar.gz \
+        ./
+RUN apk add --no-cache --virtual build-dependencies \
+        build-base cmake eudev-dev \
+    && tar xvzf p8-platform-2.1.0.1.tar.gz \
+    && rm p8-platform-*.tar.gz && mv platform* platform \
+    && mkdir platform/build \
+    && cd platform/build \
+    && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local .. \
+    && make \
+    && make install \
+    && cd - \
+    && tar xvzf libcec-4.0.2.tar.gz && rm libcec-*.tar.gz \
+    && mv libcec* libcec \
+    && mkdir libcec/build \
+    && cd libcec/build \
+    && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local \
+        -DRPI_INCLUDE_DIR=/opt/vc/include \
+        -DRPI_LIB_DIR=/opt/vc/lib \
+        -DPYTHON_LIBRARY="/usr/lib/libpython3.6m.so" \
+        -DPYTHON_INCLUDE_DIR="/usr/include/python3.6m" .. \
+    && make -j4 \
+    && make install \
+    && apk del build-dependencies \
+    && cd - && rm -rf platform && rm -rf libcec
 
 ENV LD_LIBRARY_PATH=/opt/vc/lib:${LD_LIBRARY_PATH}
-
-WORKDIR /config/
-
