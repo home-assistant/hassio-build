@@ -40,6 +40,7 @@ RUN apk del libcec \
     && apk del build-base cmake eudev-dev git \
            python3-dev swig raspberrypi-dev
 ENV LD_LIBRARY_PATH=/opt/vc/lib:${LD_LIBRARY_PATH}
+
 ##
 # Install DHT
 RUN apk add --no-cache gcc libc-dev python3-dev \
