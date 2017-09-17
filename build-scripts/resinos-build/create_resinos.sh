@@ -36,12 +36,12 @@ NAME="$1"
 case "$NAME" in
     "raspberrypi" | "raspberrypi2" | "raspberrypi3")
         RESIN_REPO="https://github.com/resin-os/resin-raspberrypi"
-        RESIN_BRANCH="v2.0.8+rev1"
+        RESIN_BRANCH="v2.3.0+rev1"
         MACHINE="$NAME"
     ;;
     "intel-nuc")
         RESIN_REPO="https://github.com/resin-os/resin-intel"
-        RESIN_BRANCH="v2.0.9+rev1"
+        RESIN_BRANCH="v2.3.0+rev1"
         MACHINE="intel-corei7-64"
     ;;
     *)
