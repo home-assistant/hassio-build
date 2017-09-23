@@ -22,8 +22,7 @@ curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/in
 
 On a special platform they need set a machine type use:
 
-```bash
-curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/hassio_install | bash - -m MY_MACHINE
+```curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/hassio_install > /var/tmp/hassio_install && chmod +x /var/tmp/hassio_install && /var/tmp/hassio_install -m $(uname -m)
 ```
 
 ## Supported Machine types
