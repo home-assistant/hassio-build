@@ -9,9 +9,9 @@ set -e
 DOCKER_TIMEOUT=20
 DOCKER_PID=-1
 DOCKER_HUB=""
-DOCKER_CACHE="false"
-DOCKER_LATEST="false"
-DOCKER_PUSH="false"
+DOCKER_CACHE="true"
+DOCKER_LATEST="true"
+DOCKER_PUSH="true"
 GIT_REPOSITORY=""
 GIT_BRANCH="master"
 TARGET=""
@@ -50,12 +50,12 @@ Options:
         Build all architecture.
 
   Build handling
-    -p, --push
-       Enable push to dockerhub.
-    -l, --tag-latest
-       Tag images as latest.
-    -c, --cache
-       Enable cache for the build (from latest).
+    --test
+       Disable push to dockerhub.
+    -l, --no-latest
+       Do not tag images as latest.
+    -c, --no-cache
+       Disable cache for the build (from latest).
     -d, --docker-hub <DOCKER_REPOSITORY>
        Set or overwrite the docker repository.
 
@@ -273,16 +273,13 @@ while [[ $# -gt 0 ]]; do
             TARGET=$2
             shift
             ;;
-        -p|--push)
-            DOCKER_PUSH="true"
+        -l|--no-latest)
+            DOCKER_LATEST="false"
             ;;
-        -l|--tag-latest)
-            DOCKER_LATEST="true"
-            ;;
-        -t|--test)
+        --test)
             DOCKER_PUSH="false"
             ;;
-        -c|--cache)
+        -c|--no-cache)
             DOCKER_CACHE="false"
             ;;
         -d|--docker-hub)
