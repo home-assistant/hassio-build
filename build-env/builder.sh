@@ -78,14 +78,16 @@ EOF
 #### Docker functions ####
 
 function start_docker() {
-    local starttime="$(date +%s)"
-    local endtime="$(date +%s)"
+    local starttime
+    local endtime
 
     echo "[INFO] Starting docker."
     dockerd 2> /dev/null &
     DOCKER_PID=$!
 
     echo "[INFO] Waiting for docker to initialize..."
+    starttime="$(date +%s)"
+    endtime="$(date +%s)"
     until docker info >/dev/null 2>&1; do
         if [ $((endtime - starttime)) -le $DOCKER_TIMEOUT ]; then
             sleep 1
@@ -150,13 +152,13 @@ function run_build() {
         "${docker_cli[@]}" \
         "$build_dir"
 
-    push_images+="$repository/$image:$version"
+    push_images+=("$repository/$image:$version")
     echo "[INFO] Finish build for $repository/$image:$version"
 
     # Tag latest
     if [ "$DOCKER_LATEST" == "true" ]; then
         docker tag "$repository/$image:$version" "$repository/$image:latest"
-        push_images+="$repository/$image:latest"
+        push_images+=("$repository/$image:latest")
     fi
 
     # Push images
