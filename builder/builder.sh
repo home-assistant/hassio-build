@@ -130,12 +130,12 @@ function stop_docker() {
 function run_build() {
     local build_dir=$1
     local repository=$2
-    local image=$4
-    local version=$5
-    local build_type=$6
-    local build_from=$7
-    local build_arch=$9
-    local docker_cli=("${!10}")
+    local image=$3
+    local version=$4
+    local build_type=$5
+    local build_from=$6
+    local build_arch=$7
+    local docker_cli=("${!8}")
 
     local push_images=()
 
@@ -173,7 +173,7 @@ function run_build() {
 #### HassIO functions ####
 
 function build_addon() {
-    local build_arch=$2
+    local build_arch=$1
 
     local docker_cli=()
     local build_from=""
@@ -194,11 +194,9 @@ function build_addon() {
 
     # Read addon config.json
     version="$(jq --raw-output '.version' "$TARGET/config.json")"
-    raw_image="$(jq --raw-output '.image // empty' "$TARGET/config.json")"
+    raw_image="$(jq --raw-output '.image // empty' "$TARGET/config.json" | sed -r "s/\{arch\}/$build_arch/g")"
 
-    # Replace arch
-    raw_image="${$raw_image/\{arch\}/$build_arch}"
-
+    # Image need exists
     if [ -z "$raw_image" ]; then
         echo "[ERROR] Can't find image data inside config.json"
         exit 1
@@ -215,8 +213,8 @@ function build_addon() {
     # Init Cache
     if [ "$DOCKER_CACHE" == "true" ]; then
         echo "[INFO] Init cache for $repository/$image:$version"
-        if docker pull "$repository/$image:latest" 2> /dev/null; then
-            docker_cli+=("--cache-from $repository/$image:latest")
+        if docker pull "$repository/$image:latest" > /dev/null 2>&1; then
+            docker_cli+=("--cache-from" "$repository/$image:latest")
         else
             echo "[WARN] No cache image found. Cache is disabled for build"
         fi
@@ -224,7 +222,7 @@ function build_addon() {
 
     # Start build
     run_build "$TARGET" "$repository" "$image" "$version" \
-        "addon" "$build_from" "$build_arch"
+        "addon" "$build_from" "$build_arch" docker_cli[@]
 }
 
 #### initialized cross-build ####
@@ -342,7 +340,8 @@ start_docker
 
 # Load external repository
 if [ ! -z "$GIT_REPOSITORY" ]; then
-    git clone --depth 1 --branch "$GIT_BRANCH" /data/git 2> /dev/null
+    echo "[INFO] Checkout repository $GIT_REPOSITORY"
+    git clone --depth 1 --branch "$GIT_BRANCH" "$GIT_REPOSITORY" /data/git 2> /dev/null
     TARGET="/data/git/$TARGET"
 fi
 
@@ -350,7 +349,7 @@ fi
 if [ "$BUILD_TYPE" == "addon" ]; then
     echo "[INFO] Run addon build for: ${BUILD_LIST[*]}"
     for arch in "${BUILD_LIST[@]}"; do
-        (addon_build "$arch") &
+        (build_addon "$arch") &
     done
     wait
 fi
