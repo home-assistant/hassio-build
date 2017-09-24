@@ -164,7 +164,12 @@ function run_build() {
     # Push images
     if [ "$DOCKER_PUSH" == "true" ]; then
         for i in "${push_images[@]}"; do
-            docker push "$i"
+            echo "[INFO] Start upload $1"
+            if docker push "$i" > /dev/null 2>&1; then
+                echo "[INFO] Upload success"
+            else
+                echo "[WARN] Upload fail!"
+            fi
         done
     fi
 }
