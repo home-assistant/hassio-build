@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
         software-properties-common \
     && rm -rf /var/lib/apt/lists/* \
     && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
-    && add-apt-repository "deb [arch=$BUILD_ARCH] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+    && ARCH=$BUILD_ARCH add-apt-repository "deb [arch=$(echo $ARCH)] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
     && apt-get update && apt-get install -y docker-ce \
     && rm -rf /var/lib/apt/lists/*
 
@@ -27,8 +27,8 @@ RUN apt-get update && apt-get install -y \
         binfmt-support \
     && rm -rf /var/lib/apt/lists/*
 
-COPY build.sh /
-RUN chmod a+x /build.sh
+COPY builder.sh /
+RUN chmod a+x /builder.sh
 
 WORKDIR /data
 CMD ["build.sh"]
