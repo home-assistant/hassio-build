@@ -78,8 +78,8 @@ EOF
 #### Docker functions ####
 
 function start_docker() {
-    local starttime=$(date +%s)
-    local endtime=$(date +%s)
+    local starttime="$(date +%s)"
+    local endtime="$(date +%s)"
 
     echo "[INFO] Starting docker."
     dockerd 2> /dev/null &
@@ -105,8 +105,8 @@ function stop_docker() {
 
     echo "[INFO] Stopping in container docker..."
     if [ "$DOCKER_PID" -gt 0 ] && kill -0 "$DOCKER_PID" 2> /dev/null; then
-        starttime=$(date +%s)
-        endtime=$(date +%s)
+        starttime="$(date +%s)"
+        endtime="$(date +%s)"
 
         # Now wait for it to die
         kill "$DOCKER_PID"
@@ -121,10 +121,6 @@ function stop_docker() {
         done
     else
         echo "[WARN] Your host might have been left with unreleased resources"
-    fi
-
-    if [ "$1" == "fail" ]; then
-        exit 1
     fi
 }
 
@@ -149,7 +145,7 @@ function run_build() {
         --label "io.hass.type=$build_type" \
         --label "io.hass.arch=$build_arch" \
         --build-arg "BUILD_FROM=$build_from" \
-        --build-arg "BUILD_VERSION=$build_version" \
+        --build-arg "BUILD_VERSION=$version" \
         --build-arg "BUILD_ARCH=$build_arch" \
         "${docker_cli[@]}" \
         "$build_dir"
@@ -158,13 +154,13 @@ function run_build() {
     echo "[INFO] Finish build for $repository/$image:$version"
 
     # Tag latest
-    if [ "$DOCKER_LATEST" -eq "true" ]; then
+    if [ "$DOCKER_LATEST" == "true" ]; then
         docker tag "$repository/$image:$version" "$repository/$image:latest"
         push_images+="$repository/$image:latest"
     fi
 
     # Push images
-    if [ "$DOCKER_PUSH" -eq "true" ]; then
+    if [ "$DOCKER_PUSH" == "true" ]; then
         for i in "${push_images[@]}"; do
             docker push "$i"
         done
@@ -212,10 +208,10 @@ function build_addon() {
     fi
 
     # Init Cache
-    if [ "$DOCKER_CACHE" -eq "true" ]; then
+    if [ "$DOCKER_CACHE" == "true" ]; then
         echo "[INFO] Init cache for $repository/$image:$version"
         if docker pull "$repository/$image:latest" 2> /dev/null; then
-            $docker_cli+="--cache-from $repository/$image:latest"
+            docker_cli+=("--cache-from $repository/$image:latest")
         else
             echo "[WARN] No cache image found. Cache is disabled for build"
         fi
@@ -250,6 +246,8 @@ function clean_crosscompile() {
 function error_handling() {
     stop_docker
     clean_crosscompile
+
+    exit 1
 }
 trap 'error_handling' SIGINT SIGTERM
 
@@ -287,16 +285,16 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --armhf)
-            BUILD_LIST+="armhf"
+            BUILD_LIST+=("armhf")
             ;;
         --amd64)
-            BUILD_LIST+="amd64"
+            BUILD_LIST+=("amd64")
             ;;
         --i386)
-            BUILD_LIST+="i386"
+            BUILD_LIST+=("i386")
             ;;
         --aarch64)
-            BUILD_LIST+="aarch64"
+            BUILD_LIST+=("aarch64")
             ;;
         --all)
             BUILD_LIST=("armhf" "amd64" "i386" "aarch64")
@@ -344,8 +342,8 @@ if [ ! -z "$GIT_REPOSITORY" ]; then
 fi
 
 # Select addon build
-if [ "$BUILD_TYPE" -eq "addon" ]; then
-    echo "[INFO] Run addon build for: ${BUILD_LIST[@]}"
+if [ "$BUILD_TYPE" == "addon" ]; then
+    echo "[INFO] Run addon build for: ${BUILD_LIST[*]}"
     for arch in "${BUILD_LIST[@]}"; do
         (addon_build "$arch") &
     done
