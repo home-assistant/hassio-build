@@ -1,6 +1,7 @@
 ARG BUILD_FROM
-ARG BUILD_ARCH
 FROM $BUILD_FROM
+
+ARG BUILD_ARCH
 
 # setup locals
 RUN apt-get update && apt-get install -y \
@@ -17,15 +18,16 @@ RUN apt-get update && apt-get install -y \
         software-properties-common \
     && rm -rf /var/lib/apt/lists/* \
     && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
-    && ARCH=$BUILD_ARCH add-apt-repository "deb [arch=$(echo $ARCH)] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+    && add-apt-repository "deb [arch=$BUILD_ARCH] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
     && apt-get update && apt-get install -y docker-ce \
     && rm -rf /var/lib/apt/lists/*
 
 # setup arm binary support
-RUN apt-get update && apt-get install -y \
+RUN if [ "$BUILD_ARCH" != "amd64" ]; then exit 0; else \
+    apt-get update && apt-get install -y \
         qemu-user-static \
         binfmt-support \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*; fi
 
 COPY builder.sh /
 RUN chmod a+x /builder.sh
