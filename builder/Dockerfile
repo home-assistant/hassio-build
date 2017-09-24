@@ -33,4 +33,4 @@ COPY builder.sh /usr/bin/
 RUN chmod a+x /usr/bin/builder.sh
 
 WORKDIR /data
-ENTRYPOINT ["/usr/bin/build.sh"]
+ENTRYPOINT ["/usr/bin/builder.sh"]
