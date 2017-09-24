@@ -29,8 +29,8 @@ RUN if [ "$BUILD_ARCH" != "amd64" ]; then exit 0; else \
         binfmt-support \
     && rm -rf /var/lib/apt/lists/*; fi
 
-COPY builder.sh /
-RUN chmod a+x /builder.sh
+COPY builder.sh /usr/bin/
+RUN chmod a+x /usr/bin/builder.sh
 
 WORKDIR /data
-CMD ["build.sh"]
+ENTRYPOINT ["/usr/bin/build.sh"]
