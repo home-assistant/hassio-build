@@ -3,9 +3,9 @@ FROM ubuntu:16.04
 ARG BUILD_ARCH
 
 # setup locals
-RUN apt-get update && apt-get install -y locales jq \
+RUN apt-get update && apt-get install -y \
+        jq \
     && rm -rf /var/lib/apt/lists/* \
-    && locale-gen C.UTF-8
 ENV LANG C.UTF-8
 
 # Install docker
@@ -23,8 +23,8 @@ RUN apt-get update && apt-get install -y \
 
 # setup arm binary support
 RUN apt-get update && apt-get install -y \
-    qemu-user-static \
-    binfmt-support \
+        qemu-user-static \
+        binfmt-support \
     && rm -rf /var/lib/apt/lists/*
 
 COPY build.sh /
