@@ -196,6 +196,9 @@ function build_addon() {
     version="$(jq --raw-output '.version' "$TARGET/config.json")"
     raw_image="$(jq --raw-output '.image // empty' "$TARGET/config.json")"
 
+    # Replace arch
+    raw_image="${$raw_image/\{arch\}/$build_arch}"
+
     if [ -z "$raw_image" ]; then
         echo "[ERROR] Can't find image data inside config.json"
         exit 1
