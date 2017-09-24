@@ -1,6 +1,6 @@
 ARG BUILD_FROM
 ARG BUILD_ARCH
-FROM ubuntu:16.04
+FROM $BUILD_FROM
 
 # setup locals
 RUN apt-get update && apt-get install -y \
