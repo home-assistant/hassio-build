@@ -16,6 +16,7 @@ GIT_REPOSITORY=""
 GIT_BRANCH="master"
 TARGET=""
 BUILD_LIST=()
+BUILD_TYPE="addon"
 
 #### Misc functions ####
 
@@ -57,6 +58,18 @@ Options:
        Enable cache for the build (from latest).
     -d, --docker-hub <DOCKER_REPOSITORY>
        Set or overwrite the docker repository.
+
+  Internals:
+    --addon
+        Default on. Run all things for a addon build.
+    --supervisor
+        Build a hassio supervisor.
+    --homeassistant-base
+        Build a Home-Assistant base image.
+    --homeassistant-generic
+        Build the generic release for a Home-Assistant.
+    --homeassistant
+        Build the machine based image for a release.
 EOF
 
     exit 1
@@ -65,17 +78,18 @@ EOF
 #### Docker functions ####
 
 function start_docker() {
+    local starttime=$(date +%s)
+    local endtime=$(date +%s)
+
     echo "[INFO] Starting docker."
     dockerd 2> /dev/null &
     DOCKER_PID=$!
 
     echo "[INFO] Waiting for docker to initialize..."
-    STARTTIME=$(date +%s)
-    ENDTIME=$(date +%s)
     until docker info >/dev/null 2>&1; do
-        if [ $((ENDTIME - STARTTIME)) -le $DOCKER_TIMEOUT ]; then
+        if [ $((endtime - starttime)) -le $DOCKER_TIMEOUT ]; then
             sleep 1
-            ENDTIME=$(date +%s)
+            endtime=$(date +%s)
         else
             echo "[ERROR] Timeout while waiting for docker to come up"
             exit 1
@@ -86,29 +100,71 @@ function start_docker() {
 
 
 function stop_docker() {
-    echo "[INFO] Stopping in container docker..."
+    local starttime
+    local endtime
 
+    echo "[INFO] Stopping in container docker..."
     if [ "$DOCKER_PID" -gt 0 ] && kill -0 "$DOCKER_PID" 2> /dev/null; then
-        STARTTIME=$(date +%s)
-        ENDTIME=$(date +%s)
+        starttime=$(date +%s)
+        endtime=$(date +%s)
 
         # Now wait for it to die
         kill "$DOCKER_PID"
         while kill -0 "$DOCKER_PID" 2> /dev/null; do
-            if [ $((ENDTIME - STARTTIME)) -le $DOCKER_TIMEOUT ]; then
+            if [ $((endtime - starttime)) -le $DOCKER_TIMEOUT ]; then
                 sleep 1
-                ENDTIME=$(date +%s)
+                endtime=$(date +%s)
             else
-                echo "[ERROR] Timeout while waiting for in container docker to die"
+                echo "[ERROR] Timeout while waiting for container docker to die"
                 exit 1
             fi
         done
     else
-        echo "[WARN] Your host might have been left with unreleased resources (ex. loop devices)"
+        echo "[WARN] Your host might have been left with unreleased resources"
     fi
 
     if [ "$1" == "fail" ]; then
         exit 1
+    fi
+}
+
+
+function run_build() {
+    local build_dir=$1
+    local repository=$2
+    local image=$4
+    local version=$5
+    local build_type=$6
+    local build_from=$7
+    local build_arch=$9
+    local docker_cli=$10
+
+    local push_images=()
+
+    # Build image
+    docker build -t "$repository/$image:$version" \
+        --label "io.hass.version=$version" \
+        --label "io.hass.type=$build_type" \
+        --label "io.hass.arch=$build_arch" \
+        --build-arg "BUILD_FROM=$build_from" \
+        --build-arg "BUILD_VERSION=$build_version" \
+        --build-arg "BUILD_ARCH=$build_arch" \
+        "${docker_cli[@]}" \
+        "$build_dir"
+
+    push_images+="$repository/$image:$version"
+
+    # Tag latest
+    if [ "$DOCKER_LATEST" -eq "true" ]; then
+        docker tag "$repository/$image:$version" "$repository/$image:latest"
+        push_images+="$repository/$image:latest"
+    fi
+
+    # Push images
+    if [ "$DOCKER_PUSH" -eq "true" ]; then
+        for i in "${push_images[@]}"; do
+            docker push "$i"
+        done
     fi
 }
 
@@ -190,9 +246,24 @@ while [[ $# -gt 0 ]]; do
         --all)
             BUILD_LIST=("armhf" "amd64" "i386" "aarch64")
             ;;
+        --addon)
+            BUILD_TYPE="addon"
+            ;;
+        --supervisor)
+            BUILD_TYPE="supervisor"
+            ;;
+        --homeassistant-base)
+            BUILD_TYPE="homeassistant-base"
+            ;;
+        --homeassistant-generic)
+            BUILD_TYPE="homeassistant-generic"
+            ;;
+        --homeassistant)
+            BUILD_TYPE="homeassistant"
+            ;;
 
         *)
-            echo "[WARNING] $0 : Argument '$1' unknown. Ignoring."
+            echo "[WARN] $0 : Argument '$1' unknown. Ignoring."
             ;;
     esac
     shift
