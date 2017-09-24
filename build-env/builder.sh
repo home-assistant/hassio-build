@@ -137,9 +137,11 @@ function run_build() {
     local build_type=$6
     local build_from=$7
     local build_arch=$9
-    local docker_cli=$10
+    local docker_cli=("${!10}")
 
     local push_images=()
+
+    echo "[INFO] Run build for $repository/$image:$version"
 
     # Build image
     docker build -t "$repository/$image:$version" \
@@ -153,6 +155,7 @@ function run_build() {
         "$build_dir"
 
     push_images+="$repository/$image:$version"
+    echo "[INFO] Finish build for $repository/$image:$version"
 
     # Tag latest
     if [ "$DOCKER_LATEST" -eq "true" ]; then
@@ -166,6 +169,61 @@ function run_build() {
             docker push "$i"
         done
     fi
+}
+
+
+#### HassIO functions ####
+
+function build_addon() {
+    local build_arch=$2
+
+    local docker_cli=()
+    local build_from=""
+    local version=""
+    local image=""
+    local repository=""
+    local raw_image=""
+
+    # Read addon build.json
+    if [ -f "$TARGET/build.json" ]; then
+        build_from="$(jq --raw-output ".build_from.$build_arch // empty" "$TARGET/build.json")"
+    fi
+
+    # Set defaults build things
+    if [ -z "$build_from" ]; then
+        build_from="homeassistant/$build_arch-base:latest"
+    fi
+
+    # Read addon config.json
+    version="$(jq --raw-output '.version' "$TARGET/config.json")"
+    raw_image="$(jq --raw-output '.image // empty' "$TARGET/config.json")"
+
+    if [ -z "$raw_image" ]; then
+        echo "[ERROR] Can't find image data inside config.json"
+        exit 1
+    fi
+
+    repository="$(echo "$raw_image" | cut -f 1 -d '/')"
+    image="$(echo "$raw_image" | cut -f 2 -d '/')"
+
+    # Overwrite docker hub
+    if [ ! -z "$DOCKER_HUB" ]; then
+        repository=$DOCKER_HUB
+    fi
+
+    # Init Cache
+    if [ "$DOCKER_CACHE" -eq "true" ]; then
+        echo "[INFO] Init cache for $repository/$image:$version"
+        if docker pull "$repository/$image:latest" 2> /dev/null; then
+            $docker_cli+="--cache-from $repository/$image:latest"
+        else
+            echo "[WARN] No cache image found. Cache is disabled for build"
+        fi
+    fi
+
+    # Start build
+    run_build "$TARGET" "$repository" "$image" "$version" \
+        "addon" "$build_from" "$build_arch"
 }
 
 #### initialized cross-build ####
@@ -263,11 +321,16 @@ while [[ $# -gt 0 ]]; do
             ;;
 
         *)
-            echo "[WARN] $0 : Argument '$1' unknown. Ignoring."
+            echo "[WARN] $0 : Argument '$1' unknown will be Ignoring"
             ;;
     esac
     shift
 done
+
+# Check if a architecture is available
+if [ "${#BUILD_LIST[@]}" -eq 0 ]; then
+    echo "[ERROR] You need select a architecture for build!"
+fi
 
 #### Main ####
 
@@ -281,6 +344,15 @@ start_docker
 if [ ! -z "$GIT_REPOSITORY" ]; then
     git clone --depth 1 --branch "$GIT_BRANCH" /data/git 2> /dev/null
     TARGET="/data/git/$TARGET"
+fi
+
+# Select addon build
+if [ "$BUILD_TYPE" -eq "addon" ]; then
+    echo "[INFO] Run addon build for: ${BUILD_LIST[@]}"
+    for arch in "${BUILD_LIST[@]}"; do
+        (addon_build "$arch") &
+    done
+    wait
 fi
 
 # Cleanup docker env
