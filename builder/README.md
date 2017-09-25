@@ -46,11 +46,11 @@ Options:
   Build handling
     --test
        Disable push to dockerhub.
-    -l, --no-latest
+    --no-latest
        Do not tag images as latest.
-    -c, --no-cache
+    --no-cache
        Disable cache for the build (from latest).
-    -d, --docker-hub <DOCKER_REPOSITORY>
+    --docker-hub <DOCKER_REPOSITORY>
        Set or overwrite the docker repository.
 
   Internals:
