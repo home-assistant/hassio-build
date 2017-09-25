@@ -14,6 +14,11 @@ docker build -t "homeassistant/amd64-builder:$TAG" \
 
 docker tag "homeassistant/amd64-builder:$TAG" "homeassistant/amd64-builder:latest"
 
+if [ "$1" == "push" ]; then
+    docker push "homeassistant/amd64-builder:$TAG"
+    docker push "homeassistant/amd64-builder:latest"
+fi
+
 # Create armhf-builder
 docker build -t "homeassistant/armhf-builder:$TAG" \
     --build-arg "BUILD_FROM=multiarch/ubuntu-core:armhf-xenial" \
@@ -24,3 +29,8 @@ docker build -t "homeassistant/armhf-builder:$TAG" \
     .
 
 docker tag "homeassistant/armhf-builder:$TAG" "homeassistant/armhf-builder:latest"
+
+if [ "$1" == "push" ]; then
+    docker push "homeassistant/amd64-builder:$TAG"
+    docker push "homeassistant/amd64-builder:latest"
+fi
