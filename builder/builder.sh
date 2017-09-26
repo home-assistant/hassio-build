@@ -333,6 +333,7 @@ done
 # Check if a architecture is available
 if [ "${#BUILD_LIST[@]}" -eq 0 ]; then
     echo "[ERROR] You need select a architecture for build!"
+    exit 1
 fi
 
 #### Main ####
