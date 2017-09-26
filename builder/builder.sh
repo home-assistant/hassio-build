@@ -357,7 +357,7 @@ if [ "$BUILD_TYPE" == "addon" ]; then
     echo "[INFO] Run addon build for: ${BUILD_LIST[*]}"
     for arch in "${BUILD_LIST[@]}"; do
         (build_addon "$arch") &
-        BUILD_TASKS=+($!)
+        BUILD_TASKS+=($!)
     done
 fi
 
