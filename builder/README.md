@@ -16,12 +16,12 @@ $ docker pull homeassistant/armhf-builder
 
 GIT repository:
 ```bash
-$ docker run --rm --privileged -v ~/.docker:/root/docker homeassistant/amd64-builder --all -t addon-folder -r https://github.com/xy/addons -b branchname
+$ docker run --rm --privileged -v ~/.docker:/root/.docker homeassistant/amd64-builder --all -t addon-folder -r https://github.com/xy/addons -b branchname
 ```
 
 Local repository:
 ```bash
-docker run --rm --privileged -v ~/.docker:/root/docker -v /my_addon:/data homeassistant/amd64-builder --all -t /data
+docker run --rm --privileged -v ~/.docker:/root/.docker -v /my_addon:/data homeassistant/amd64-builder --all -t /data
 ```
 
 ## Help
