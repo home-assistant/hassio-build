@@ -17,6 +17,7 @@ GIT_BRANCH="master"
 TARGET=""
 BUILD_LIST=()
 BUILD_TYPE="addon"
+BUILD_TASKS=()
 
 #### Misc functions ####
 
@@ -356,9 +357,12 @@ if [ "$BUILD_TYPE" == "addon" ]; then
     echo "[INFO] Run addon build for: ${BUILD_LIST[*]}"
     for arch in "${BUILD_LIST[@]}"; do
         (build_addon "$arch") &
+        BUILD_TASKS=+($!)
     done
-    wait
 fi
+
+# Wait until all build jobs are done
+wait "${BUILD_TASKS[@]}"
 
 # Cleanup docker env
 clean_crosscompile
