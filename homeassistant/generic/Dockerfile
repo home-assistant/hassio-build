@@ -1,14 +1,16 @@
-FROM %%BASE_IMAGE%%
+ARG BUILD_FROM
+FROM $BUILD_FROM
 
 ## Install Home Assistant
-COPY homeassistant/ homeassistant
+ARG BUILD_VERSION
 RUN apk add --no-cache \
-        gcc g++ python3-dev musl-dev cmake make bluez-dev bluez-libs \
-        libffi-dev linux-headers libressl-dev glib-dev \
+        gcc g++ python3-dev musl-dev cmake make git linux-headers \
+        bluez-dev bluez-libs \
+        libffi-dev libressl-dev glib-dev \
         eudev-dev eudev-libs \
         libxslt-dev libxslt libxml2-dev libxml2 \
         libpng-dev libjpeg-turbo-dev tiff-dev \
-    && echo "cryptography==1.9" >> homeassistant/requirements_all.txt \
+    && git clone --depth 1 --branch $BUILD_VERSION https://github.com/home-assistant/home-assistant homeassistant \
     && sed -i "s/# pybluez/pybluez/g" homeassistant/requirements_all.txt \
     && sed -i "s/# bluepy/bluepy/g" homeassistant/requirements_all.txt \
     && sed -i "s/# RPi.GPIO/RPi.GPIO/g" homeassistant/requirements_all.txt \
@@ -23,7 +25,8 @@ RUN apk add --no-cache \
     && pip3 install --no-cache-dir ./homeassistant \
     && pip3 uninstall -y enum34 \
     && apk del \
-        gcc g++ python3-dev musl-dev cmake make bluez-dev libffi-dev linux-headers \
+        gcc g++ python3-dev musl-dev cmake make git linux-headers \
+        bluez-dev libffi-dev \
         eudev-dev libxslt-dev libxml2-dev libressl-dev glib-dev \
         libpng-dev libjpeg-turbo-dev tiff-dev \
     && rm -r homeassistant
