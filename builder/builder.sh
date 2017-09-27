@@ -336,7 +336,7 @@ while [[ $# -gt 0 ]]; do
         --no-cache)
             DOCKER_CACHE="false"
             ;;
-        -d, --docker-hub)
+        -d|--docker-hub)
             DOCKER_HUB=$2
             shift
             ;;
