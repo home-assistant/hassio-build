@@ -15,6 +15,8 @@ DOCKER_PUSH="true"
 GIT_REPOSITORY=""
 GIT_BRANCH="master"
 TARGET=""
+VERSION=""
+IMAGE=""
 BUILD_LIST=()
 BUILD_TYPE="addon"
 BUILD_TASKS=()
@@ -30,13 +32,19 @@ Options:
   -h, --help
         Display this help and exit.
 
-  Repository / Data handling
+  Repository / Data
     -r, --repository <REPOSITORY>
         Set git repository to load data from.
     -b, --branch <BRANCH>
         Set git branch for repository.
     -t, --target <PATH_TO_BUILD>
         Set local folder or path inside repository for build.
+
+  Version/Image handling
+    -v, --version <VERSION>
+        Overwrite version/tag of build
+    -i, --image <IMAGE_NAME>
+        Overwrite image name of build / support {arch}
 
   Architecture
     --armhf
@@ -140,9 +148,26 @@ function run_build() {
 
     local push_images=()
 
-    echo "[INFO] Run build for $repository/$image:$version"
+    # Overwrites
+    if [ ! -z "$DOCKER_HUB" ]; then repository="$DOCKER_HUB"; fi
+    if [ ! -z "$IMAGE" ]; then image="$IMAGE"; fi
+    if [ ! -z "$VERSION" ]; then version="$VERSION"; fi
+
+    # Replace {arch} with build arch for image
+    image="$(echo "$image" | sed -r "s/\{arch\}/$build_arch/g")"
+
+    # Init Cache
+    if [ "$DOCKER_CACHE" == "true" ]; then
+        echo "[INFO] Init cache for $repository/$image:$version"
+        if docker pull "$repository/$image:latest" > /dev/null 2>&1; then
+            docker_cli+=("--cache-from" "$repository/$image:latest")
+        else
+            echo "[WARN] No cache image found. Cache is disabled for build"
+        fi
+    fi
 
     # Build image
+    echo "[INFO] Run build for $repository/$image:$version"
     docker build -t "$repository/$image:$version" \
         --label "io.hass.version=$version" \
         --label "io.hass.type=$build_type" \
@@ -187,6 +212,9 @@ function build_addon() {
     local image=""
     local repository=""
     local raw_image=""
+    local name=""
+    local description=""
+    local url=""
 
     # Read addon build.json
     if [ -f "$TARGET/build.json" ]; then
@@ -199,31 +227,24 @@ function build_addon() {
     fi
 
     # Read addon config.json
+    name="$(jq --raw-output '.name // empty' "$TARGET/config.json")"
+    description="$(jq --raw-output '.description // empty' "$TARGET/config.json")"
+    url="$(jq --raw-output '.url // empty' "$TARGET/config.json")"
     version="$(jq --raw-output '.version' "$TARGET/config.json")"
-    raw_image="$(jq --raw-output '.image // empty' "$TARGET/config.json" | sed -r "s/\{arch\}/$build_arch/g")"
+    raw_image="$(jq --raw-output '.image // empty' "$TARGET/config.json")"
 
-    # Image need exists
-    if [ -z "$raw_image" ]; then
-        echo "[ERROR] Can't find image data inside config.json"
-        exit 1
+    # Read data from image
+    if [ ! -z "$raw_image" ]; then
+        repository="$(echo "$raw_image" | cut -f 1 -d '/')"
+        image="$(echo "$raw_image" | cut -f 2 -d '/')"
     fi
 
-    repository="$(echo "$raw_image" | cut -f 1 -d '/')"
-    image="$(echo "$raw_image" | cut -f 2 -d '/')"
+    # Set additional labels
+    docker_cli+=("--label" "io.hass.name=$name")
+    docker_cli+=("--label" "io.hass.description=$description")
 
-    # Overwrite docker hub
-    if [ ! -z "$DOCKER_HUB" ]; then
-        repository=$DOCKER_HUB
-    fi
-
-    # Init Cache
-    if [ "$DOCKER_CACHE" == "true" ]; then
-        echo "[INFO] Init cache for $repository/$image:$version"
-        if docker pull "$repository/$image:latest" > /dev/null 2>&1; then
-            docker_cli+=("--cache-from" "$repository/$image:latest")
-        else
-            echo "[WARN] No cache image found. Cache is disabled for build"
-        fi
+    if [ ! -z "$url" ]; then
+        docker_cli+=("--label" "io.hass.url=$url")
     fi
 
     # Start build
@@ -278,6 +299,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         -t|--target)
             TARGET=$2
+            shift
+            ;;
+        -v|--version)
+            VERSION=$2
+            shift
+            ;;
+        -i|--image)
+            IMAGE=$2
             shift
             ;;
         --no-latest)
