@@ -71,13 +71,15 @@ Options:
   Internals:
     --addon
         Default on. Run all things for a addon build.
+    --base
+        Build our base images.
     --supervisor
         Build a hassio supervisor.
     --homeassistant-base
         Build a Home-Assistant base image.
-    --homeassistant-generic
-        Build the generic release for a Home-Assistant.
     --homeassistant
+        Build the generic release for a Home-Assistant.
+    --homeassistant-machine
         Build the machine based image for a release.
 EOF
 
@@ -270,6 +272,18 @@ function build_supervisor() {
 }
 
 
+function build_homeassistant() {
+    local build_arch=$1
+
+    local image="{arch}-homeassistant"
+    local build_from="homeassistant/${build_arch}-homeassistant-base:latest"
+    local docker_cli=()
+
+    # Start build
+    run_build "$TARGET" "$DOCKER_HUB" "$image" "$VERSION" \
+        "homeassistant" "$build_from" "$build_arch" docker_cli[@]
+}
+
 #### initialized cross-build ####
 
 function init_crosscompile() {
@@ -336,7 +350,7 @@ while [[ $# -gt 0 ]]; do
         --no-cache)
             DOCKER_CACHE="false"
             ;;
-        -d, --docker-hub)
+        -d|--docker-hub)
             DOCKER_HUB=$2
             shift
             ;;
@@ -358,17 +372,22 @@ while [[ $# -gt 0 ]]; do
         --addon)
             BUILD_TYPE="addon"
             ;;
+        --base)
+            BUILD_TYPE="base"
+            ;;
         --supervisor)
             BUILD_TYPE="supervisor"
             ;;
         --homeassistant-base)
             BUILD_TYPE="homeassistant-base"
             ;;
-        --homeassistant-generic)
-            BUILD_TYPE="homeassistant-generic"
-            ;;
         --homeassistant)
             BUILD_TYPE="homeassistant"
+            DOCKER_CACHE="false"
+            ;;
+        --homeassistant-machine)
+            BUILD_TYPE="homeassistant-machine"
+            DOCKER_CACHE="false"
             ;;
 
         *)
@@ -390,6 +409,17 @@ if [ "$BUILT_TYPE" != "addon" ] && [ -z "$DOCKER_HUB" ]; then
     exit 1
 fi
 
+if [ "$BUILT_TYPE" == "homeassistant" ] && [ -z "$VERSION" ]; then
+    echo "[ERROR] Please set a version for home-assistant!"
+    exit 1
+fi
+
+if [ "$BUILT_TYPE" == "homeassistant-machine" ] && [ -z "$VERSION" ]; then
+    echo "[ERROR] Please set a version for home-assistant!"
+    exit 1
+fi
+
+
 #### Main ####
 
 mkdir -p /data
@@ -406,22 +436,17 @@ if [ ! -z "$GIT_REPOSITORY" ]; then
 fi
 
 # Select addon build
-if [ "$BUILD_TYPE" == "addon" ]; then
-    echo "[INFO] Run addon build for: ${BUILD_LIST[*]}"
-    for arch in "${BUILD_LIST[@]}"; do
+echo "[INFO] Run $BUILD_TYPE build for: ${BUILD_LIST[*]}"
+for arch in "${BUILD_LIST[@]}"; do
+    if [ "$BUILD_TYPE" == "addon" ]; then
         (build_addon "$arch") &
-        BUILD_TASKS+=($!)
-    done
-fi
-
-# Select addon build
-if [ "$BUILD_TYPE" == "supervisor" ]; then
-    echo "[INFO] Run supervisor build for: ${BUILD_LIST[*]}"
-    for arch in "${BUILD_LIST[@]}"; do
+    elif [ "$BUILD_TYPE" == "supervisor" ]; then
         (build_supervisor "$arch") &
-        BUILD_TASKS+=($!)
-    done
-fi
+    elif [ "$BUILD_TYPE" == "homeassistant" ]; then
+        (build_homeassistant "$arch") &
+    fi
+    BUILD_TASKS+=($!)
+done
 
 # Wait until all build jobs are done
 wait "${BUILD_TASKS[@]}"
