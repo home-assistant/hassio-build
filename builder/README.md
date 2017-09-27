@@ -33,15 +33,21 @@ $ docker run --rm --privileged -v ~/.docker:/root/.docker homeassistant/amd64-bu
 ```
 Options:
   -h, --help
-        Display this help and exit.
+        Display this help and exit.
 
-  Repository / Data handling
+  Repository / Data
     -r, --repository <REPOSITORY>
-        Set git repository to load data from.
+        Set git repository to load data from.
     -b, --branch <BRANCH>
-        Set git branch for repository.
+        Set git branch for repository.
     -t, --target <PATH_TO_BUILD>
         Set local folder or path inside repository for build.
+
+  Version/Image handling
+    -v, --version <VERSION>
+        Overwrite version/tag of build
+    -i, --image <IMAGE_NAME>
+        Overwrite image name of build / support {arch}
 
   Architecture
     --armhf
@@ -62,7 +68,7 @@ Options:
        Do not tag images as latest.
     --no-cache
        Disable cache for the build (from latest).
-    --docker-hub <DOCKER_REPOSITORY>
+    -d, --docker-hub <DOCKER_REPOSITORY>
        Set or overwrite the docker repository.
 
   Internals:
@@ -76,5 +82,4 @@ Options:
         Build the generic release for a Home-Assistant.
     --homeassistant
         Build the machine based image for a release.
-
 ```
