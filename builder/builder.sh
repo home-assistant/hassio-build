@@ -65,7 +65,7 @@ Options:
        Do not tag images as latest.
     --no-cache
        Disable cache for the build (from latest).
-    --docker-hub <DOCKER_REPOSITORY>
+    -d, --docker-hub <DOCKER_REPOSITORY>
        Set or overwrite the docker repository.
 
   Internals:
@@ -223,7 +223,7 @@ function build_addon() {
 
     # Set defaults build things
     if [ -z "$build_from" ]; then
-        build_from="homeassistant/$build_arch-base:latest"
+        build_from="homeassistant/${build_arch}-base:latest"
     fi
 
     # Read addon config.json
@@ -251,6 +251,24 @@ function build_addon() {
     run_build "$TARGET" "$repository" "$image" "$version" \
         "addon" "$build_from" "$build_arch" docker_cli[@]
 }
+
+
+function build_supervisor() {
+    local build_arch=$1
+
+    local image="{arch}-hassio-supervisor"
+    local build_from="homeassistant/${build_arch}-base:latest"
+    local version=""
+    local docker_cli=()
+
+    # Read version
+    version="$(python3 "$TARGET/setup.py" -V)"
+
+    # Start build
+    run_build "$TARGET" "$DOCKER_HUB" "$image" "$version" \
+        "supervisor" "$build_from" "$build_arch" docker_cli[@]
+}
+
 
 #### initialized cross-build ####
 
@@ -318,7 +336,7 @@ while [[ $# -gt 0 ]]; do
         --no-cache)
             DOCKER_CACHE="false"
             ;;
-        --docker-hub)
+        -d, --docker-hub)
             DOCKER_HUB=$2
             shift
             ;;
@@ -366,6 +384,12 @@ if [ "${#BUILD_LIST[@]}" -eq 0 ]; then
     exit 1
 fi
 
+# Check other args
+if [ "$BUILT_TYPE" != "addon" ] && [ -z "$DOCKER_HUB" ]; then
+    echo "[ERROR] Please set a docker hub!"
+    exit 1
+fi
+
 #### Main ####
 
 mkdir -p /data
@@ -386,6 +410,15 @@ if [ "$BUILD_TYPE" == "addon" ]; then
     echo "[INFO] Run addon build for: ${BUILD_LIST[*]}"
     for arch in "${BUILD_LIST[@]}"; do
         (build_addon "$arch") &
+        BUILD_TASKS+=($!)
+    done
+fi
+
+# Select addon build
+if [ "$BUILD_TYPE" == "supervisor" ]; then
+    echo "[INFO] Run supervisor build for: ${BUILD_LIST[*]}"
+    for arch in "${BUILD_LIST[@]}"; do
+        (build_supervisor "$arch") &
         BUILD_TASKS+=($!)
     done
 fi

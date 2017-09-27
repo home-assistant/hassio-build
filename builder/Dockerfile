@@ -7,6 +7,7 @@ ARG BUILD_ARCH
 RUN apt-get update && apt-get install -y \
         jq \
         git \
+        python3-setuptools \
     && rm -rf /var/lib/apt/lists/* \
 ENV LANG C.UTF-8
 

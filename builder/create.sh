@@ -31,6 +31,6 @@ docker build -t "homeassistant/armhf-builder:$TAG" \
 docker tag "homeassistant/armhf-builder:$TAG" "homeassistant/armhf-builder:latest"
 
 if [ "$1" == "push" ]; then
-    docker push "homeassistant/amd64-builder:$TAG"
-    docker push "homeassistant/amd64-builder:latest"
+    docker push "homeassistant/armhf-builder:$TAG"
+    docker push "homeassistant/armhf-builder:latest"
 fi
