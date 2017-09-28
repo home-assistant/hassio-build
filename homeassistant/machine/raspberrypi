@@ -1,6 +1,5 @@
-FROM homeassistant/armhf-homeassistant:%%VERSION%%
-
-LABEL io.hass.machine raspberrypi
+ARG BUILD_VERSION
+FROM homeassistant/armhf-homeassistant:$BUILD_VERSION
 
 RUN apk --no-cache add raspberrypi raspberrypi-libs usbutils
 
