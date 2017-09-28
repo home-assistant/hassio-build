@@ -145,10 +145,9 @@ function run_build() {
     local repository=$2
     local image=$3
     local version=$4
-    local build_type=$5
-    local build_from=$6
-    local build_arch=$7
-    local docker_cli=("${!8}")
+    local build_from=$5
+    local build_arch=$6
+    local docker_cli=("${!7}")
 
     local push_images=()
 
@@ -170,15 +169,18 @@ function run_build() {
         fi
     fi
 
+    # do we know the arch of build?
+    if [ ! -z "$build_arch" ]; then
+        docker_cli+=("--label" "io.hass.arch=$build_arch")
+        docker_cli+=("--build-arg" "BUILD_ARCH=$build_arch")
+    fi
+
     # Build image
     echo "[INFO] Run build for $repository/$image:$version"
     docker build -t "$repository/$image:$version" \
         --label "io.hass.version=$version" \
-        --label "io.hass.type=$build_type" \
-        --label "io.hass.arch=$build_arch" \
         --build-arg "BUILD_FROM=$build_from" \
         --build-arg "BUILD_VERSION=$version" \
-        --build-arg "BUILD_ARCH=$build_arch" \
         "${docker_cli[@]}" \
         "$build_dir"
 
@@ -246,6 +248,7 @@ function build_addon() {
     # Set additional labels
     docker_cli+=("--label" "io.hass.name=$name")
     docker_cli+=("--label" "io.hass.description=$description")
+    docker_cli+=("--label" "io.hass.type=addon")
 
     if [ ! -z "$url" ]; then
         docker_cli+=("--label" "io.hass.url=$url")
@@ -253,7 +256,7 @@ function build_addon() {
 
     # Start build
     run_build "$TARGET" "$repository" "$image" "$version" \
-        "addon" "$build_from" "$build_arch" docker_cli[@]
+        "$build_from" "$build_arch" docker_cli[@]
 }
 
 
@@ -267,10 +270,11 @@ function build_supervisor() {
 
     # Read version
     version="$(python3 "$TARGET/setup.py" -V)"
+    docker_cli+=("--label" "io.hass.type=supervisor")
 
     # Start build
     run_build "$TARGET" "$DOCKER_HUB" "$image" "$version" \
-        "supervisor" "$build_from" "$build_arch" docker_cli[@]
+        "$build_from" "$build_arch" docker_cli[@]
 }
 
 
@@ -281,10 +285,32 @@ function build_homeassistant() {
     local build_from="homeassistant/${build_arch}-homeassistant-base:latest"
     local docker_cli=()
 
+    # Set labels
+    docker_cli+=("--label" "io.hass.type=homeassistant")
+
     # Start build
     run_build "$TARGET" "$DOCKER_HUB" "$image" "$VERSION" \
-        "homeassistant" "$build_from" "$build_arch" docker_cli[@]
+        "$build_from" "$build_arch" docker_cli[@]
 }
+
+
+function build_homeassistant_machine() {
+    local build_machine=$1
+
+    local image="${build_machine}-homeassistant"
+    local build_from=""
+    local docker_cli=()
+    local dockerfile="$TARGET/$build_machine"
+
+    # Set labels
+    docker_cli+=("--label" "io.hass.machine=$build_machine")
+    docker_cli+=("--file" "$dockerfile")
+
+    # Start build
+    run_build "$TARGET" "$DOCKER_HUB" "$image" "$VERSION" \
+        "$build_from" "" docker_cli[@]
+}
+
 
 
 function extract_machine_build() {
@@ -419,7 +445,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check if a architecture is available
-if [ "${#BUILD_LIST[@]}" -eq 0 ] && [ "$BUILT_TYPE" != "homeassistant-machine" ]; then
+if [ "${#BUILD_LIST[@]}" -eq 0 ] && [ "$BUILD_TYPE" != "homeassistant-machine" ]; then
     echo "[ERROR] You need select a architecture for build!"
     exit 1
 fi
@@ -427,16 +453,6 @@ fi
 # Check other args
 if [ "$BUILD_TYPE" != "addon" ] && [ -z "$DOCKER_HUB" ]; then
     echo "[ERROR] Please set a docker hub!"
-    exit 1
-fi
-
-if [ "$BUILD_TYPE" == "homeassistant" ] && [ -z "$VERSION" ]; then
-    echo "[ERROR] Please set a version for home-assistant!"
-    exit 1
-fi
-
-if [ "$BUILD_TYPE" == "homeassistant-machine" ] && [ -z "$VERSION" ]; then
-    echo "[ERROR] Please set a version for home-assistant!"
     exit 1
 fi
 
@@ -456,7 +472,7 @@ if [ ! -z "$GIT_REPOSITORY" ]; then
     TARGET="/data/git/$TARGET"
 fi
 
-# Select addon build
+# Select arch build
 echo "[INFO] Run $BUILD_TYPE build for: ${BUILD_LIST[*]}"
 for arch in "${BUILD_LIST[@]}"; do
     if [ "$BUILD_TYPE" == "addon" ]; then
@@ -468,6 +484,15 @@ for arch in "${BUILD_LIST[@]}"; do
     fi
     BUILD_TASKS+=($!)
 done
+
+# Select machine build
+if [ "$BUILD_TYPE" == "homeassistant-machine" ]; then
+    echo "[INFO] Machine builds: ${BUILD_MACHINE[*]}"
+    for machine in "${BUILD_MACHINE[@]}"; do
+        (build_homeassistant_machine "$machine") &
+        BUILD_TASKS+=($!)
+    done
+fi
 
 # Wait until all build jobs are done
 wait "${BUILD_TASKS[@]}"
