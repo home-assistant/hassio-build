@@ -20,6 +20,7 @@ IMAGE=""
 BUILD_LIST=()
 BUILD_TYPE="addon"
 BUILD_TASKS=()
+BUILD_MACHINE=()
 
 #### Misc functions ####
 
@@ -77,9 +78,9 @@ Options:
         Build a hassio supervisor.
     --homeassistant-base
         Build a Home-Assistant base image.
-    --homeassistant
+    --homeassistant <VERSION>
         Build the generic release for a Home-Assistant.
-    --homeassistant-machine
+    --homeassistant-machine <VERSION=ALL,X,Y>
         Build the machine based image for a release.
 EOF
 
@@ -389,10 +390,15 @@ while [[ $# -gt 0 ]]; do
         --homeassistant)
             BUILD_TYPE="homeassistant"
             DOCKER_CACHE="false"
+            VERSION=$2
+            shift
             ;;
         --homeassistant-machine)
             BUILD_TYPE="homeassistant-machine"
             DOCKER_CACHE="false"
+            VERSION="$(echo "$2" | cut -d '=' -f 1)"
+            IFS="," read -a BUILD_MACHINE <<<"$(echo "$2" | cut -d '=' -f 1)"
+            shift
             ;;
 
         *)
