@@ -20,7 +20,8 @@ IMAGE=""
 BUILD_LIST=()
 BUILD_TYPE="addon"
 BUILD_TASKS=()
-BUILD_MACHINE=()
+BUILD_MACHINE=('raspberrypi' 'raspberrypi2' 'raspberrypi3' 'intel-nuc' 'qemux86-64' 'qemux86')
+
 
 #### Misc functions ####
 
@@ -285,6 +286,15 @@ function build_homeassistant() {
         "homeassistant" "$build_from" "$build_arch" docker_cli[@]
 }
 
+
+function extract_machine_build() {
+    local list=$1
+    
+    if [ "$list" != "ALL" ]; then
+        IFS="," read -a BUILD_MACHINE <<<"$list"
+    fi
+}
+
 #### initialized cross-build ####
 
 function init_crosscompile() {
@@ -397,7 +407,7 @@ while [[ $# -gt 0 ]]; do
             BUILD_TYPE="homeassistant-machine"
             DOCKER_CACHE="false"
             VERSION="$(echo "$2" | cut -d '=' -f 1)"
-            IFS="," read -a BUILD_MACHINE <<<"$(echo "$2" | cut -d '=' -f 1)"
+            extract_machine_build "$(echo "$2" | cut -d '=' -f 2)"
             shift
             ;;
 
@@ -409,7 +419,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check if a architecture is available
-if [ "${#BUILD_LIST[@]}" -eq 0 ]; then
+if [ "${#BUILD_LIST[@]}" -eq 0 ] && [ "$BUILT_TYPE" != "homeassistant-machine" ]; then
     echo "[ERROR] You need select a architecture for build!"
     exit 1
 fi
