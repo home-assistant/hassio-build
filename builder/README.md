@@ -78,8 +78,8 @@ Options:
         Build a hassio supervisor.
     --homeassistant-base
         Build a Home-Assistant base image.
-    --homeassistant-generic
+    --homeassistant <VERSION>
         Build the generic release for a Home-Assistant.
-    --homeassistant
+    --homeassistant-machine <VERSION=ALL,X,Y>
         Build the machine based image for a release.
 ```
