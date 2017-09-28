@@ -288,19 +288,24 @@ function build_homeassistant() {
 
 function init_crosscompile() {
     echo "[INFO] Setup crosscompiling feature"
-    mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
-    update-binfmts --enable qemu-arm
-    update-binfmts --enable qemu-aarch64
+    (
+        mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
+        update-binfmts --enable qemu-arm
+        update-binfmts --enable qemu-aarch64
+    ) > /dev/null 2>&1 || echo "[WARN] Can't enable crosscompiling feature"
 }
 
 
 function clean_crosscompile() {
+    echo "[INFO] Clean crosscompiling feature"
     if [ -f /proc/sys/fs/binfmt_misc ]; then
-        umount /proc/sys/fs/binfmt_misc
+        umount /proc/sys/fs/binfmt_misc || true
     fi
 
-    update-binfmts --disable qemu-arm
-    update-binfmts --disable qemu-aarch64
+    (
+        update-binfmts --disable qemu-arm
+        update-binfmts --disable qemu-aarch64
+    ) > /dev/null 2>&1 || echo "[WARN] No crosscompiling feature found for cleanup"
 }
 
 #### Error handling ####
