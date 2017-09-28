@@ -425,17 +425,17 @@ if [ "${#BUILD_LIST[@]}" -eq 0 ] && [ "$BUILT_TYPE" != "homeassistant-machine" ]
 fi
 
 # Check other args
-if [ "$BUILT_TYPE" != "addon" ] && [ -z "$DOCKER_HUB" ]; then
+if [ "$BUILD_TYPE" != "addon" ] && [ -z "$DOCKER_HUB" ]; then
     echo "[ERROR] Please set a docker hub!"
     exit 1
 fi
 
-if [ "$BUILT_TYPE" == "homeassistant" ] && [ -z "$VERSION" ]; then
+if [ "$BUILD_TYPE" == "homeassistant" ] && [ -z "$VERSION" ]; then
     echo "[ERROR] Please set a version for home-assistant!"
     exit 1
 fi
 
-if [ "$BUILT_TYPE" == "homeassistant-machine" ] && [ -z "$VERSION" ]; then
+if [ "$BUILD_TYPE" == "homeassistant-machine" ] && [ -z "$VERSION" ]; then
     echo "[ERROR] Please set a version for home-assistant!"
     exit 1
 fi
