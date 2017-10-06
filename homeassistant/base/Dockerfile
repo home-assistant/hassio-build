@@ -95,13 +95,13 @@ RUN apk add --no-cache \
     && autoreconf \
     && ./configure --with-ecc --without-debug \
     && cd cython \
-    && pip3 install --no-cache-dir . \
+    && python3 setup.py install \
     && cd /usr/src \
     && rm -rf /usr/src/tinydtls \
     && git clone https://github.com/chrysn/aiocoap \
     && cd aiocoap \
     && git reset --hard 0df6a1e44582de99ae944b6a7536d08e2a612e8f \
-    && python3 setup.py install \
+    && pip3 install --no-cache-dir . \
     && apk del \
         git make gcc python3-dev autoconf automake musl-dev \
     && rm -rf /usr/src/aiocoap
