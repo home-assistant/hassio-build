@@ -88,7 +88,7 @@ RUN git clone --depth 1 -b v2.3.0 https://github.com/openalpr/openalpr \
 
 # tinydtls / aiocoap
 RUN apk add --no-cache \
-        git make gcc python3-dev autoconf aclocal musl-dev \
+        git make gcc python3-dev autoconf automake musl-dev \
     && pip3 install --no-cache-dir cython \
     && git clone --depth 1 https://git.fslab.de/jkonra2m/tinydtls \
     && cd tinydtls \
@@ -103,7 +103,7 @@ RUN apk add --no-cache \
     && git reset --hard 0df6a1e44582de99ae944b6a7536d08e2a612e8f \
     && pip3 install --no-cache-dir . \
     && apk del \
-        git make gcc python3-dev autoconf aclocal musl-dev \
+        git make gcc python3-dev autoconf automake musl-dev \
     && rm -rf /usr/src/aiocoap
 
 ##
