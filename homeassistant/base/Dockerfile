@@ -1,4 +1,5 @@
-FROM %%BASE_IMAGE%%
+ARG BUILD_FROM
+FROM $BUILD_FROM
 
 # Add env
 ENV LANG C.UTF-8
@@ -85,22 +86,25 @@ RUN git clone --depth 1 -b v2.3.0 https://github.com/openalpr/openalpr \
         git autoconf automake \
     && rm -rf /usr/src/openalpr
 
-# libcoap
+# tinydtls / aiocoap
 RUN apk add --no-cache \
-        git make gcc g++ autoconf automake libtool \
-    && git clone --depth 1 --recursive -b dtls https://github.com/home-assistant/libcoap \
-    && cd libcoap \
-    && grep -r -l u_int8_t * | xargs sed -i "s/u_int8_t/unsigned char/g" \
-    && grep -r -l u_int32_t * | xargs sed -i "s/u_int32_t/unsigned int/g" \
-    && grep -r -l u_int64_t * | xargs sed -i "s/u_int64_t/unsigned long long/g" \
-    && grep -r -l "time_t coap_time_t" * | xargs sed -i "s/time_t coap_time_t/unsigned long long coap_time_t/g" \
-    && ./autogen.sh \
-    && ./configure --disable-documentation --disable-shared --without-debug CFLAGS="-D COAP_DEBUG_FD=stderr" \
-    && make \
-    && make install \
+        git make gcc python3-dev autoconf automake musl-dev \
+    && pip3 install --no-cache-dir cython \
+    && git clone --depth 1 https://git.fslab.de/jkonra2m/tinydtls \
+    && cd tinydtls \
+    && autoreconf \
+    && ./configure --with-ecc --without-debug \
+    && cd cython \
+    && python3 setup.py install \
+    && cd /usr/src \
+    && rm -rf /usr/src/tinydtls \
+    && git clone https://github.com/chrysn/aiocoap \
+    && cd aiocoap \
+    && git reset --hard 0df6a1e44582de99ae944b6a7536d08e2a612e8f \
+    && pip3 install --no-cache-dir . \
     && apk del \
-        git make gcc g++ autoconf automake libtool \
-    && rm -rf /usr/src/libcoap
+        git make gcc python3-dev autoconf automake musl-dev \
+    && rm -rf /usr/src/aiocoap
 
 ##
 # Install component packages
@@ -129,4 +133,3 @@ RUN apk add --no-cache \
     && apk del \
         mariadb-dev postgresql-dev freetds-dev \
         gcc g++ musl-dev python3-dev make
-
