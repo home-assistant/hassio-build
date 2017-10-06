@@ -278,6 +278,23 @@ function build_supervisor() {
 }
 
 
+function build_homeassistant_base() {
+    local build_arch=$1
+
+    local image="{arch}-homeassistant-base"
+    local build_from="homeassistant/${build_arch}-base:latest"
+    local docker_cli=()
+    local version=""
+
+    # Make version
+    version="$(date +%Y%m%d)"
+
+    # Start build
+    run_build "$TARGET" "$DOCKER_HUB" "$image" "$version" \
+        "$build_from" "$build_arch" docker_cli[@]
+}
+
+
 function build_homeassistant() {
     local build_arch=$1
 
@@ -479,6 +496,8 @@ for arch in "${BUILD_LIST[@]}"; do
         (build_addon "$arch") &
     elif [ "$BUILD_TYPE" == "supervisor" ]; then
         (build_supervisor "$arch") &
+    elif [ "$BUILD_TYPE" == "homeassistant-base" ]; then
+        (build_homeassistant_base "$arch") &
     elif [ "$BUILD_TYPE" == "homeassistant" ]; then
         (build_homeassistant "$arch") &
     fi
