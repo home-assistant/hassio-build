@@ -23,7 +23,6 @@ RUN apk add --no-cache \
     && sed -i "s/# i2csense/i2csense/g" homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir ./homeassistant \
-    && pip3 uninstall -y enum34 \
     && apk del \
         gcc g++ python3-dev musl-dev cmake make git linux-headers \
         bluez-dev libffi-dev \
