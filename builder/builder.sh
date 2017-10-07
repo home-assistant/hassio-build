@@ -100,7 +100,7 @@ function start_docker() {
 
     if [ "$DOCKER_LOCAL" == "true" ]; then
         echo "[INFO] Use host docker setup with '/var/run/docker.sock'"
-        exit 0
+        return 0
     fi
 
     echo "[INFO] Starting docker."
@@ -128,7 +128,7 @@ function stop_docker() {
     local endtime
 
     if [ "$DOCKER_LOCAL" == "true" ]; then
-        exit 0
+        return 0
     fi
 
     echo "[INFO] Stopping in container docker..."
