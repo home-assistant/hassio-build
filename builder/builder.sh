@@ -12,6 +12,7 @@ DOCKER_HUB=""
 DOCKER_CACHE="true"
 DOCKER_LATEST="true"
 DOCKER_PUSH="true"
+DOCKER_LOCAL="false"
 GIT_REPOSITORY=""
 GIT_BRANCH="master"
 TARGET=""
@@ -69,6 +70,9 @@ Options:
        Disable cache for the build (from latest).
     -d, --docker-hub <DOCKER_REPOSITORY>
        Set or overwrite the docker repository.
+    --local-docker
+       Use the host docker socket (need map to container!)
+       /var/run/docker.sock
 
   Internals:
     --addon
@@ -94,6 +98,11 @@ function start_docker() {
     local starttime
     local endtime
 
+    if [ "DOCKER_LOCAL" == "true" ]; then
+        echo "[INFO] Use host docker setup with '/var/run/docker.sock'"
+        exit 0
+    fi
+
     echo "[INFO] Starting docker."
     dockerd 2> /dev/null &
     DOCKER_PID=$!
@@ -117,6 +126,10 @@ function start_docker() {
 function stop_docker() {
     local starttime
     local endtime
+
+    if [ "DOCKER_LOCAL" == "true" ]; then
+        exit 0
+    fi
 
     echo "[INFO] Stopping in container docker..."
     if [ "$DOCKER_PID" -gt 0 ] && kill -0 "$DOCKER_PID" 2> /dev/null; then
@@ -412,6 +425,9 @@ while [[ $# -gt 0 ]]; do
         -d|--docker-hub)
             DOCKER_HUB=$2
             shift
+            ;;
+        --local-docker)
+            DOCKER_LOCAL="true"
             ;;
         --armhf)
             BUILD_LIST+=("armhf")
