@@ -70,6 +70,9 @@ Options:
        Disable cache for the build (from latest).
     -d, --docker-hub <DOCKER_REPOSITORY>
        Set or overwrite the docker repository.
+    --local-docker
+       Use the host docker socket (need map to container!)
+       /var/run/docker.sock
 
   Internals:
     --addon
