@@ -178,8 +178,11 @@ function run_build() {
         if docker pull "$repository/$image:latest" > /dev/null 2>&1; then
             docker_cli+=("--cache-from" "$repository/$image:latest")
         else
+            docker_cli+=("--no-cache")
             echo "[WARN] No cache image found. Cache is disabled for build"
         fi
+    else
+        docker_cli+=("--no-cache")
     fi
 
     # do we know the arch of build?
@@ -190,7 +193,7 @@ function run_build() {
 
     # Build image
     echo "[INFO] Run build for $repository/$image:$version"
-    docker build -t "$repository/$image:$version" \
+    docker build --pull -t "$repository/$image:$version" \
         --label "io.hass.version=$version" \
         --build-arg "BUILD_FROM=$build_from" \
         --build-arg "BUILD_VERSION=$version" \
