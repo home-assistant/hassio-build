@@ -100,7 +100,7 @@ RUN apk add --no-cache \
     && rm -rf /usr/src/tinydtls \
     && git clone https://github.com/chrysn/aiocoap \
     && cd aiocoap \
-    && git reset --hard 0df6a1e44582de99ae944b6a7536d08e2a612e8f \
+    && git reset --hard 3286f48f0b949901c8b5c04c0719dc54ab63d431 \
     && pip3 install --no-cache-dir . \
     && apk del \
         git make gcc python3-dev autoconf automake musl-dev \
