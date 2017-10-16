@@ -73,6 +73,8 @@ Options:
     --local-docker
        Use the host docker socket (need map to container!)
        /var/run/docker.sock
+    --no-crossbuild-cleanup
+       Don't cleanup the crosscompile feature (for multible builds)
 
   Internals:
     --addon
