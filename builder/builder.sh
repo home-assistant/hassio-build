@@ -13,6 +13,7 @@ DOCKER_CACHE="true"
 DOCKER_LATEST="true"
 DOCKER_PUSH="true"
 DOCKER_LOCAL="false"
+CROSSBUILD_CLEANUP="true"
 GIT_REPOSITORY=""
 GIT_BRANCH="master"
 TARGET=""
@@ -73,6 +74,8 @@ Options:
     --local-docker
        Use the host docker socket (need map to container!)
        /var/run/docker.sock
+    --no-crossbuild-cleanup
+       Don't cleanup the crosscompile feature (for multible builds)
 
   Internals:
     --addon
@@ -367,6 +370,10 @@ function init_crosscompile() {
 
 
 function clean_crosscompile() {
+    if [ "$CROSSBUILD_CLEANUP" == "false" ]; then
+        echo "[INFO] Skeep crosscompiling cleanup"
+    fi
+
     echo "[INFO] Clean crosscompiling feature"
     if [ -f /proc/sys/fs/binfmt_misc ]; then
         umount /proc/sys/fs/binfmt_misc || true
@@ -431,6 +438,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         --local-docker)
             DOCKER_LOCAL="true"
+            ;;
+        --no-crossbuild-cleanup)
+            CROSSBUILD_CLEANUP="false"
             ;;
         --armhf)
             BUILD_LIST+=("armhf")
