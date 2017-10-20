@@ -138,8 +138,8 @@ RUN apk add --no-cache \
 ## Install gatttool from edge (can be removed with release of Alpine 3.7)
 RUN mkdir -p bluez-deprecated \
     && cd bluez-deprecated \
-    $$ wget http://dl-3.alpinelinux.org/alpine/edge/main/armhf/bluez-deprecated-5.47-r3.apk \
+    && curl -o bluez-deprecated-5.47-r3.apk http://dl-3.alpinelinux.org/alpine/edge/main/armhf/bluez-deprecated-5.47-r3.apk \
     && tar -xzf bluez-deprecated-5.47-r3.apk usr/bin/gatttool \
     && mv usr/bin/gatttool /usr/bin/ \
-    && cd ./../ \
-    && rm -r bluez-deprecated
+    && cd ../ \
+    && rm -fr bluez-deprecated
