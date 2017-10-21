@@ -11,11 +11,15 @@ RUN apk add --no-cache \
         libxslt-dev libxslt libxml2-dev libxml2 \
         libpng-dev libjpeg-turbo-dev tiff-dev \
     && git clone --depth 1 --branch $BUILD_VERSION https://github.com/home-assistant/home-assistant homeassistant \
+    && sed -i "s/# DTLSSocket/DTLSSocket/g" homeassistant/requirements_all.txt \
+    && sed -i "s|# https://github.com/chrysn/aiocoap|https://github.com/chrysn/aiocoap|g" homeassistant/requirements_all.txt \
     && sed -i "s/# pybluez/pybluez/g" homeassistant/requirements_all.txt \
     && sed -i "s/# bluepy/bluepy/g" homeassistant/requirements_all.txt \
+    && sed -i "s/# beacontools/beacontools/g" homeassistant/requirements_all.txt \
     && sed -i "s/# RPi.GPIO/RPi.GPIO/g" homeassistant/requirements_all.txt \
     && sed -i "s/# raspihats/raspihats/g" homeassistant/requirements_all.txt \
     && sed -i "s/# rpi-rf/rpi-rf/g" homeassistant/requirements_all.txt \
+    && sed -i "s/# blinkt/blinkt/g" homeassistant/requirements_all.txt \
     && sed -i "s/# fritzconnection/fritzconnection/g" homeassistant/requirements_all.txt \
     && sed -i "s/# pyuserinput/pyuserinput/g" homeassistant/requirements_all.txt \
     && sed -i "s/# evdev/evdev/g" homeassistant/requirements_all.txt \
