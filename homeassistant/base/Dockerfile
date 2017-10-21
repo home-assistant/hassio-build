@@ -139,30 +139,18 @@ RUN apk add --no-cache \
 ARG BUILD_ARCH
 RUN mkdir -p bluez-deprecated \
     && cd bluez-deprecated \
-    && if [ "$BUILD_ARCH" = "amd64" ]; then \
-          curl -o bluez-deprecated-5.47-r3.apk http://dl-3.alpinelinux.org/alpine/edge/main/x86_64/bluez-deprecated-5.47-r3.apk; \ 
+    && if [ "$BUILD_ARCH" = "amd64" ]; then APK_ARCH = "x86_64"; \
+       elif [ "$BUILD_ARCH" = "i386" ]; then APK_ARCH = "x86"; \
+       elif [ "$BUILD_ARCH" = "armhf" ]; then APK_ARCH = "armhf"; \
+       elif [ "$BUILD_ARCH" = "aarch64" ]; then APK_ARCH = "aarch64"; \
+       else exit 0; \ 
+    && if [ -z "$APK_ARCH"]; then cd ../; \
+            rm -fr bluez-deprecated; \ 
+            exit 0; \
+       else curl -o bluez-deprecated-5.47-r3.apk http://dl-3.alpinelinux.org/alpine/edge/main/$APK_ARCH/bluez-deprecated-5.47-r3.apk; \ 
           tar -xzf bluez-deprecated-5.47-r3.apk usr/bin/gatttool; \
           mv usr/bin/gatttool /usr/bin/; \
           cd ../; \
           rm -fr bluez-deprecated; \
-       elif [ "$BUILD_ARCH" = "i386" ]; then \
-          curl -o bluez-deprecated-5.47-r3.apk http://dl-3.alpinelinux.org/alpine/edge/main/x86/bluez-deprecated-5.47-r3.apk; \
-          tar -xzf bluez-deprecated-5.47-r3.apk usr/bin/gatttool; \
-          mv usr/bin/gatttool /usr/bin/; \
-          cd ../; \
-          rm -fr bluez-deprecated; \      
-       elif [ "$BUILD_ARCH" = "armhf" ]; then \
-          curl -o bluez-deprecated-5.47-r3.apk http://dl-3.alpinelinux.org/alpine/edge/main/armhf/bluez-deprecated-5.47-r3.apk; \
-          tar -xzf bluez-deprecated-5.47-r3.apk usr/bin/gatttool; \
-          mv usr/bin/gatttool /usr/bin/; \
-          cd ../; \
-          rm -fr bluez-deprecated; \      
-       elif [ "$BUILD_ARCH" = "aarch64" ]; then \
-          curl -o bluez-deprecated-5.47-r3.apk http://dl-3.alpinelinux.org/alpine/edge/main/aarch64/bluez-deprecated-5.47-r3.apk; \
-          tar -xzf bluez-deprecated-5.47-r3.apk usr/bin/gatttool; \
-          mv usr/bin/gatttool /usr/bin/; \
-          cd ../; \
-          rm -fr bluez-deprecated; \      
-       else cd ../; \
-            rm- fr bluez-deprecated; \ 
-            exit 0; \
+          exit 0; \
+       
