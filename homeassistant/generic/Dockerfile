@@ -35,7 +35,7 @@ RUN apk add --no-cache \
     && rm -r homeassistant
 
 # Install and update certificates
-RUN update-ca-certificates
+RUN update-ca-certificates -f
 
 # Run Home Assistant
 WORKDIR /config
