@@ -86,26 +86,6 @@ RUN git clone --depth 1 -b v2.3.0 https://github.com/openalpr/openalpr \
         git autoconf automake \
     && rm -rf /usr/src/openalpr
 
-# tinydtls / aiocoap
-RUN apk add --no-cache \
-        git make gcc python3-dev autoconf automake musl-dev \
-    && pip3 install --no-cache-dir cython \
-    && git clone --depth 1 https://git.fslab.de/jkonra2m/tinydtls \
-    && cd tinydtls \
-    && autoreconf \
-    && ./configure --with-ecc --without-debug \
-    && cd cython \
-    && python3 setup.py install \
-    && cd /usr/src \
-    && rm -rf /usr/src/tinydtls \
-    && git clone https://github.com/chrysn/aiocoap \
-    && cd aiocoap \
-    && git reset --hard 3286f48f0b949901c8b5c04c0719dc54ab63d431 \
-    && pip3 install --no-cache-dir . \
-    && apk del \
-        git make gcc python3-dev autoconf automake musl-dev \
-    && rm -rf /usr/src/aiocoap
-
 ##
 # Install component packages
 RUN apk add --no-cache \
@@ -130,6 +110,7 @@ RUN apk add --no-cache \
     && pip3 install --no-cache-dir mysqlclient psycopg2 \
     && pip3 install --no-cache-dir https://github.com/wayfair/pymssql/archive/v2.1.3.0.0.1.zip \
     && pip3 install --no-cache-dir cchardet uvloop aiodns \
+    && pip3 install --no-cache-dir cython \
     && apk del \
         mariadb-dev postgresql-dev freetds-dev \
         gcc g++ musl-dev python3-dev make
