@@ -114,18 +114,3 @@ RUN apk add --no-cache \
     && apk del \
         mariadb-dev postgresql-dev freetds-dev \
         gcc g++ musl-dev python3-dev make
-
-
-## Install gatttool from edge (can be removed with release of Alpine 3.7)
-ARG BUILD_ARCH
-RUN mkdir -p bluez-deprecated \
-    && cd bluez-deprecated \
-    && if [ "$BUILD_ARCH" = "amd64" ]; then APK_ARCH= "x86_64"; \
-       elif [ "$BUILD_ARCH" = "i386" ]; then APK_ARCH= "x86"; \
-       else APK_ARCH="$BUILD_ARCH"; fi \ 
-    && curl -so bluez-deprecated-5.47-r3.apk http://dl-3.alpinelinux.org/alpine/edge/main/$APK_ARCH/bluez-deprecated-5.47-r3.apk \ 
-    && tar -xzf bluez-deprecated-5.47-r3.apk usr/bin/gatttool \
-    && mv usr/bin/gatttool /usr/bin/ \
-    && cd ../ \
-    && rm -fr bluez-deprecated
-       
