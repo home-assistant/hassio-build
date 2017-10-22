@@ -119,8 +119,8 @@ RUN apk add --no-cache \
         readline \
     && apk add --no-cache --virtual .build-dependencies \
         gcc g++ make musl-dev consolekit dbus-dev libusb-compat-dev eudev-dev \
-	    libical-dev readline-dev glib-dev linux-headers \
-	    autoconf automake libtool \
+        libical-dev readline-dev glib-dev linux-headers \
+        autoconf automake libtool \
     && mkdir -p bluez-deprecated \
     && cd bluez-deprecated \
     && curl -so bluez-5.44.tar.gz https://www.kernel.org/pub/linux/bluetooth/bluez-5.44.tar.gz \ 
