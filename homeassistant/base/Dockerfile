@@ -116,12 +116,14 @@ RUN apk add --no-cache \
 ####
 ## Temporary Fix for Mi Flora. Remove on release of Alpine 3.7
 RUN apk add --no-cache \
-        gcc g++ make musl-dev consolekit dbus dbus-dev libusb-compat-dev eudev-dev \
-	libical-dev readline-dev glib-dev linux-headers \
-	autoconf automake libtool \
+        readline \
+    && apk add --no-cache --virtual .build-dependencies \
+        gcc g++ make musl-dev consolekit dbus-dev libusb-compat-dev eudev-dev \
+	    libical-dev readline-dev glib-dev linux-headers \
+	    autoconf automake libtool \
     && mkdir -p bluez-deprecated \
     && cd bluez-deprecated \
-    && curl -o bluez-5.44.tar.gz https://www.kernel.org/pub/linux/bluetooth/bluez-5.44.tar.gz \ 
+    && curl -so bluez-5.44.tar.gz https://www.kernel.org/pub/linux/bluetooth/bluez-5.44.tar.gz \ 
     && tar -xzf bluez-5.44.tar.gz \
     && cd bluez-5.44 \
     && ./configure \
@@ -132,7 +134,4 @@ RUN apk add --no-cache \
     && mv attrib/gatttool /usr/bin/ \
     && cd ../../ \
     && rm -fr bluez-deprecated \
-    && apk del \
-        gcc g++ make musl-dev consolekit dbus dbus-dev libusb-compat-dev eudev-dev \
-	libical-dev readline-dev glib-dev linux-headers \
-        autoconf automake libtool
+    && apk del .build-dependencies
