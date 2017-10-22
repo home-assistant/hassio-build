@@ -112,3 +112,26 @@ RUN apk add --no-cache \
     && pip3 install --no-cache-dir https://github.com/wayfair/pymssql/archive/v2.1.3.0.0.1.zip \
     && pip3 install --no-cache-dir cchardet uvloop aiodns \
     && apk del .build-dependencies
+    
+####
+## Temporary Fix for Mi Flora. Remove on release of Alpine 3.7
+RUN apk add --no-cache \
+        readline \
+    && apk add --no-cache --virtual .build-dependencies \
+        gcc g++ make musl-dev consolekit dbus-dev libusb-compat-dev eudev-dev \
+        libical-dev readline-dev glib-dev linux-headers \
+        autoconf automake libtool \
+    && mkdir -p bluez-deprecated \
+    && cd bluez-deprecated \
+    && curl -so bluez-5.44.tar.gz https://www.kernel.org/pub/linux/bluetooth/bluez-5.44.tar.gz \ 
+    && tar -xzf bluez-5.44.tar.gz \
+    && cd bluez-5.44 \
+    && ./configure \
+       --enable-deprecated \
+       --disable-systemd \
+       --enable-library \
+    && make \
+    && mv attrib/gatttool /usr/bin/ \
+    && cd ../../ \
+    && rm -fr bluez-deprecated \
+    && apk del .build-dependencies
