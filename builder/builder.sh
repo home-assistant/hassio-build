@@ -372,6 +372,7 @@ function init_crosscompile() {
 function clean_crosscompile() {
     if [ "$CROSSBUILD_CLEANUP" == "false" ]; then
         echo "[INFO] Skeep crosscompiling cleanup"
+        return 0
     fi
 
     echo "[INFO] Clean crosscompiling feature"
