@@ -33,3 +33,4 @@ curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/in
 - raspberrypi3
 - qemux86-64
 - qemux86
+- intel-nuc
