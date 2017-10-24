@@ -10,6 +10,8 @@ bash
 socat
 jq
 curl
+avahi-daemon
+dbus-daemon
 ```
 
 ## Run
