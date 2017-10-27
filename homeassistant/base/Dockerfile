@@ -114,6 +114,19 @@ RUN apk add --no-cache \
     && apk del .build-dependencies
     
 ####
+
+### Install Telldus library for TellStick
+# Couldn't find libftdi-compat in Alpine packages may be needed
+RUN apk add --no-cache --virtual .build-dependencies \
+        gcc g++ confuse cmake doxygen make git \
+    && git clone --depth 1 http://git.telldus.com/telldus.git \
+    && cd telldus/telldus-core \
+    && cmake -H. -Bbuild -DFORCE_COMPILE_FROM_TRUNK=YES \
+    && cd build \
+    && make \
+    && make install \
+    && apk del .build-dependencies \
+
 ## Temporary Fix for Mi Flora. Remove on release of Alpine 3.7
 RUN apk add --no-cache \
         readline \
