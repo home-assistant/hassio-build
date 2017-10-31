@@ -23,6 +23,20 @@ RUN apk add --no-cache \
 ## Build library
 WORKDIR /usr/src/
 
+### Install Telldus library for TellStick
+RUN apk add --no-cache \
+        confuse libftdi1 \
+    && apk add --no-cache --virtual .build-dependencies \
+        cmake build-base gcc doxygen confuse-dev argp-standalone libftdi1-dev git \
+    && git clone -b homeassistant-alpine https://github.com/bjorne/telldus.git \
+    && cd telldus/telldus-core \
+    && cmake . -DFORCE_COMPILE_FROM_TRUNK=YES \
+    && make \
+    && make install \
+    && cd ../.. \
+    && rm -rf telldus \
+    && apk del .build-dependencies
+
 # ssocr
 RUN apk add --no-cache git gcc make musl-dev imlib2-dev imlib2 \
     && git clone --depth 1 https://github.com/auerswal/ssocr \
@@ -114,19 +128,6 @@ RUN apk add --no-cache \
     && apk del .build-dependencies
     
 ####
-
-### Install Telldus library for TellStick
-# Couldn't find libftdi-compat in Alpine packages may be needed
-RUN apk add --no-cache --virtual .build-dependencies \
-        gcc g++ confuse cmake doxygen make git \
-    && git clone --depth 1 http://git.telldus.com/telldus.git \
-    && cd telldus/telldus-core \
-    && cmake -H. -Bbuild -DFORCE_COMPILE_FROM_TRUNK=YES \
-    && cd build \
-    && make \
-    && make install \
-    && apk del .build-dependencies \
-
 ## Temporary Fix for Mi Flora. Remove on release of Alpine 3.7
 RUN apk add --no-cache \
         readline \
