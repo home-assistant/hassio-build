@@ -91,14 +91,13 @@ RUN apk add --no-cache \
         confuse libftdi1 \
     && apk add --no-cache --virtual .build-dependencies \
         cmake build-base gcc doxygen confuse-dev argp-standalone libftdi1-dev git \
-    && git clone -b homeassistant-alpine https://github.com/bjorne/telldus.git \
+    && git clone -b homeassistant-alpine https://github.com/bjorne/telldus \
     && cd telldus/telldus-core \
     && cmake . -DFORCE_COMPILE_FROM_TRUNK=YES \
     && make \
     && make install \
-    && cd ../.. \
-    && rm -rf telldus \
-    && apk del .build-dependencies
+    && apk del .build-dependencies \
+    && rm -rf /usr/src/telldus
 
 ##
 # Install component packages
@@ -146,6 +145,5 @@ RUN apk add --no-cache \
        --enable-library \
     && make \
     && mv attrib/gatttool /usr/bin/ \
-    && cd ../../ \
-    && rm -fr bluez-deprecated \
-    && apk del .build-dependencies
+    && apk del .build-dependencies \
+    && rm -rf /usr/src/bluez-deprecated
