@@ -23,20 +23,6 @@ RUN apk add --no-cache \
 ## Build library
 WORKDIR /usr/src/
 
-### Install Telldus library for TellStick
-RUN apk add --no-cache \
-        confuse libftdi1 \
-    && apk add --no-cache --virtual .build-dependencies \
-        cmake build-base gcc doxygen confuse-dev argp-standalone libftdi1-dev git \
-    && git clone -b homeassistant-alpine https://github.com/bjorne/telldus.git \
-    && cd telldus/telldus-core \
-    && cmake . -DFORCE_COMPILE_FROM_TRUNK=YES \
-    && make \
-    && make install \
-    && cd ../.. \
-    && rm -rf telldus \
-    && apk del .build-dependencies
-
 # ssocr
 RUN apk add --no-cache git gcc make musl-dev imlib2-dev imlib2 \
     && git clone --depth 1 https://github.com/auerswal/ssocr \
@@ -99,6 +85,20 @@ RUN git clone --depth 1 -b v2.3.0 https://github.com/openalpr/openalpr \
         cmake ncurses make g++ tesseract-ocr-dev \
         git autoconf automake \
     && rm -rf /usr/src/openalpr
+
+### Install Telldus library for TellStick
+RUN apk add --no-cache \
+        confuse libftdi1 \
+    && apk add --no-cache --virtual .build-dependencies \
+        cmake build-base gcc doxygen confuse-dev argp-standalone libftdi1-dev git \
+    && git clone -b homeassistant-alpine https://github.com/bjorne/telldus.git \
+    && cd telldus/telldus-core \
+    && cmake . -DFORCE_COMPILE_FROM_TRUNK=YES \
+    && make \
+    && make install \
+    && cd ../.. \
+    && rm -rf telldus \
+    && apk del .build-dependencies
 
 ##
 # Install component packages
