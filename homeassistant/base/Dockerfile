@@ -91,7 +91,7 @@ RUN apk add --no-cache \
         confuse libftdi1 \
     && apk add --no-cache --virtual .build-dependencies \
         cmake build-base gcc doxygen confuse-dev argp-standalone libftdi1-dev git \
-    && git clone -b homeassistant-alpine https://github.com/bjorne/telldus \
+    && git clone -b homeassistant-alpine --depth 1 https://github.com/bjorne/telldus \
     && cd telldus/telldus-core \
     && cmake . -DBUILD_LIBTELLDUS-CORE=ON -DBUILD_TDADMIN=OFF -DBUILD_TDTOOL=OFF -DGENERATE_MAN=OFF -DFORCE_COMPILE_FROM_TRUNK=ON \
     && make \
