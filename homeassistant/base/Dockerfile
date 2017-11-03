@@ -93,7 +93,7 @@ RUN apk add --no-cache \
         cmake build-base gcc doxygen confuse-dev argp-standalone libftdi1-dev git \
     && git clone -b homeassistant-alpine https://github.com/bjorne/telldus \
     && cd telldus/telldus-core \
-    && cmake . -DFORCE_COMPILE_FROM_TRUNK=YES \
+    && cmake . -DBUILD_LIBTELLDUS-CORE=ON -DBUILD_TDADMIN=OFF -DBUILD_TDTOOL=OFF -DGENERATE_MAN=OFF -DFORCE_COMPILE_FROM_TRUNK=ON \
     && make \
     && make install \
     && apk del .build-dependencies \
@@ -111,7 +111,8 @@ RUN apk add --no-cache \
     libsodium \
     openssh-client \
     libffi \
-    glib
+    glib \
+    socat
 
 ####
 ## Install pip module for component/homeassistant
