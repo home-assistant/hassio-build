@@ -24,47 +24,49 @@ RUN apk add --no-cache \
 WORKDIR /usr/src/
 
 # ssocr
-RUN apk add --no-cache git gcc make musl-dev imlib2-dev imlib2 \
+RUN apk add --no-cache \
+        imlib2 \
+    && apk add --no-cache --virtual .build-dependencies \
+        git gcc make musl-dev imlib2-dev \
     && git clone --depth 1 https://github.com/auerswal/ssocr \
     && cd ssocr \
     && make \
     && make install \
-    && apk del git gcc make imlib2-dev musl-dev \
+    && apk del .build-dependencies \
     && rm -rf /usr/src/ssocr
 
 # OpenCV/scipy
 ENV PYTHONPATH /usr/local/lib/python3.6/site-packages
 RUN apk add --no-cache \
+        libwebp ffmpeg-libs libgfortran lapack \
+    && apk add --no-cache --virtual .build-dependencies \
         gcc g++ musl-dev python3-dev cmake make ncurses linux-headers \
-        lapack-dev lapack \
-        gfortran libgfortran \
-        ffmpeg-dev ffmpeg-libs \
-        libwebp-dev libwebp \
+        lapack-dev gfortran ffmpeg-dev libwebp-dev  \
         git libpng-dev libjpeg-turbo-dev tiff-dev \
     && pip3 install --no-cache-dir numpy scipy \
-    && git clone --depth 1 -b 3.2.0 https://github.com/opencv/opencv \
+    && git clone --depth 1 -b 3.3.1 https://github.com/opencv/opencv \
     && cd opencv \
     && mkdir -p build \
     && cd build \
     && cmake ../ -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_DOCS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF \
     && make \
     && make install \
-    && apk del \
-        gcc g++ musl-dev python3-dev lapack-dev linux-headers \
-        gfortran cmake make ncurses ffmpeg-dev \
-        git libpng-dev libjpeg-turbo-dev tiff-dev libwebp-dev \
+    && apk del .build-dependencies \
     && rm -rf /usr/src/opencv
     
 # Dlib
 RUN apk add --no-cache \
-        boost boost-python3 boost-dev \
-        cmake ncurses make g++ python3-dev \
+        boost boost-python3 \
+    && apk add --no-cache --virtual .build-dependencies \
+        boost-dev cmake ncurses make g++ python3-dev \
     && pip3 install --no-cache-dir dlib \
-    && apk del boost-dev cmake ncurses make g++ python3-dev
+    && apk del .build-dependencies
 
 # OpenALPR
 RUN apk add --no-cache \
-        cmake ncurses make g++ tesseract-ocr-dev tesseract-ocr \
+        tesseract-ocr \
+    && apk add --no-cache --virtual .build-dependencies \
+        cmake ncurses make g++ tesseract-ocr-dev \
         git autoconf automake \
     && git clone --depth 1 -b REL_1_2_0 https://github.com/log4cplus/log4cplus \
     && cd log4cplus \
@@ -81,9 +83,7 @@ RUN git clone --depth 1 -b v2.3.0 https://github.com/openalpr/openalpr \
     && cmake ../ -DWITH_TESTS=FALSE -DWITH_BINDING_JAVA=FALSE -DWITH_BINDING_PYTHON=FALSE -DWITH_BINDING_GO=FALSE -DWITH_DAEMON=FALSE -DCMAKE_INSTALL_PREFIX:PATH=/usr/local \
     && make \
     && make install \
-    && apk del \
-        cmake ncurses make g++ tesseract-ocr-dev \
-        git autoconf automake \
+    && apk del .build-dependencies \
     && rm -rf /usr/src/openalpr
 
 ### Install Telldus library for TellStick
