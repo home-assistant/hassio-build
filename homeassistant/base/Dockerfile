@@ -39,18 +39,20 @@ RUN apk add --no-cache \
 ENV PYTHONPATH /usr/local/lib/python3.6/site-packages
 RUN apk add --no-cache \
         libwebp ffmpeg-libs libgfortran libdc1394 jasper-libs zlib \
-        protobuf \
+        lapack \
     && apk add --no-cache --virtual .build-dependencies \
         gcc g++ musl-dev python3-dev cmake make ncurses linux-headers \
-        gfortran ffmpeg-dev libwebp-dev \
+        gfortran ffmpeg-dev libwebp-dev lapack-dev \
         git libpng-dev libjpeg-turbo-dev tiff-dev \
-        jasper-dev libdc1394-dev zlib-dev protobuf-dev \
+        jasper-dev libdc1394-dev zlib-dev \
     && pip3 install --no-cache-dir numpy scipy \
     && git clone --depth 1 -b 3.3.1 https://github.com/opencv/opencv \
     && cd opencv \
     && mkdir -p build \
     && cd build \
-    && cmake .. -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_DOCS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF \
+    && cmake .. -DCMAKE_BUILD_TYPE=Release \
+        -DWITH_LAPACK=OFF -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF \
+        -DBUILD_DOCS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF \
     && make \
     && make install \
     && apk del .build-dependencies \
