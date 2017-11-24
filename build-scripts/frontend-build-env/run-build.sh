@@ -16,6 +16,8 @@ npm install -g gulp-cli
 gulp hassio-panel hassio-panel-es5
 
 # prepare data
+mkdir -p ../hassio/panel
+
 cp -f build-temp/hassio-main.html ../hassio/panel/hassio-main-latest.html
 gzip -f -k -9 ../hassio/panel/hassio-main-latest.html
 
