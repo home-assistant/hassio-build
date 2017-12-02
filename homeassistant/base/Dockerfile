@@ -130,7 +130,6 @@ RUN apk add --no-cache \
     && pip3 install --no-cache-dir cython \
     && pip3 install --no-cache-dir mysqlclient psycopg2 \
     && pip3 install --no-cache-dir https://github.com/wayfair/pymssql/archive/v2.1.3.0.0.1.zip \
-    && pip3 install --no-cache-dir cchardet uvloop aiodns \
     && apk del .build-dependencies
     
 ####
