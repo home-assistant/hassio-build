@@ -1,4 +1,4 @@
-FROM arm64v8/alpine:3.6
+FROM arm64v8/alpine:3.7
 
 COPY qemu-aarch64-static /usr/bin/qemu-aarch64-static
 COPY entry.sh /usr/bin/entry.sh
