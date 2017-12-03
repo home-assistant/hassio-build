@@ -1,4 +1,4 @@
-FROM i386/alpine:3.6
+FROM i386/alpine:3.7
 
 COPY entry.sh /usr/bin/entry.sh
 
