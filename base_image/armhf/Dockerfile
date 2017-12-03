@@ -1,4 +1,4 @@
-FROM arm32v6/alpine:3.6
+FROM arm32v6/alpine:3.7
 
 COPY qemu-arm-static /usr/bin/qemu-arm-static
 COPY entry.sh /usr/bin/entry.sh
