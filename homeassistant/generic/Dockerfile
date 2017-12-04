@@ -11,8 +11,7 @@ RUN apk add --no-cache \
         libxml2-dev libxslt-dev libpng-dev libjpeg-turbo-dev tiff-dev \
         autoconf automake \
     && git clone --depth 1 --branch $BUILD_VERSION https://github.com/home-assistant/home-assistant homeassistant \
-    && sed -i "s|# DTLSSocket|DTLSSocket|g" homeassistant/requirements_all.txt \
-    && sed -i "s|# https://github.com/chrysn/aiocoap|https://github.com/chrysn/aiocoap|g" homeassistant/requirements_all.txt \
+    && sed -i "s|# pytradfri|pytradfri|g" homeassistant/requirements_all.txt \
     && sed -i "s|# pybluez|pybluez|g" homeassistant/requirements_all.txt \
     && sed -i "s|# bluepy|bluepy|g" homeassistant/requirements_all.txt \
     && sed -i "s|# beacontools|beacontools|g" homeassistant/requirements_all.txt \
