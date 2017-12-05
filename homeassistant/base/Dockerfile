@@ -72,7 +72,7 @@ RUN apk add --no-cache \
     && apk add --no-cache --virtual .build-dependencies \
         cmake ncurses make g++ tesseract-ocr-dev \
         git autoconf automake \
-    && git clone --depth 1 -b REL_1_2_0 https://github.com/log4cplus/log4cplus \
+    && git clone --depth 1 -b REL_1_2_1 https://github.com/log4cplus/log4cplus \
     && cd log4cplus \
     && ./configure \
     && sed -i "s/1\.14/1.15/g" aclocal.m4 \
