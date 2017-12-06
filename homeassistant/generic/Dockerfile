@@ -31,9 +31,6 @@ RUN apk add --no-cache \
     && apk del .build-dependencies \
     && rm -r homeassistant
 
-# Install and update certificates
-RUN update-ca-certificates -f
-
 # Run Home Assistant
 WORKDIR /config
 CMD [ "python3", "-m", "homeassistant", "--config", "/config" ]
