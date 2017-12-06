@@ -27,7 +27,7 @@ RUN apk add --no-cache \
     && sed -i "s|# python-eq3bt|python-eq3bt|g" homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir ./homeassistant \
-    && pip3 install --no-cache-dir --upgrade cchardet uvloop aiodns \
+    && pip3 install --no-cache-dir --upgrade cchardet uvloop aiodns brotlipy \
     && apk del .build-dependencies \
     && rm -r homeassistant
 
