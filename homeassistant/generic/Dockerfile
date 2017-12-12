@@ -9,7 +9,7 @@ RUN apk add --no-cache \
         gcc g++ python3-dev musl-dev cmake make git linux-headers \
         bluez-dev libffi-dev libressl-dev glib-dev eudev-dev \
         libxml2-dev libxslt-dev libpng-dev libjpeg-turbo-dev tiff-dev \
-        autoconf automake file \
+        autoconf automake \
     && git clone --depth 1 --branch $BUILD_VERSION https://github.com/home-assistant/home-assistant homeassistant \
     && sed -i "s|# pytradfri|pytradfri|g" homeassistant/requirements_all.txt \
     && sed -i "s|# pybluez|pybluez|g" homeassistant/requirements_all.txt \
