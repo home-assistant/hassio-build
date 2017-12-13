@@ -245,7 +245,7 @@ function build_addon() {
     # Read addon build.json
     if [ -f "$TARGET/build.json" ]; then
         build_from="$(jq --raw-output ".build_from.$build_arch // empty" "$TARGET/build.json")"
-        args="(jq --raw-output '.args // empty | keys[]' "$TARGET/build.json")"
+        args="$(jq --raw-output '.args // empty | keys[]' "$TARGET/build.json")"
     fi
 
     # Set defaults build things
@@ -256,7 +256,7 @@ function build_addon() {
     # Additional build args
     if [ ! -z "$args" ]; then
         for arg in $args; do
-            value="(jq --raw-output ".args.$arg // empty" "$TARGET/build.json")"
+            value="$(jq --raw-output ".args.$arg" "$TARGET/build.json")"
             docker_cli+=("--build-arg" "$arg=$value")
         done
     fi
