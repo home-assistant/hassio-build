@@ -113,6 +113,7 @@ RUN apk add --no-cache \
     libcec \
     net-tools \
     bluez \
+    bluez-deprecated \
     curl \
     libsodium \
     openssh-client \
