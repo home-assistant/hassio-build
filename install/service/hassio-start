@@ -9,8 +9,8 @@ runSupervisor() {
     docker run --name hassio_supervisor \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v /var/run/hassio-hc.sock:/var/run/hassio-hc.sock \
+        -v /var/run/dbus:/var/run/dbus \
         -v %%DATA_SHARE%%:/data \
-        -v /var/log/supervisor-log:/var/log \
         -e SUPERVISOR_SHARE=%%DATA_SHARE%% \
         -e SUPERVISOR_NAME=hassio_supervisor \
         -e HOMEASSISTANT_REPOSITORY=%%HOMEASSISTANT_IMAGE%% \
