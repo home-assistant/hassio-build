@@ -12,6 +12,7 @@ DOCKER_HUB=""
 DOCKER_CACHE="true"
 DOCKER_LATEST="true"
 DOCKER_PUSH="true"
+DOCKER_LOGIN="false"
 DOCKER_LOCAL="false"
 CROSSBUILD_CLEANUP="true"
 GIT_REPOSITORY=""
@@ -71,11 +72,13 @@ Options:
        Disable cache for the build (from latest).
     -d, --docker-hub <DOCKER_REPOSITORY>
        Set or overwrite the docker repository.
-    --local-docker
-       Use the host docker socket (need map to container!)
-       /var/run/docker.sock
+    --docker-login
+       Login into docker hub on startup (need `-ti` docker opts)
     --no-crossbuild-cleanup
        Don't cleanup the crosscompile feature (for multible builds)
+
+    Use the host docker socket if mapped into container:
+       /var/run/docker.sock
 
   Internals:
     --addon
@@ -101,8 +104,9 @@ function start_docker() {
     local starttime
     local endtime
 
-    if [ "$DOCKER_LOCAL" == "true" ]; then
+    if [ -f "/var/run/docker.sock" ]; then
         echo "[INFO] Use host docker setup with '/var/run/docker.sock'"
+        DOCKER_LOCAL="true"
         return 0
     fi
 
@@ -123,6 +127,10 @@ function start_docker() {
         fi
     done
     echo "[INFO] Docker was initialized"
+    
+    if [ "$DOCKER_LOGIN" == "true" ]; then
+        docker login
+    fi
 }
 
 
@@ -447,8 +455,8 @@ while [[ $# -gt 0 ]]; do
             DOCKER_HUB=$2
             shift
             ;;
-        --local-docker)
-            DOCKER_LOCAL="true"
+        --docker-login)
+            DOCKER_LOGIN="true"
             ;;
         --no-crossbuild-cleanup)
             CROSSBUILD_CLEANUP="false"
