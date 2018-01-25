@@ -371,7 +371,7 @@ function extract_machine_build() {
     local list=$1
     
     if [ "$list" != "ALL" ]; then
-        IFS="," read -a BUILD_MACHINE <<<"$list"
+        IFS="," read -ra BUILD_MACHINE <<<"$list"
     fi
 }
 
