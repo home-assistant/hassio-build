@@ -73,7 +73,7 @@ Options:
     -d, --docker-hub <DOCKER_REPOSITORY>
        Set or overwrite the docker repository.
     --docker-login
-       Login into docker hub on startup (need `-ti` docker opts)
+       Login into docker hub on startup (need '-ti' docker opts)
     --no-crossbuild-cleanup
        Don't cleanup the crosscompile feature (for multible builds)
 
