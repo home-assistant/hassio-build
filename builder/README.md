@@ -12,6 +12,11 @@ armhf:
 $ docker pull homeassistant/armhf-builder
 ```
 
+aarch64:
+```bash
+$ docker pull homeassistant/aarch64-builder
+```
+
 ## Run
 
 GIT repository:
