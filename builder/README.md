@@ -27,6 +27,6 @@ docker run --rm --privileged -v ~/.docker:/root/.docker -v /my_addon:/data homea
 ## Help
 
 ```bash
-$ docker run --rm --privileged -v ~/.docker:/root/.docker homeassistant/amd64-builder --help
+$ docker run --rm --privileged homeassistant/amd64-builder --help
 ```
 
