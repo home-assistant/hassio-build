@@ -34,3 +34,19 @@ if [ "$1" == "push" ]; then
     docker push "homeassistant/armhf-builder:$TAG"
     docker push "homeassistant/armhf-builder:latest"
 fi
+
+# Create aarch64-builder
+docker build -t "homeassistant/aarch64-builder:$TAG" \
+    --build-arg "BUILD_FROM=multiarch/ubuntu-core:arm64-xenial" \
+    --build-arg "BUILD_ARCH=aarch64" \
+    --label "io.hass.version=$TAG" \
+    --label "io.hass.type=builder" \
+    --label "io.hass.arch=aarch64" \
+    .
+
+docker tag "homeassistant/aarch64-builder:$TAG" "homeassistant/aarch64-builder:latest"
+
+if [ "$1" == "push" ]; then
+    docker push "homeassistant/aarch64-builder:$TAG"
+    docker push "homeassistant/aarch64-builder:latest"
+fi
