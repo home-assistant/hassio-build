@@ -17,10 +17,7 @@ RUN apk add --no-cache \
         libjpeg-turbo \
         libressl \
         musl \
-        tini \
     && ln -s /usr/include/locale.h /usr/include/xlocale.h
-
-ENTRYPOINT ["/sbin/tini", "--"]
 
 ####
 ## Build library
