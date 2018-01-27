@@ -75,7 +75,6 @@ RUN apk add --no-cache \
     && git clone --depth 1 -b REL_1_2_0 https://github.com/log4cplus/log4cplus \
     && cd log4cplus \
     && autoreconf -f -i \
-    && sed -i "s|wait \$am_sleep_pid 2>/dev/null|echo -n \"test\"|" configure \
     && ./configure --with-working-locale \
     && make \
     && make install \
