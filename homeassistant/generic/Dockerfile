@@ -4,7 +4,7 @@ FROM $BUILD_FROM
 ## Install Home Assistant
 ARG BUILD_VERSION
 RUN apk add --no-cache \
-        bluez-libs eudev-libs libxslt libxml2 bash \
+        bluez-libs eudev-libs libxslt libxml2 \
     && apk add --no-cache --virtual .build-dependencies \
         gcc g++ python3-dev musl-dev cmake make git linux-headers \
         bluez-dev libffi-dev libressl-dev glib-dev eudev-dev \
