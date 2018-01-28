@@ -12,6 +12,7 @@ function build_base {
     docker tag "homeassistant/$arch-base:$VERSION" "homeassistant/$arch-base:latest"
     docker push "homeassistant/$arch-base:$VERSION"
     docker push "homeassistant/$arch-base:latest"
+    cd ..
 }
 
 build_base "armhf"
