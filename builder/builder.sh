@@ -82,7 +82,7 @@ Options:
 
   Internals:
     --addon
-        Default on. Run all things for a addon build.
+        Default on. Run all things for an addon build.
     --base
         Build our base images.
     --supervisor
@@ -509,9 +509,9 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
-# Check if a architecture is available
+# Check if an architecture is available
 if [ "${#BUILD_LIST[@]}" -eq 0 ] && [ "$BUILD_TYPE" != "homeassistant-machine" ]; then
-    echo "[ERROR] You need select a architecture for build!"
+    echo "[ERROR] You need select an architecture for build!"
     exit 1
 fi
 
