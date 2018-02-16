@@ -123,10 +123,10 @@ RUN apk add --no-cache \
 ####
 ## Install pip module for component/homeassistant
 RUN apk add --no-cache \
-        mariadb-client-libs postgresql-libs freetds \
+        mariadb-client-libs postgresql-libs freetds libffi \
     && apk add --no-cache --virtual .build-dependencies \
         gcc g++ musl-dev python3-dev make \
-        mariadb-dev postgresql-dev freetds-dev \
+        mariadb-dev postgresql-dev freetds-dev libffi-dev \
     && pip3 install --no-cache-dir cython \
     && pip3 install --no-cache-dir mysqlclient psycopg2 \
     && pip3 install --no-cache-dir https://github.com/wayfair/pymssql/archive/v2.1.3.0.0.1.zip \
