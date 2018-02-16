@@ -5,6 +5,7 @@ FROM $BUILD_FROM
 ARG BUILD_VERSION
 RUN apk add --no-cache \
         bluez-libs eudev-libs libxslt libxml2 cups-libs \
+        libffi libressl \
     && apk add --no-cache --virtual .build-dependencies \
         gcc g++ python3-dev musl-dev cmake make git linux-headers \
         bluez-dev libffi-dev libressl-dev glib-dev eudev-dev \
