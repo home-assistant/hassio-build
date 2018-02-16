@@ -5,7 +5,7 @@ Beside the usage of the images it's also possible to run Hass.io on a generic sy
 ## Requirements
 
 ```
-docker.io
+docker.ce
 bash
 socat
 jq
