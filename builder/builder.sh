@@ -549,7 +549,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check if an architecture is available
-if [ "${#BUILD_LIST[@]}" -eq 0 ] && [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
+if [ "${#BUILD_LIST[@]}" -eq 0 ] && ! [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
     echo "[ERROR] You need select an architecture for build!"
     exit 1
 fi
