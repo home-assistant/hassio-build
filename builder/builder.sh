@@ -23,7 +23,7 @@ IMAGE=""
 BUILD_LIST=()
 BUILD_TYPE="addon"
 BUILD_TASKS=()
-BUILD_MACHINE=('raspberrypi' 'raspberrypi2' 'raspberrypi3' 'intel-nuc' 'qemux86-64' 'qemux86')
+BUILD_MACHINE=('raspberrypi' 'raspberrypi2' 'raspberrypi3' 'intel-nuc' 'qemux86-64' 'qemux86' 'qemuarm' 'qemuarm-64')
 
 
 #### Misc functions ####
@@ -31,7 +31,7 @@ BUILD_MACHINE=('raspberrypi' 'raspberrypi2' 'raspberrypi3' 'intel-nuc' 'qemux86-
 function print_help() {
     cat << EOF
 Hass.io build-env for ecosystem:
-docker run --rm homeassistant/build-env:latest [options]
+docker run --rm homeassistant/{arch}-builder:latest [options]
 
 Options:
   -h, --help
@@ -91,6 +91,8 @@ Options:
         Build a Home-Assistant base image.
     --homeassistant <VERSION>
         Build the generic release for a Home-Assistant.
+    --homeassisant-landingpage
+        Build the landingpage for machines.
     --homeassistant-machine <VERSION=ALL,X,Y>
         Build the machine based image for a release.
 EOF
@@ -181,6 +183,7 @@ function run_build() {
     if [ ! -z "$VERSION" ]; then version="$VERSION"; fi
 
     # Replace {arch} with build arch for image
+    # shellcheck disable=SC1117
     image="$(echo "$image" | sed -r "s/\{arch\}/$build_arch/g")"
 
     # Init Cache
@@ -366,6 +369,34 @@ function build_homeassistant_machine() {
 }
 
 
+function build_homeassistant_landingpage() {
+    local build_machine=$1
+
+    local build_arch=""
+    local image="${build_machine}-homeassistant"
+    local docker_cli=()
+
+    # Lookup Archs
+    if [[ "$build_machine" =~ ^(raspberry.*|.*arm)$ ]]; then
+        build_arch="armhf"
+    elif [[ "$build_machine" =~ ^(.*x86-64|intel-nuc)$ ]]; then
+        build_arch="amd64"
+    elif [[ "$build_machine" =~ ^(.*x86)$ ]]; then
+        build_arch="i386"
+    elif [[ "$build_machine" =~ ^(.*arm-64)$ ]]; then
+        build_arch="aarch64"
+    fi
+    local build_from="homeassistant/${build_arch}-base:latest"
+
+    # Set labels
+    docker_cli+=("--label" "io.hass.machine=$build_machine")
+    docker_cli+=("--label" "io.hass.type=landingpage")
+
+    # Start build
+    run_build "$TARGET" "$DOCKER_HUB" "$image" "$VERSION" \
+        "$build_from" "$build_arch" docker_cli[@]
+}
+
 
 function extract_machine_build() {
     local list=$1
@@ -494,6 +525,14 @@ while [[ $# -gt 0 ]]; do
             VERSION=$2
             shift
             ;;
+        --homeassistant-landingpage)
+            BUILD_TYPE="homeassistant-landingpage"
+            DOCKER_CACHE="false"
+            DOCKER_LATEST="false"
+            VERSION="landingpage"
+            extract_machine_build "$2"
+            shift
+            ;;
         --homeassistant-machine)
             BUILD_TYPE="homeassistant-machine"
             DOCKER_CACHE="false"
@@ -510,7 +549,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check if an architecture is available
-if [ "${#BUILD_LIST[@]}" -eq 0 ] && [ "$BUILD_TYPE" != "homeassistant-machine" ]; then
+if [ "${#BUILD_LIST[@]}" -eq 0 ] && [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
     echo "[ERROR] You need select an architecture for build!"
     exit 1
 fi
@@ -553,10 +592,14 @@ for arch in "${BUILD_LIST[@]}"; do
 done
 
 # Select machine build
-if [ "$BUILD_TYPE" == "homeassistant-machine" ]; then
+if [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
     echo "[INFO] Machine builds: ${BUILD_MACHINE[*]}"
     for machine in "${BUILD_MACHINE[@]}"; do
-        (build_homeassistant_machine "$machine") &
+        if [ "$BUILD_TYPE" == "homeassistant-machine" ]; then
+            (build_homeassistant_machine "$machine") &
+        elif [ "$BUILD_TYPE" == "homeassistant-machine" ]; then
+            (build_homeassistant_landingpage "$machine") &
+        fi
         BUILD_TASKS+=($!)
     done
 fi
