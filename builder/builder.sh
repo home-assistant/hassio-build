@@ -597,7 +597,7 @@ if [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
     for machine in "${BUILD_MACHINE[@]}"; do
         if [ "$BUILD_TYPE" == "homeassistant-machine" ]; then
             (build_homeassistant_machine "$machine") &
-        elif [ "$BUILD_TYPE" == "homeassistant-machine" ]; then
+        elif [ "$BUILD_TYPE" == "homeassistant-landingpage" ]; then
             (build_homeassistant_landingpage "$machine") &
         fi
         BUILD_TASKS+=($!)
