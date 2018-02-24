@@ -394,7 +394,7 @@ function build_homeassistant_landingpage() {
 
     # Start build
     run_build "$TARGET" "$DOCKER_HUB" "$image" "$VERSION" \
-        "$build_from" "" docker_cli[@]
+        "$build_from" "$build_arch" docker_cli[@]
 }
 
 
