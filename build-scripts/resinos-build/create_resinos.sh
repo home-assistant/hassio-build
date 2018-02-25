@@ -113,7 +113,7 @@ if [ "${COMPRESSED}" == 'true' ]; then
 		(cd $BUILD_DEPLOY_DIR && tar --remove-files  --use-compress-program pigz --directory=$DEPLOY_ARTIFACT -cvf ${DEPLOY_ARTIFACT}.tar.gz .)
 	else
 		 mv $BUILD_DEPLOY_DIR/$DEPLOY_ARTIFACT $BUILD_DEPLOY_DIR/resin.img
-		(cd $BUILD_DEPLOY_DIR && bzip2 resin.img)
+		(cd $BUILD_DEPLOY_DIR && xz --threads=0 resin.img)
 	fi
 fi
 if [ -f $(readlink --canonicalize $WORKSPACE/build/tmp/deploy/images/$MACHINE/resin-image-$MACHINE.resinhup-tar) ]; then
@@ -141,7 +141,7 @@ else
 fi
 
 # move image into script dir
-cp "$BUILD_DEPLOY_DIR/resin.img.bz2" "$SCRIPTPATH/resinos-hassio-$RESINOS_HASSIO_VERSION-$NAME.img.bz2"
+cp "$BUILD_DEPLOY_DIR/resin.img.xz" "$SCRIPTPATH/resinos-hassio-$RESINOS_HASSIO_VERSION-$NAME.img.xz"
 
 # Cleanup the build directory
 # Keep this after writing all artifacts
