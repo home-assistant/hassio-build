@@ -27,7 +27,7 @@ RUN apk add --no-cache \
     && sed -i "s|# i2csense|i2csense|g" homeassistant/requirements_all.txt \
     && sed -i "s|# python-eq3bt|python-eq3bt|g" homeassistant/requirements_all.txt \
     && sed -i "s|# pycups|pycups|g" homeassistant/requirements_all.txt \
-    && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt \
+    && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt -c homeassistant/package_constraints.txt \
     && pip3 install --no-cache-dir ./homeassistant \
     && apk del .build-dependencies \
     && rm -r homeassistant
