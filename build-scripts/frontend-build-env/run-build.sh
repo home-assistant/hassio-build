@@ -16,10 +16,10 @@ npm install -g gulp-cli
 gulp hassio-es5
 
 # prepare data
-mkdir -p ../hassio/panel
+mkdir -p ../hassio/api/panel
 
-cp -f build-hassio/index.html ../hassio/panel/index.html
-gzip -f -k -9 ../hassio/panel/index.html
+cp -f build-hassio/index.html ../hassio/api/panel/index.html
+gzip -f -k -9 ../hassio/api/panel/index.html
 
-cp -f build-hassio/hassio-app.html ../hassio/panel/hassio-app.html
-gzip -f -k -9 ../hassio/panel/hassio-app.html
+cp -f build-hassio/hassio-app.html ../hassio/api/panel/hassio-app.html
+gzip -f -k -9 ../hassio/api/panel/hassio-app.html
