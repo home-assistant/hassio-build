@@ -81,7 +81,7 @@ def main():
     latest_build = args.version
     while True:
         for release in get_releases(latest_build):
-            run_build(args.builder, args.architectures, args.machines, release):
+            run_build(args.builder, args.architectures, args.machines, release)
             latest_build = release
             logging.info("Build of release %s done", release)
 
