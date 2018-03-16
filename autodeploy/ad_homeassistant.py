@@ -19,6 +19,9 @@ def parse_args():
         description="Automat deploying of Home-Assistant containers."
     )
     parser.add_argument(
+        "--builder-arch", dest='builder', required=True,
+        help="Builder arch to use for builds")
+    parser.add_argument(
         "--latest-build", dest='version', required=True,
         help="Version of latest build")
     parser.add_argument(
@@ -39,9 +42,12 @@ def get_releases(until=None):
         yield tag
 
 
-def run_build(architectures, version):
+def run_build(builder, architectures, version):
     """Run Build."""
-    command = f"docker run --rm --privileged -v ~/.docker:/root/.docker -v /var/run/docker.sock:/var/run/docker.sock homeassistant/{ARCH}-builder -r https://github.com/home-assistant/hassio-build -t homeassistant/generic --docker-hub homeassistant --{architectures.join(' --')} --homeassistant {version}"
+    command = (f"docker run --rm --privileged -v ~/.docker:/root/.docker "
+               f"-v /var/run/docker.sock:/var/run/docker.sock homeassistant/{builder}-builder "
+               f"-r https://github.com/home-assistant/hassio-build -t homeassistant/generic "
+               f"--docker-hub homeassistant --{architectures.join(' --')} --homeassistant {version}")
 
 
 def main():
@@ -51,7 +57,7 @@ def main():
     latest_build = args.version
     while True:
         for release in get_releases(latest_build):
-            run_build(args.architectures, release):
+            run_build(args.builder, args.architectures, release):
             latest_build = release
 
         # Wait 10 min before
