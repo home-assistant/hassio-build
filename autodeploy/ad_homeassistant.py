@@ -2,7 +2,6 @@
 import argparse
 import logging
 import subprocess
-import shlex
 import time
 
 import requests
@@ -49,8 +48,7 @@ def get_releases(until=None):
 
 def run_build(builder, architectures, machines, version):
     """Run Build."""
-    generic = ("/usr/bin/docker run --rm --privileged "
-               "-v ~/.docker:/root/.docker "
+    generic = ("docker run --rm --privileged -v ~/.docker:/root/.docker "
                "-v /var/run/docker.sock:/var/run/docker.sock "
                "homeassistant/{}-builder "
                "-r https://github.com/home-assistant/hassio-build "
@@ -58,8 +56,7 @@ def run_build(builder, architectures, machines, version):
                "--{} --homeassistant {}").format(
                    builder, " --".join(architectures), version)
 
-    machine = ("/usr/bin/docker run --rm --privileged "
-               "-v ~/.docker:/root/.docker "
+    machine = ("docker run --rm --privileged -v ~/.docker:/root/.docker "
                "-v /var/run/docker.sock:/var/run/docker.sock "
                "homeassistant/{}-builder "
                "-r https://github.com/home-assistant/hassio-build "
@@ -69,12 +66,20 @@ def run_build(builder, architectures, machines, version):
 
     logging.info("Start generic build of %s", version)
     run_generic = subprocess.run(
-        shlex.split(generic), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        generic, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    # Write log
+    with open("generic-{}.log".format(version), "w") as logfile:
+        logfile.write("{}\n{}".format(run_generic.stdout, run_generic.stderr))
     run_generic.check_returncode()
 
     logging.info("Start generic machine of %s", version)
     run_machine = subprocess.run(
-        shlex.split(machine), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        machine, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    # Write log
+    with open("machine-{}.log".format(version), "w") as logfile:
+        logfile.write("{}\n{}".format(run_machine.stdout, run_machine.stderr))
     run_machine.check_returncode()
 
 
