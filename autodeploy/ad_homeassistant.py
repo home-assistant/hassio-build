@@ -55,7 +55,7 @@ def run_build(builder, architectures, machines, version):
                "-r https://github.com/home-assistant/hassio-build "
                "-t homeassistant/generic --docker-hub homeassistant "
                "--{} --homeassistant {}").format(
-                   builder, architectures.join(" --"), version)
+                   builder, " --".join(architectures), version)
 
     machine = ("docker run --rm --privileged -v ~/.docker:/root/.docker "
                "-v /var/run/docker.sock:/var/run/docker.sock "
