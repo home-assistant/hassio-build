@@ -3,12 +3,11 @@ import argparse
 import logging
 from pathlib import Path
 import subprocess
+import shlex
 import time
 
 import requests
 
-
-DATA_STORE = Path('build.db')
 RELEASE_URL = \
     'https://api.github.com/repos/home-assistant/home-assistant/releases'
 
@@ -27,6 +26,9 @@ def parse_args():
     parser.add_argument(
         "--arch", action='append', dest='architectures', required=True,
         help="Run build for this architecture")
+    parser.add_argument(
+        "--machines", dest='machines', required=True,
+        help="Run machine build for this")
 
     return parser.parse_args()
 
@@ -42,12 +44,25 @@ def get_releases(until=None):
         yield tag
 
 
-def run_build(builder, architectures, version):
+def run_build(builder, architectures, machine, version):
     """Run Build."""
-    command = (f"docker run --rm --privileged -v ~/.docker:/root/.docker "
+    generic = (f"docker run --rm --privileged -v ~/.docker:/root/.docker "
                f"-v /var/run/docker.sock:/var/run/docker.sock homeassistant/{builder}-builder "
                f"-r https://github.com/home-assistant/hassio-build -t homeassistant/generic "
                f"--docker-hub homeassistant --{architectures.join(' --')} --homeassistant {version}")
+
+    machine = (f"docker run --rm --privileged -v ~/.docker:/root/.docker "
+               f"-v /var/run/docker.sock:/var/run/docker.sock homeassistant/{builder}-builder "
+               f"-r https://github.com/home-assistant/hassio-build -t homeassistant/machine "
+               f"--docker-hub homeassistant --homeassistant-machine {version}={machines}")
+
+    logging.info("Start generic build of %s", version)
+    run_generic = subprocess.run(shlex.split(generic), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    run_generic.check_returncode()
+
+    logging.info("Start generic machine of %s", version)
+    run_machine = subprocess.run(shlex.split(machine), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    run_machine.check_returncode()
 
 
 def main():
@@ -57,8 +72,9 @@ def main():
     latest_build = args.version
     while True:
         for release in get_releases(latest_build):
-            run_build(args.builder, args.architectures, release):
+            run_build(args.builder, args.architectures, args.machines, release):
             latest_build = release
+            logging.info("Build of release %s done", release)
 
         # Wait 10 min before
         time.sleep(600)
