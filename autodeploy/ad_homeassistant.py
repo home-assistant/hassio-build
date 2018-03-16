@@ -37,8 +37,8 @@ def get_releases(until=None):
     try:
         release_data = requests.get(RELEASE_URL).json()
     except requests.exceptions.RequestException:
-        logging.exceptions("Can't read releases")
-        return []
+        logging.exception("Can't read releases")
+        release_data = []
 
     for row in release_data:
         tag = row['tag_name']
@@ -47,21 +47,23 @@ def get_releases(until=None):
         yield tag
 
 
-def run_build(builder, architectures, machine, version):
+def run_build(builder, architectures, machines, version):
     """Run Build."""
-    generic = (f"docker run --rm --privileged -v ~/.docker:/root/.docker "
-               f"-v /var/run/docker.sock:/var/run/docker.sock "
-               f"homeassistant/{builder}-builder "
-               f"-r https://github.com/home-assistant/hassio-build "
-               f"-t homeassistant/generic --docker-hub homeassistant "
-               f"--{architectures.join(' --')} --homeassistant {version}")
+    generic = ("docker run --rm --privileged -v ~/.docker:/root/.docker "
+               "-v /var/run/docker.sock:/var/run/docker.sock "
+               "homeassistant/{}-builder "
+               "-r https://github.com/home-assistant/hassio-build "
+               "-t homeassistant/generic --docker-hub homeassistant "
+               "--{} --homeassistant {}").format(
+                   builder, architectures.join(" --"), version)
 
-    machine = (f"docker run --rm --privileged -v ~/.docker:/root/.docker "
-               f"-v /var/run/docker.sock:/var/run/docker.sock "
-               f"homeassistant/{builder}-builder "
-               f"-r https://github.com/home-assistant/hassio-build "
-               f"-t homeassistant/machine --docker-hub homeassistant "
-               f"--homeassistant-machine {version}={machines}")
+    machine = ("docker run --rm --privileged -v ~/.docker:/root/.docker "
+               "-v /var/run/docker.sock:/var/run/docker.sock "
+               "homeassistant/{}-builder "
+               "-r https://github.com/home-assistant/hassio-build "
+               "-t homeassistant/machine --docker-hub homeassistant "
+               "--homeassistant-machine {}={}").format(
+                   builder, version, machines)
 
     logging.info("Start generic build of %s", version)
     run_generic = subprocess.run(
@@ -90,6 +92,8 @@ def main():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+
     try:
         logging.info("Start Build System")
         main()
