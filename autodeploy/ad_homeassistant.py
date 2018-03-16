@@ -49,7 +49,8 @@ def get_releases(until=None):
 
 def run_build(builder, architectures, machines, version):
     """Run Build."""
-    generic = ("docker run --rm --privileged -v ~/.docker:/root/.docker "
+    generic = ("/usr/bin/docker run --rm --privileged "
+               "-v ~/.docker:/root/.docker "
                "-v /var/run/docker.sock:/var/run/docker.sock "
                "homeassistant/{}-builder "
                "-r https://github.com/home-assistant/hassio-build "
@@ -57,7 +58,8 @@ def run_build(builder, architectures, machines, version):
                "--{} --homeassistant {}").format(
                    builder, " --".join(architectures), version)
 
-    machine = ("docker run --rm --privileged -v ~/.docker:/root/.docker "
+    machine = ("/usr/bin/docker run --rm --privileged "
+               "-v ~/.docker:/root/.docker "
                "-v /var/run/docker.sock:/var/run/docker.sock "
                "homeassistant/{}-builder "
                "-r https://github.com/home-assistant/hassio-build "
