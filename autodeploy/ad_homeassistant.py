@@ -1,7 +1,6 @@
 """Automatic deploy Home-Assistant container."""
 import argparse
 import logging
-from pathlib import Path
 import subprocess
 import shlex
 import time
@@ -35,7 +34,11 @@ def parse_args():
 
 def get_releases(until=None):
     """Read releases into list."""
-    release_data = requests.get(RELEASE_URL).json()
+    try:
+        release_data = requests.get(RELEASE_URL).json()
+    except requests.exceptions.RequestException:
+        logging.exceptions("Can't read releases")
+        return []
 
     for row in release_data:
         tag = row['tag_name']
