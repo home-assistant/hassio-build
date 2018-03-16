@@ -41,7 +41,7 @@ def get_releases(until=None):
 
 def run_build(architectures, version):
     """Run Build."""
-    pass
+    command = f"docker run --rm --privileged -v ~/.docker:/root/.docker -v /var/run/docker.sock:/var/run/docker.sock homeassistant/{ARCH}-builder -r https://github.com/home-assistant/hassio-build -t homeassistant/generic --docker-hub homeassistant --{architectures.join(' --')} --homeassistant {version}"
 
 
 def main():
@@ -51,7 +51,8 @@ def main():
     latest_build = args.version
     while True:
         for release in get_releases(latest_build):
-            run_build(args.architecture, release)
+            run_build(args.architectures, release):
+            latest_build = release
 
         # Wait 10 min before
         time.sleep(600)
