@@ -50,21 +50,27 @@ def get_releases(until=None):
 def run_build(builder, architectures, machine, version):
     """Run Build."""
     generic = (f"docker run --rm --privileged -v ~/.docker:/root/.docker "
-               f"-v /var/run/docker.sock:/var/run/docker.sock homeassistant/{builder}-builder "
-               f"-r https://github.com/home-assistant/hassio-build -t homeassistant/generic "
-               f"--docker-hub homeassistant --{architectures.join(' --')} --homeassistant {version}")
+               f"-v /var/run/docker.sock:/var/run/docker.sock "
+               f"homeassistant/{builder}-builder "
+               f"-r https://github.com/home-assistant/hassio-build "
+               f"-t homeassistant/generic --docker-hub homeassistant "
+               f"--{architectures.join(' --')} --homeassistant {version}")
 
     machine = (f"docker run --rm --privileged -v ~/.docker:/root/.docker "
-               f"-v /var/run/docker.sock:/var/run/docker.sock homeassistant/{builder}-builder "
-               f"-r https://github.com/home-assistant/hassio-build -t homeassistant/machine "
-               f"--docker-hub homeassistant --homeassistant-machine {version}={machines}")
+               f"-v /var/run/docker.sock:/var/run/docker.sock "
+               f"homeassistant/{builder}-builder "
+               f"-r https://github.com/home-assistant/hassio-build "
+               f"-t homeassistant/machine --docker-hub homeassistant "
+               f"--homeassistant-machine {version}={machines}")
 
     logging.info("Start generic build of %s", version)
-    run_generic = subprocess.run(shlex.split(generic), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    run_generic = subprocess.run(
+        shlex.split(generic), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     run_generic.check_returncode()
 
     logging.info("Start generic machine of %s", version)
-    run_machine = subprocess.run(shlex.split(machine), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    run_machine = subprocess.run(
+        shlex.split(machine), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     run_machine.check_returncode()
 
 
