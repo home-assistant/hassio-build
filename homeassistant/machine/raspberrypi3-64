@@ -1,44 +1,7 @@
 ARG BUILD_VERSION
 FROM homeassistant/aarch64-homeassistant:$BUILD_VERSION
 
-RUN apk --no-cache add raspberrypi raspberrypi-libs usbutils
-
-##
-# Set symlinks for raspberry pi binaries.
-RUN ln -sv /opt/vc/bin/raspistill /usr/local/bin/raspistill \
-    && ln -sv /opt/vc/bin/raspivid /usr/local/bin/raspivid \
-    && ln -sv /opt/vc/bin/raspividyuv /usr/local/bin/raspividyuv \
-    && ln -sv /opt/vc/bin/raspiyuv /usr/local/bin/raspiyuv
-
-##
-# Build libcec with RPi support for HDMI-CEC
-RUN apk del libcec \
-    && apk add --no-cache build-base cmake eudev-dev git \
-           python3-dev swig raspberrypi-dev \
-    && git clone --depth 1 -b p8-platform-2.1.0.1 https://github.com/Pulse-Eight/platform /usr/src/platform \
-    && mkdir -p /usr/src/platform/build \
-    && cd /usr/src/platform/build \
-    && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr .. \
-    && make \
-    && make install \
-    && cd /usr/src \
-    && rm -rf platform \
-    && git clone --depth 1 -b libcec-4.0.2 https://github.com/Pulse-Eight/libcec /usr/src/libcec \
-    && mkdir -p /usr/src/libcec/build \
-    && cd /usr/src/libcec/build \
-    && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr \
-        -DRPI_INCLUDE_DIR=/opt/vc/include \
-        -DRPI_LIB_DIR=/opt/vc/lib \
-        -DPYTHON_LIBRARY="/usr/lib/libpython3.6m.so" \
-        -DPYTHON_INCLUDE_DIR="/usr/include/python3.6m" .. \
-    && make \
-    && make install \
-    && echo "cec" > "/usr/lib/python3.6/site-packages/cec.pth" \
-    && cd /usr/src \
-    && rm -rf libcec \
-    && apk del build-base cmake eudev-dev git \
-           python3-dev swig raspberrypi-dev
-ENV LD_LIBRARY_PATH=/opt/vc/lib:${LD_LIBRARY_PATH}
+RUN apk --no-cache add usbutils
 
 ##
 # Install DHT
