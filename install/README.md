@@ -33,6 +33,7 @@ curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/in
 - raspberrypi
 - raspberrypi2
 - raspberrypi3
+- raspberrypi3-64
 - qemuarm
 - qemuarm-64
 - qemux86-64
