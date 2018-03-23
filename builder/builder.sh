@@ -273,8 +273,8 @@ function build_addon() {
     fi
 
     # Read addon config.json
-    name="$(jq --raw-output '.name // empty' "$TARGET/config.json")"
-    description="$(jq --raw-output '.description // empty' "$TARGET/config.json")"
+    name="$(jq --raw-output '.name // empty' "$TARGET/config.json" | sed "s/'//g")"
+    description="$(jq --raw-output '.description // empty' "$TARGET/config.json" | sed "s/'//g")"
     url="$(jq --raw-output '.url // empty' "$TARGET/config.json")"
     version="$(jq --raw-output '.version' "$TARGET/config.json")"
     raw_image="$(jq --raw-output '.image // empty' "$TARGET/config.json")"
