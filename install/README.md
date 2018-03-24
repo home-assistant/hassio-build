@@ -5,7 +5,7 @@ Beside the usage of the images it's also possible to run Hass.io on a generic sy
 ## Requirements
 
 ```
-docker
+docker.ce
 bash
 socat
 jq
@@ -16,7 +16,7 @@ dbus-daemon
 
 ## Run
 
-Run as root:
+Run as root (sudo su):
 
 ```bash
 curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/hassio_install | bash -s
