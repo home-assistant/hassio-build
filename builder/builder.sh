@@ -23,7 +23,7 @@ IMAGE=""
 BUILD_LIST=()
 BUILD_TYPE="addon"
 BUILD_TASKS=()
-BUILD_MACHINE=('raspberrypi' 'raspberrypi2' 'raspberrypi3' 'intel-nuc' 'qemux86-64' 'qemux86' 'qemuarm' 'qemuarm-64')
+BUILD_MACHINE=('raspberrypi' 'raspberrypi2' 'raspberrypi3' 'raspberrypi3-64' 'intel-nuc' 'qemux86-64' 'qemux86' 'qemuarm' 'qemuarm-64')
 
 
 #### Misc functions ####
