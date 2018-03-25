@@ -522,6 +522,7 @@ while [[ $# -gt 0 ]]; do
         --homeassistant)
             BUILD_TYPE="homeassistant"
             DOCKER_CACHE="false"
+            DOCKER_LATEST="false"
             VERSION=$2
             shift
             ;;
@@ -536,6 +537,7 @@ while [[ $# -gt 0 ]]; do
         --homeassistant-machine)
             BUILD_TYPE="homeassistant-machine"
             DOCKER_CACHE="false"
+            DOCKER_LATEST="false"
             VERSION="$(echo "$2" | cut -d '=' -f 1)"
             extract_machine_build "$(echo "$2" | cut -d '=' -f 2)"
             shift
