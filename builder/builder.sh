@@ -377,13 +377,13 @@ function build_homeassistant_landingpage() {
     local docker_cli=()
 
     # Lookup Archs
-    if [[ "$build_machine" =~ ^(raspberry.*|.*arm)$ ]]; then
+    if [[ "$build_machine" =~ ^(raspberry[23]?|.*arm)$ ]]; then
         build_arch="armhf"
     elif [[ "$build_machine" =~ ^(.*x86-64|intel-nuc)$ ]]; then
         build_arch="amd64"
     elif [[ "$build_machine" =~ ^(.*x86)$ ]]; then
         build_arch="i386"
-    elif [[ "$build_machine" =~ ^(.*arm-64)$ ]]; then
+    elif [[ "$build_machine" =~ ^(.*arm-64|raspberry3-64)$ ]]; then
         build_arch="aarch64"
     fi
     local build_from="homeassistant/${build_arch}-base:latest"
