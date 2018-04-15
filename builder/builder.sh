@@ -106,7 +106,7 @@ function start_docker() {
     local starttime
     local endtime
 
-    if [ -f "/var/run/docker.sock" ]; then
+    if [ -S "/var/run/docker.sock" ]; then
         echo "[INFO] Use host docker setup with '/var/run/docker.sock'"
         DOCKER_LOCAL="true"
         return 0
