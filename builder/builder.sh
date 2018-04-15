@@ -89,7 +89,7 @@ Options:
         Build our base images.
     --supervisor
         Build a Hass.io supervisor image.
-    --hassio-cli
+    --hassio-cli <VERSION>
         Build a Hass.io OS CLI image.
     --homeassistant-base
         Build a Home-Assistant base image.
@@ -259,6 +259,7 @@ function build_builder() {
         return 1
     else
         build_from=multiarch/ubuntu-core:${build_arch}-xenial
+    fi
 
     # Make version
     version="$(date +%Y%m%d)"
