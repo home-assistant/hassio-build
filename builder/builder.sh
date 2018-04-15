@@ -83,10 +83,14 @@ Options:
   Internals:
     --addon
         Default on. Run all things for an addon build.
+    --builder
+        Build a it self.
     --base
         Build our base images.
     --supervisor
-        Build a hassio supervisor.
+        Build a Hass.io supervisor image.
+    --hassio-cli <VERSION>
+        Build a Hass.io OS CLI image.
     --homeassistant-base
         Build a Home-Assistant base image.
     --homeassistant <VERSION>
@@ -239,6 +243,34 @@ function run_build() {
 
 #### HassIO functions ####
 
+function build_builder() {
+    local build_arch=$1
+
+    local image="{arch}-builder"
+    local build_from=""
+    local version=""
+    local docker_cli=()
+
+    # Select builder image
+    if [ "$build_arch" == "aarch64" ]; then
+        build_from=multiarch/ubuntu-core:arm64-xenial
+    elif [ "$build_arch" == "i386" ]; then
+        echo "[ERROR] i386 not supported for builder"
+        return 1
+    else
+        build_from=multiarch/ubuntu-core:${build_arch}-xenial
+    fi
+
+    # Make version
+    version="$(date +%Y%m%d)"
+    docker_cli+=("--label" "io.hass.type=builder")
+
+    # Start build
+    run_build "$TARGET" "$DOCKER_HUB" "$image" "$version" \
+        "$build_from" "$build_arch" docker_cli[@]
+}
+
+
 function build_addon() {
     local build_arch=$1
 
@@ -305,8 +337,8 @@ function build_supervisor() {
 
     local image="{arch}-hassio-supervisor"
     local build_from="homeassistant/${build_arch}-base:latest"
-    local version=""
     local docker_cli=()
+    local version=""
 
     # Read version
     version="$(python3 "$TARGET/setup.py" -V)"
@@ -314,6 +346,22 @@ function build_supervisor() {
 
     # Start build
     run_build "$TARGET" "$DOCKER_HUB" "$image" "$version" \
+        "$build_from" "$build_arch" docker_cli[@]
+}
+
+
+function build_hassio_cli() {
+    local build_arch=$1
+
+    local image="{arch}-hassio-cli"
+    local build_from="homeassistant/${build_arch}-base:latest"
+    local docker_cli=()
+
+    # Metadata
+    docker_cli+=("--label" "io.hass.type=cli")
+
+    # Start build
+    run_build "$TARGET" "$DOCKER_HUB" "$image" "" \
         "$build_from" "$build_arch" docker_cli[@]
 }
 
@@ -513,6 +561,14 @@ while [[ $# -gt 0 ]]; do
         --base)
             BUILD_TYPE="base"
             ;;
+        --hassio-cli)
+            BUILD_TYPE="cli"
+            VERSION=$2
+            shift
+            ;;
+        --builder)
+            BUILD_TYPE="builder"
+            ;;
         --supervisor)
             BUILD_TYPE="supervisor"
             ;;
@@ -583,6 +639,10 @@ echo "[INFO] Run $BUILD_TYPE build for: ${BUILD_LIST[*]}"
 for arch in "${BUILD_LIST[@]}"; do
     if [ "$BUILD_TYPE" == "addon" ]; then
         (build_addon "$arch") &
+    elif [ "$BUILD_TYPE" == "builder" ]; then
+        (build_builder "$arch") &
+    elif [ "$BUILD_TYPE" == "cli" ]; then
+        (build_hassio_cli "$arch") &
     elif [ "$BUILD_TYPE" == "supervisor" ]; then
         (build_supervisor "$arch") &
     elif [ "$BUILD_TYPE" == "homeassistant-base" ]; then
