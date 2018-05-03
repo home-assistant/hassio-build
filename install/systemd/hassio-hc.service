@@ -1,10 +1,12 @@
-﻿[Unit]
-Description=Hass.io HostControl
-Before=hassio-supervisor.service
+[Unit]
+Description=Hass.io AppArmor
+Wants=hassio-supervisor.service
+Before=docker.service hassio-supervisor.service
 
 [Service]
-Type=simple
-ExecStart=/usr/bin/socat UNIX-LISTEN:/var/run/hassio-hc.sock,fork EXEC:%%BIN_DIR%%/hassio-hc
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/usr/sbin/hassio-apparmor
 
 [Install]
 WantedBy=multi-user.target
