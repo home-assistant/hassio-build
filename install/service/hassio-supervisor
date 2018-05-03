@@ -6,8 +6,14 @@ CONFIG_FILE=/mnt/data/hassio.json
 
 SUPERVISOR="$(jq --raw-output '.supervisor' ${CONFIG_FILE})"
 HOMEASSISTANT="$(jq --raw-output '.homeassistant' ${CONFIG_FILE})"
-APPARMOR="$(jq --raw-output '.apparmor // "docker-default"' ${CONFIG_FILE})"
 DATA="$(jq --raw-output '.data // "/usr/share/hassio"' ${CONFIG_FILE})"
+
+# AppArmor Support
+if ! command -v apparmor_parser > /dev/null 2>&1; then
+    APPARMOR="docker-default"
+else
+    APPARMOR="hassio-supervisor"
+fi
 
 # Init supervisor
 HASSIO_DATA=${DATA}
@@ -23,7 +29,7 @@ runSupervisor() {
         -v ${HASSIO_DATA}:/data \
         -e SUPERVISOR_SHARE=${HASSIO_DATA} \
         -e SUPERVISOR_NAME=hassio_supervisor \
-        $DOCKER_ARGS \
+        -e HOMEASSISTANT_REPOSITORY=${HOMEASSISTANT} \
         ${SUPERVISOR}
 }
 
