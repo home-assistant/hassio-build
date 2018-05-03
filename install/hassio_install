@@ -4,29 +4,29 @@ set -e
 ARCH=$(uname -m)
 DOCKER_REPO=homeassistant
 URL_VERSION="https://raw.githubusercontent.com/home-assistant/hassio/master/version.json"
-URL_START_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/service/hassio-start"
-URL_GENERIC_HC="https://raw.githubusercontent.com/home-assistant/hassio-build/master/generic-hc"
+URL_BIN_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/service/hassio-supervisor"
+URL_BIN_APPARMOR="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/service/hassio-apparmor"
 URL_SERVICE_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/systemd/hassio-supervisor.service"
-URL_SERVICE_HOSTCONTROL="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/systemd/hassio-hc.service"
+URL_SERVICE_APPARMOR="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/systemd/hassio-apparmor.service"
 
 BIN_DIR=/usr/bin
 DATA_SHARE=/usr/share/hassio
 
 # Check env
-command -v docker > /dev/null 2>&1 || { echo "[ERROR] Please install docker first"; exit 1; }
-command -v jq > /dev/null 2>&1 || { echo "[ERROR] Please install jq first"; exit 1; }
-command -v socat > /dev/null 2>&1 || { echo "[ERROR] Please install socat first"; exit 1; }
-command -v curl > /dev/null 2>&1 || { echo "[ERROR] Please install curl first"; exit 1; }
-command -v avahi-daemon > /dev/null 2>&1 || { echo "[ERROR] Please install avahi first"; exit 1; }
-command -v dbus-daemon > /dev/null 2>&1 || { echo "[ERROR] Please install dbus first"; exit 1; }
+command -v systemctl > /dev/null 2>&1 || { echo "[Error] Only systemd is supported!"; exit 1; }
+command -v docker > /dev/null 2>&1 || { echo "[Error] Please install docker first"; exit 1; }
+command -v jq > /dev/null 2>&1 || { echo "[Error] Please install jq first"; exit 1; }
+command -v curl > /dev/null 2>&1 || { echo "[Error] Please install curl first"; exit 1; }
+command -v avahi-daemon > /dev/null 2>&1 || { echo "[Error] Please install avahi first"; exit 1; }
+command -v dbus-daemon > /dev/null 2>&1 || { echo "[Error] Please install dbus first"; exit 1; }
+command -v apparmor_parser > /dev/null 2>&1 || echo "[Warning] No AppArmor support on Host."
+command -v nmcli > /dev/null 2>&1 || echo "[Warning] No NetworkManager support on Host."
 
-# Check system options
-if [ -x $(command -v systemctl) ]; then
-    INIT_SYSTEM=systemd
+# AppArmor Support
+if command -v apparmor_parser > /dev/null 2>&1; then
+    APPARMOR=no
 else
-    INIT_SYSTEM=sysvinit
-    echo "[ERROR] Only systemd is supprted at the moment"
-    exit 1
+    APPARMOR=yes
 fi
 
 # Parse command line parameters
@@ -35,21 +35,16 @@ while [[ $# > 0 ]]; do
 
     case $arg in
         -m|--machine)
-            if [ -z "$2" ]; then
-                echo "[ERROR] \"$1\" argument needs a value"
-            fi
             MACHINE=$2
             shift
             ;;
         -d|--data-share)
-            if [ -z "$2" ]; then
-                echo "[ERROR] \"$1\" argument needs a value"
-            fi
             DATA_SHARE=$2
             shift
             ;;
         *)
-            echo "[ERROR] Unrecognized option $1"
+            echo "[Error] Unrecognized option $1"
+            exit 1
             ;;
     esac
     shift
@@ -96,38 +91,34 @@ fi
 
 # Read infos from web
 HASSIO_VERSION=$(curl -s $URL_VERSION | jq -e -r '.hassio')
-GENERIC_HC_VERSION=$(curl -s $URL_VERSION | jq -e -r '.generic')
 
 ##
 # Install supervisor
-echo "[INFO] Install supervisor docker"
+echo "[Info] Install supervisor docker"
 docker pull "$HASSIO_DOCKER:$HASSIO_VERSION" > /dev/null
 docker tag "$HASSIO_DOCKER:$HASSIO_VERSION" "$HASSIO_DOCKER:latest" > /dev/null
 
 ##
-# Install generic hostcontrol
-echo "[INFO] Install generic HostControl"
-curl -sL "$URL_GENERIC_HC/$GENERIC_HC_VERSION" > "$BIN_DIR/hassio-hc"
-
-chmod a+x "$BIN_DIR/hassio-hc"
-
-##
-# Install start-hassio
-echo "[INFO] Install startup scripts"
+# Install Hass.io Supervisor
+echo "[Info] Install supervisor startup scripts"
 curl -sL "$URL_START_HASSIO" > "$BIN_DIR/hassio-start"
 
-sed -i "s|%%SUPERVISOR_IMAGE%%|$HASSIO_DOCKER|g" "$BIN_DIR/hassio-start"
-sed -i "s|%%HOMEASSISTANT_IMAGE%%|$HOMEASSISTANT_DOCKER|g" "$BIN_DIR/hassio-start"
-sed -i "s|%%DATA_SHARE%%|$DATA_SHARE|g" "$BIN_DIR/hassio-start"
+chmod a+x "$BIN_DIR/hassio-supervisor"
 
-chmod a+x "$BIN_DIR/hassio-start"
+#
+# Install Hass.io AppArmor
+if [ "$APPARMOR" == "yes" ]; then
+    echo "[Info] Install AppArmor scripts"
+    curl -sL "$URL_START_HASSIO" > "$BIN_DIR/hassio-start"
+
+    chmod a+x "$BIN_DIR/hassio-supervisor"
+fi
 
 ##
 # Init system
-if [ "$INIT_SYSTEM" == "systemd" ]; then
-    echo "[INFO] Init systemd"
-    curl -sL "$URL_SERVICE_HASSIO" > "/etc/systemd/system/hassio-supervisor.service"
-    curl -sL "$URL_SERVICE_HOSTCONTROL" > "/etc/systemd/system/hassio-hc.service"
+echo "[INFO] Init systemd"
+curl -sL "$URL_SERVICE_HASSIO" > "/etc/systemd/system/hassio-supervisor.service"
+curl -sL "$URL_SERVICE_HOSTCONTROL" > "/etc/systemd/system/hassio-hc.service"
 
     sed -i "s|%%BIN_DIR%%|$BIN_DIR|g" "/etc/systemd/system/hassio-hc.service"
     sed -i "s|%%BIN_DIR%%|$BIN_DIR|g" "/etc/systemd/system/hassio-supervisor.service"
@@ -137,4 +128,3 @@ if [ "$INIT_SYSTEM" == "systemd" ]; then
     echo "[INFO] Start services"
     systemctl start hassio-hc.service
     systemctl start hassio-supervisor.service
-fi
