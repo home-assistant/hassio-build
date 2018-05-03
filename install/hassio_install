@@ -3,14 +3,12 @@ set -e
 
 ARCH=$(uname -m)
 DOCKER_REPO=homeassistant
+DATA_SHARE=/usr/share/hassio
 URL_VERSION="https://raw.githubusercontent.com/home-assistant/hassio/master/version.json"
 URL_BIN_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/service/hassio-supervisor"
 URL_BIN_APPARMOR="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/service/hassio-apparmor"
 URL_SERVICE_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/systemd/hassio-supervisor.service"
 URL_SERVICE_APPARMOR="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/systemd/hassio-apparmor.service"
-
-BIN_DIR=/usr/bin
-DATA_SHARE=/usr/share/hassio
 
 # Check env
 command -v systemctl > /dev/null 2>&1 || { echo "[Error] Only systemd is supported!"; exit 1; }
@@ -79,10 +77,16 @@ case $ARCH in
         HASSIO_DOCKER="$DOCKER_REPO/aarch64-hassio-supervisor"
     ;;
     *)
-        echo "[ERROR] $ARCH unknown!"
+        echo "[Error] $ARCH unknown!"
         exit 1
     ;;
 esac
+
+if [ -z "${HOMEASSISTANT_DOCKER}" ]; then
+    echo "[Error] Found no Home Assistant docker images for this host!"
+fi
+
+### Main
 
 # Init folders
 if [ ! -d "$DATA_SHARE" ]; then
@@ -93,7 +97,17 @@ fi
 HASSIO_VERSION=$(curl -s $URL_VERSION | jq -e -r '.hassio')
 
 ##
-# Install supervisor
+# Write config
+cat > /etc/hassio.json <<- EOF
+{
+    "supervisor": "${HASSIO_DOCKER}",
+    "homeassistant": "${HOMEASSISTANT_DOCKER}",
+    "data": "${SUPERVISOR_PROFILE}"
+}
+EOF
+
+##
+# Pull supervisor image
 echo "[Info] Install supervisor docker"
 docker pull "$HASSIO_DOCKER:$HASSIO_VERSION" > /dev/null
 docker tag "$HASSIO_DOCKER:$HASSIO_VERSION" "$HASSIO_DOCKER:latest" > /dev/null
@@ -101,30 +115,26 @@ docker tag "$HASSIO_DOCKER:$HASSIO_VERSION" "$HASSIO_DOCKER:latest" > /dev/null
 ##
 # Install Hass.io Supervisor
 echo "[Info] Install supervisor startup scripts"
-curl -sL "$URL_START_HASSIO" > "$BIN_DIR/hassio-start"
+curl -sL "$URL_START_HASSIO" > /usr/bin/hassio-supervisor
+curl -sL "$URL_SERVICE_HASSIO" > /etc/systemd/system/hassio-supervisor.service
 
-chmod a+x "$BIN_DIR/hassio-supervisor"
+chmod a+x /usr/bin/hassio-supervisor
+systemctl enable hassio-supervisor.service
 
 #
 # Install Hass.io AppArmor
 if [ "$APPARMOR" == "yes" ]; then
     echo "[Info] Install AppArmor scripts"
-    curl -sL "$URL_START_HASSIO" > "$BIN_DIR/hassio-start"
+    curl -sL "$URL_BIN_APPARMOR" > /usr/bin/hassio-apparmor
+    curl -sL "$URL_SERVICE_APPARMOR" > /etc/systemd/system/hassio-apparmor.service
 
-    chmod a+x "$BIN_DIR/hassio-supervisor"
+    chmod a+x /usr/bin/hassio-apparmor
+    systemctl enable hassio-apparmor.service
+
+    systemctl start hassio-apparmor.service
 fi
 
 ##
 # Init system
-echo "[INFO] Init systemd"
-curl -sL "$URL_SERVICE_HASSIO" > "/etc/systemd/system/hassio-supervisor.service"
-curl -sL "$URL_SERVICE_HOSTCONTROL" > "/etc/systemd/system/hassio-hc.service"
-
-    sed -i "s|%%BIN_DIR%%|$BIN_DIR|g" "/etc/systemd/system/hassio-hc.service"
-    sed -i "s|%%BIN_DIR%%|$BIN_DIR|g" "/etc/systemd/system/hassio-supervisor.service"
-
-    systemctl enable hassio-supervisor.service
-
-    echo "[INFO] Start services"
-    systemctl start hassio-hc.service
-    systemctl start hassio-supervisor.service
+echo "[Info] Run Hass.io"
+systemctl start hassio-supervisor.service
