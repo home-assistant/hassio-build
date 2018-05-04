@@ -21,13 +21,6 @@ command -v dbus-daemon > /dev/null 2>&1 || { echo "[Error] Please install dbus f
 command -v apparmor_parser > /dev/null 2>&1 || echo "[Warning] No AppArmor support on Host."
 command -v nmcli > /dev/null 2>&1 || echo "[Warning] No NetworkManager support on Host."
 
-# AppArmor Support
-if command -v apparmor_parser > /dev/null 2>&1; then
-    APPARMOR=yes
-else
-    APPARMOR=no
-fi
-
 # Parse command line parameters
 while [[ $# > 0 ]]; do
     arg="$1"
@@ -124,7 +117,7 @@ systemctl enable hassio-supervisor.service
 
 #
 # Install Hass.io AppArmor
-if [ "$APPARMOR" == "yes" ]; then
+if command -v apparmor_parser > /dev/null 2>&1; then
     echo "[Info] Install AppArmor scripts"
     mkdir -p ${DATA_SHARE}/apparmor
     curl -sL ${URL_BIN_APPARMOR} > /usr/sbin/hassio-apparmor
