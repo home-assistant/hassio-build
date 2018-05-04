@@ -7,6 +7,8 @@ profile hassio-supervisor flags=(attach_disconnected,mediate_deleted) {
   network,
   deny network raw,
 
+  signal (send) set=(kill,term),
+
   # Old stuff, need to be remove later
   /bin/udevadm Ux,
   /sbin/udevd Ux,
@@ -35,6 +37,8 @@ profile hassio-supervisor flags=(attach_disconnected,mediate_deleted) {
 
     deny network raw,
     deny network packet,
+
+    signal (receive) set=(kill,term),
 
     /usr/bin/socat mr,
     /lib/* mr,
