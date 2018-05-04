@@ -23,9 +23,9 @@ command -v nmcli > /dev/null 2>&1 || echo "[Warning] No NetworkManager support o
 
 # AppArmor Support
 if command -v apparmor_parser > /dev/null 2>&1; then
-    APPARMOR=no
-else
     APPARMOR=yes
+else
+    APPARMOR=no
 fi
 
 # Parse command line parameters
