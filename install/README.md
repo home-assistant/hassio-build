@@ -1,7 +1,5 @@
 # Install Hass.io
 
-# ON MIGRATION - DON'T USE IT IN NEXT HOURS!
-
 Beside the usage of the images it's also possible to run Hass.io on a generic system without flashing an image.
 
 ## Requirements
