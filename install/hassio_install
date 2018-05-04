@@ -116,7 +116,7 @@ docker tag "$HASSIO_DOCKER:$HASSIO_VERSION" "$HASSIO_DOCKER:latest" > /dev/null
 ##
 # Install Hass.io Supervisor
 echo "[Info] Install supervisor startup scripts"
-curl -sL ${URL_START_HASSIO} > /usr/bin/hassio-supervisor
+curl -sL ${URL_BIN_HASSIO} > /usr/bin/hassio-supervisor
 curl -sL ${URL_SERVICE_HASSIO} > /etc/systemd/system/hassio-supervisor.service
 
 chmod a+x /usr/bin/hassio-supervisor
