@@ -5,13 +5,19 @@ Beside the usage of the images it's also possible to run Hass.io on a generic sy
 ## Requirements
 
 ```
-docker.ce
+docker-ce
 bash
-socat
 jq
 curl
 avahi-daemon
 dbus-daemon
+```
+
+## Optional
+
+```
+apparmor-utils
+networkmanager
 ```
 
 ## Run
