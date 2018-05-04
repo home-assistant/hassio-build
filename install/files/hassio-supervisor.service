@@ -1,13 +1,12 @@
 [Unit]
 Description=Hass.io supervisor
-Requires=docker.service hassio-hc.service
-Wants=hassio-hc.service
-After=docker.service hassio-hc.service
+Requires=docker.service
+After=docker.service hassio-apparmor.service
 
 [Service]
 Type=simple
 Restart=always
-RestartSec=10s
+RestartSec=5s
 ExecStartPre=-/usr/bin/docker stop hassio_supervisor
 ExecStart=/usr/sbin/hassio-supervisor
 ExecStop=-/usr/bin/docker stop hassio_supervisor
