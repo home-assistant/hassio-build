@@ -119,7 +119,7 @@ echo "[Info] Install supervisor startup scripts"
 curl -sL ${URL_BIN_HASSIO} > /usr/sbin/hassio-supervisor
 curl -sL ${URL_SERVICE_HASSIO} > /etc/systemd/system/hassio-supervisor.service
 
-chmod a+x /usr/bin/hassio-supervisor
+chmod a+x /usr/sbin/hassio-supervisor
 systemctl enable hassio-supervisor.service
 
 #
@@ -131,7 +131,7 @@ if [ "$APPARMOR" == "yes" ]; then
     curl -sL ${URL_SERVICE_APPARMOR} > /etc/systemd/system/hassio-apparmor.service
     curl -sL ${URL_APPARMOR_PROFILE} > ${DATA_SHARE}/apparmor/hassio-supervisor
 
-    chmod a+x /usr/bin/hassio-apparmor
+    chmod a+x /usr/sbin/hassio-apparmor
     systemctl enable hassio-apparmor.service
 
     systemctl start hassio-apparmor.service
