@@ -9,10 +9,10 @@ HOMEASSISTANT="$(jq --raw-output '.homeassistant' ${CONFIG_FILE})"
 DATA="$(jq --raw-output '.data // "/usr/share/hassio"' ${CONFIG_FILE})"
 
 # AppArmor Support
-if ! command -v apparmor_parser > /dev/null 2>&1; then
-    APPARMOR="docker-default"
-else
+if command -v apparmor_parser > /dev/null 2>&1 && grep hassio-supervisor /sys/kernel/security/apparmor/profiles > /dev/null; then
     APPARMOR="hassio-supervisor"
+else
+    APPARMOR="docker-default"
 fi
 
 # Init supervisor
