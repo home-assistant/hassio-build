@@ -1,7 +1,7 @@
 [Unit]
 Description=Hass.io supervisor
 Requires=docker.service
-After=docker.service hassio-apparmor.service
+After=docker.service
 
 [Service]
 Type=simple
