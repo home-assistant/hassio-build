@@ -5,12 +5,12 @@ FROM $BUILD_FROM
 ARG BUILD_VERSION
 RUN apk add --no-cache \
         bluez-libs eudev-libs libxslt libxml2 cups-libs \
-        libffi libressl \
+        libffi libressl gmp mpfr3 mpc1 \
     && apk add --no-cache --virtual .build-dependencies \
         gcc g++ python3-dev musl-dev cmake make git linux-headers \
         bluez-dev libffi-dev libressl-dev glib-dev eudev-dev \
         libxml2-dev libxslt-dev libpng-dev libjpeg-turbo-dev tiff-dev \
-        autoconf automake cups-dev \
+        autoconf automake cups-dev linux-headers gmp-dev mpfr-dev mpc1-dev \
     && git clone --depth 1 --branch $BUILD_VERSION https://github.com/home-assistant/home-assistant homeassistant \
     && sed -i "s|# pytradfri|pytradfri|g" homeassistant/requirements_all.txt \
     && sed -i "s|# pybluez|pybluez|g" homeassistant/requirements_all.txt \
@@ -27,6 +27,7 @@ RUN apk add --no-cache \
     && sed -i "s|# i2csense|i2csense|g" homeassistant/requirements_all.txt \
     && sed -i "s|# python-eq3bt|python-eq3bt|g" homeassistant/requirements_all.txt \
     && sed -i "s|# pycups|pycups|g" homeassistant/requirements_all.txt \
+    && sed -i "s|# homekit|homekit|g" homeassistant/requirements_all.txt \
     && pip3 install --no-cache-dir -r homeassistant/requirements_all.txt -c homeassistant/homeassistant/package_constraints.txt \
     && pip3 install --no-cache-dir ./homeassistant \
     && apk del .build-dependencies \
