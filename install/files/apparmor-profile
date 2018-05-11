@@ -9,10 +9,6 @@ profile hassio-supervisor flags=(attach_disconnected,mediate_deleted) {
 
   signal (send) set=(kill,term),
 
-  # Old stuff, need to be remove later
-  /bin/udevadm Ux,
-  /sbin/udevd Ux,
-
   /bin/busybox ix,
   /usr/bin/python{,3,3.[0-9]} ix,
   /usr/bin/git cx,
