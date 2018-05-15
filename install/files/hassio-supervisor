@@ -24,6 +24,7 @@ runSupervisor() {
     docker rm --force hassio_supervisor || true
     docker run --name hassio_supervisor \
         $APPARMOR \
+        --security-opt seccomp=unconfined \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v /var/run/dbus:/var/run/dbus \
         -v ${HASSIO_DATA}:/data \
