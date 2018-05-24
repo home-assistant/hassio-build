@@ -104,6 +104,9 @@ RUN apk add --no-cache \
     && apk del .build-dependencies \
     && rm -rf /usr/src/telldus
 
+### Added Iperf3 support
+RUN apk add --no-cache iperf3
+
 ##
 # Install component packages
 RUN apk add --no-cache \
