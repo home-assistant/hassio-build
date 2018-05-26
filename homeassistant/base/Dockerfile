@@ -118,7 +118,8 @@ RUN apk add --no-cache \
     openssh-client \
     libffi \
     glib \
-    socat
+    socat \
+    iperf3
 
 ####
 ## Install pip module for component/homeassistant
