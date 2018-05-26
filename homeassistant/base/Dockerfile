@@ -104,9 +104,6 @@ RUN apk add --no-cache \
     && apk del .build-dependencies \
     && rm -rf /usr/src/telldus
 
-### Added Iperf3 support
-RUN apk add --no-cache iperf3
-
 ##
 # Install component packages
 RUN apk add --no-cache \
@@ -121,7 +118,8 @@ RUN apk add --no-cache \
     openssh-client \
     libffi \
     glib \
-    socat
+    socat \
+    iperf3
 
 ####
 ## Install pip module for component/homeassistant
