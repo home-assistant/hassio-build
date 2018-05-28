@@ -7,13 +7,8 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # build frontend
-cd home-assistant-polymer
-nvm install
-nvm use
-yarn
-./node_modules/.bin/bower install --allow-root
-npm install -g gulp-cli
-gulp hassio-es5
+cd home-assistant-polymer/hassio/script
+./build_hassio
 
 # prepare data
 mkdir -p ../hassio/api/panel
