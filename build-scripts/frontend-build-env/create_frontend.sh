@@ -19,11 +19,6 @@ cleanup() {
 }
 trap 'cleanup fail' SIGINT SIGTERM
 
-# Get the absolute script location
-pushd "$(dirname "$0")" > /dev/null 2>&1
-SCRIPTPATH=$(pwd)
-popd > /dev/null 2>&1
-
 help () {
     cat << EOF
 Script for hassio frontend build
@@ -64,11 +59,7 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
-# Get the absolute script location
-pushd "$(dirname "$0")" > /dev/null 2>&1
 SCRIPTPATH=$(pwd)
-popd > /dev/null 2>&1
-
 BUILD_DIR=${BUILD_DIR:=$SCRIPTPATH}
 WORKSPACE=${BUILD_DIR:=$SCRIPTPATH}/hassio-frontend
 
@@ -81,7 +72,7 @@ fi
 
 echo "[INFO] Start frontend build"
 docker stop $BUILD_CONTAINER_NAME 2> /dev/null || true
-docker rm --volumes $BUILD_CONTAINER_NAME 2> /dev/null || true
+docker build -n hassio-frontend .
 docker run --rm \
     -v "$WORKSPACE":/hassio \
     --name $BUILD_CONTAINER_NAME \
