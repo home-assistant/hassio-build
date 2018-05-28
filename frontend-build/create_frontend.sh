@@ -72,11 +72,11 @@ fi
 
 echo "[INFO] Start frontend build"
 docker stop $BUILD_CONTAINER_NAME 2> /dev/null || true
-docker build -n hassio-frontend .
+docker build -t hassio-frontend .
 docker run --rm \
     -v "$WORKSPACE":/hassio \
     --name $BUILD_CONTAINER_NAME \
-    homeassistant/frontend-build-env \
+    hassio-frontend \
     /run-build.sh
 
 cleanup "okay"
