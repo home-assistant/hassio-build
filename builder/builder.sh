@@ -270,6 +270,17 @@ function build_builder() {
         "$build_from" "$build_arch" docker_cli[@]
 }
 
+function build_base_image() {
+    local build_arch=$1
+    local image="{arch}-base"
+    local version="$(date +%Y%m%d)"
+    local build_from=""
+    local docker_cli=()
+
+    # Start build
+    run_build "$TARGET/$build_arch" "$DOCKER_HUB" "$image" "$version" \
+        "$build_from" "$build_arch" docker_cli[@]
+}
 
 function build_addon() {
     local build_arch=$1
@@ -639,6 +650,8 @@ for arch in "${BUILD_LIST[@]}"; do
         (build_addon "$arch") &
     elif [ "$BUILD_TYPE" == "builder" ]; then
         (build_builder "$arch") &
+    elif [ "$BUILD_TYPE" == "base" ]; then
+    	(build_base_image "$arch") &
     elif [ "$BUILD_TYPE" == "cli" ]; then
         (build_hassio_cli "$arch") &
     elif [ "$BUILD_TYPE" == "supervisor" ]; then
@@ -647,6 +660,9 @@ for arch in "${BUILD_LIST[@]}"; do
         (build_homeassistant_base "$arch") &
     elif [ "$BUILD_TYPE" == "homeassistant" ]; then
         (build_homeassistant "$arch") &
+    else
+        echo "Invalid build type: $BUILD_TYPE"
+        exit 1
     fi
     BUILD_TASKS+=($!)
 done
