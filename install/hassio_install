@@ -4,7 +4,7 @@ set -e
 ARCH=$(uname -m)
 DOCKER_REPO=homeassistant
 DATA_SHARE=/usr/share/hassio
-URL_VERSION="https://raw.githubusercontent.com/home-assistant/hassio/master/version.json"
+URL_VERSION="https://s3.amazonaws.com/hassio-version/stable.json"
 URL_BIN_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/files/hassio-supervisor"
 URL_BIN_APPARMOR="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/files/hassio-apparmor"
 URL_SERVICE_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/files/hassio-supervisor.service"
@@ -88,7 +88,7 @@ if [ ! -d "$DATA_SHARE" ]; then
 fi
 
 # Read infos from web
-HASSIO_VERSION=$(curl -s $URL_VERSION | jq -e -r '.hassio')
+HASSIO_VERSION=$(curl -s $URL_VERSION | jq -e -r '.supervisor')
 
 ##
 # Write config
