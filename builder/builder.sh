@@ -85,7 +85,7 @@ Options:
         Default on. Run all things for an addon build.
     --builder
         Build a it self.
-    --base
+    --base <VERSION>
         Build our base images.
     --supervisor
         Build a Hass.io supervisor image.
@@ -273,12 +273,11 @@ function build_builder() {
 function build_base_image() {
     local build_arch=$1
     local image="{arch}-base"
-    local version="$(date +%Y%m%d)"
     local build_from=""
     local docker_cli=()
 
     # Start build
-    run_build "$TARGET/$build_arch" "$DOCKER_HUB" "$image" "$version" \
+    run_build "$TARGET/$build_arch" "$DOCKER_HUB" "$image" "$VERSION" \
         "$build_from" "$build_arch" docker_cli[@]
 }
 
@@ -571,6 +570,8 @@ while [[ $# -gt 0 ]]; do
             ;;
         --base)
             BUILD_TYPE="base"
+            VERSION=$2
+            shift
             ;;
         --hassio-cli)
             BUILD_TYPE="cli"
