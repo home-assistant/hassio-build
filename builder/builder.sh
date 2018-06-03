@@ -661,6 +661,8 @@ for arch in "${BUILD_LIST[@]}"; do
         (build_homeassistant_base "$arch") &
     elif [ "$BUILD_TYPE" == "homeassistant" ]; then
         (build_homeassistant "$arch") &
+    elif [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
+        continue  # Handled in the loop below
     else
         echo "Invalid build type: $BUILD_TYPE"
         exit 1
