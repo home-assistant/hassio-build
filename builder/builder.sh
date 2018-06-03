@@ -85,7 +85,7 @@ Options:
         Default on. Run all things for an addon build.
     --builder
         Build a it self.
-    --base
+    --base <VERSION>
         Build our base images.
     --supervisor
         Build a Hass.io supervisor image.
@@ -270,6 +270,16 @@ function build_builder() {
         "$build_from" "$build_arch" docker_cli[@]
 }
 
+function build_base_image() {
+    local build_arch=$1
+    local image="{arch}-base"
+    local build_from=""
+    local docker_cli=()
+
+    # Start build
+    run_build "$TARGET/$build_arch" "$DOCKER_HUB" "$image" "$VERSION" \
+        "$build_from" "$build_arch" docker_cli[@]
+}
 
 function build_addon() {
     local build_arch=$1
@@ -560,6 +570,8 @@ while [[ $# -gt 0 ]]; do
             ;;
         --base)
             BUILD_TYPE="base"
+            VERSION=$2
+            shift
             ;;
         --hassio-cli)
             BUILD_TYPE="cli"
@@ -639,6 +651,8 @@ for arch in "${BUILD_LIST[@]}"; do
         (build_addon "$arch") &
     elif [ "$BUILD_TYPE" == "builder" ]; then
         (build_builder "$arch") &
+    elif [ "$BUILD_TYPE" == "base" ]; then
+    	(build_base_image "$arch") &
     elif [ "$BUILD_TYPE" == "cli" ]; then
         (build_hassio_cli "$arch") &
     elif [ "$BUILD_TYPE" == "supervisor" ]; then
@@ -647,6 +661,9 @@ for arch in "${BUILD_LIST[@]}"; do
         (build_homeassistant_base "$arch") &
     elif [ "$BUILD_TYPE" == "homeassistant" ]; then
         (build_homeassistant "$arch") &
+    else
+        echo "Invalid build type: $BUILD_TYPE"
+        exit 1
     fi
     BUILD_TASKS+=($!)
 done
