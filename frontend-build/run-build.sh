@@ -14,5 +14,9 @@ cd hassio
 ./script/build_hassio
 gzip -f -k -9 build-es5/*
 
-# Copy frontend
+# Copy old frontend
 cp -rf build-es5/* ../../hassio/api/panel/
+
+# Copy frontend
+rm -f ../../hassio/api/panel/chunk.*
+cp -rf build/* ../../hassio/api/panel/
