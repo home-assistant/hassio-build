@@ -2,7 +2,7 @@
 set -e
 
 udevd --daemon
-udevadm trigger &> /dev/null
+udevadm trigger
 	
 if CMD="$(which "$1")"; then
   shift
