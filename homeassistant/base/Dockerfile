@@ -137,4 +137,11 @@ RUN apk add --no-cache \
         aiodns==1.1.1 \
         brotlipy==0.7.0 \
     && apk del .build-dependencies
-    
+
+###
+# Setup entry point for udevd
+COPY entry.sh /bin/
+RUN apk add --no-cache eudev \
+    && chmod a+x /bin/entry.sh
+
+ENTRYPOINT ["/usr/entry.sh"]
