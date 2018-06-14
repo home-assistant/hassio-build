@@ -144,4 +144,4 @@ COPY entry.sh /bin/
 RUN apk add --no-cache eudev \
     && chmod a+x /bin/entry.sh
 
-ENTRYPOINT ["/usr/entry.sh"]
+ENTRYPOINT ["/bin/entry.sh"]
