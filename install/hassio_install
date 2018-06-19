@@ -9,7 +9,7 @@ URL_BIN_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/ma
 URL_BIN_APPARMOR="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/files/hassio-apparmor"
 URL_SERVICE_HASSIO="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/files/hassio-supervisor.service"
 URL_SERVICE_APPARMOR="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/files/hassio-apparmor.service"
-URL_APPARMOR_PROFILE="https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/files/apparmor-profile"
+URL_APPARMOR_PROFILE="http://s3.amazonaws.com/hassio-version/apparmor.txt"
 
 # Check env
 command -v systemctl > /dev/null 2>&1 || { echo "[Error] Only systemd is supported!"; exit 1; }
