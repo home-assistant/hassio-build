@@ -19,7 +19,6 @@ EOF
 
 
 COMMAND=""
-
 while true; do
     read -rp "hassio > " COMMAND
 
