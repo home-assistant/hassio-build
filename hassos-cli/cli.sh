@@ -17,7 +17,10 @@ If you need access to host system use 'ho login'
 
 EOF
 
+# Set hosts data
+echo "172.30.32.2\thassio" >> /etc/hosts
 
+# Run CLI
 COMMAND=""
 while true; do
     read -rp "hassio > " COMMAND
