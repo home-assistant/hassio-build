@@ -12,8 +12,8 @@ cat << EOF
 
 Welcome on Hass.io CLI for HassOS.
 
-For more details use 'help'.
-If you need access to host system use 'ho login'
+For more details use 'help' and 'exit' to close.
+If you need access to host system use 'login'.
 
 EOF
 
@@ -26,8 +26,10 @@ while true; do
     read -rp "hassio > " COMMAND
 
     # Abort to host?
-    if [ "$COMMAND" == "ho login" ] || [ "$COMMAND" == "host login" ]; then
+    if [ "$COMMAND" == "login" ]; then
         exit 10
+    elif [ "$COMMAND" == "exit" ]; then
+        exit
     fi
 
     # shellcheck disable=SC2086
