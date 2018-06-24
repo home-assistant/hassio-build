@@ -33,6 +33,10 @@ On a special platform they need set a machine type use:
 ```bash
 curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/install/hassio_install | bash -s -- -m MY_MACHINE
 ```
+## Migration
+
+If you are already running Home Assistant and are looking to migrate to Hass.io, do the install as per the instructions above. Then move your existing configiration files (configuration.yaml, customize.yaml etc) to this folder: `/usr/share/hassio/homeassistant` and restart Home Assistant.
+
 
 ## Supported Machine types
 
