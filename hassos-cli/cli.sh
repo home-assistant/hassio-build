@@ -19,4 +19,5 @@ while true; do
 
     # shellcheck disable=SC2086
     hassio $COMMAND
+    echo ""
 done
