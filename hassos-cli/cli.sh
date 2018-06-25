@@ -4,6 +4,7 @@ cat /etc/welcome.txt
 
 # Set hosts data
 echo -e "172.30.32.2\thassio" >> /etc/hosts
+export HASSIO_TOKEN=${MACHINE_ID}
 
 # Run CLI
 COMMAND=""
