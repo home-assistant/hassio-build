@@ -3,7 +3,7 @@
 cat /etc/welcome.txt
 
 # Set hosts data
-echo "172.30.32.2\thassio" >> /etc/hosts
+echo -e "172.30.32.2\thassio" >> /etc/hosts
 
 # Run CLI
 COMMAND=""
