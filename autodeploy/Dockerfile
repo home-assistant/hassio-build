@@ -10,5 +10,5 @@ RUN apk add --no-cache \
 RUN apk add --no-cache --repository http://nl.alpinelinux.org/alpine/v3.7/community \
     docker
 
-COPY x x
+COPY ad_homeassistant.py /app/
 ENTRYPOINT ["/usr/bin/hostapp.sh"]
