@@ -3,7 +3,7 @@
 cat /etc/welcome.txt
 
 # Set Token
-export HASSIO_TOKEN=${MACHINE_ID}
+export HASSIO_TOKEN=$(cat /etc/machine-id)
 
 # Run CLI
 COMMAND=""
