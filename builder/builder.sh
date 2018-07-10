@@ -276,6 +276,9 @@ function build_base_image() {
     local build_from=""
     local docker_cli=()
 
+    # Set type
+    docker_cli+=("--label" "io.hass.type=base")
+
     # Start build
     run_build "$TARGET/$build_arch" "$DOCKER_HUB" "$image" "$VERSION" \
         "$build_from" "$build_arch" docker_cli[@]
