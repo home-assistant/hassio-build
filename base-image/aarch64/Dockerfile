@@ -1,4 +1,4 @@
-FROM arm64v8/alpine:3.7
+FROM arm64v8/alpine:3.8
 
 COPY qemu-aarch64-static /usr/bin/qemu-aarch64-static
 RUN apk upgrade --no-cache \

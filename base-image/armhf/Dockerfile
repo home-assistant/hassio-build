@@ -1,4 +1,4 @@
-FROM arm32v6/alpine:3.7
+FROM arm32v6/alpine:3.8
 
 COPY qemu-arm-static /usr/bin/qemu-arm-static
 RUN apk upgrade --no-cache \
