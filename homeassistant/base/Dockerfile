@@ -55,14 +55,16 @@ RUN apk add --no-cache \
     && rm -rf /usr/src/opencv
 
 # Boost python3
-BOOST_VERSION=
-RUN wget https://dl.bintray.com/boostorg/release/${boost_version}/source/${boost_dir}.tar.gz \
-    && tar xfz ${boost_dir}.tar.gz \
-    && rm ${boost_dir}.tar.gz \
-    && cd ${boost_dir} \
+BOOST_VERSION=boost-1.67.0
+RUN apk add --no-cache --virtual .build-dependencies \
+        make bison gcc g++ musl-dev linux-header git \
+    && cd /usr/src \
+    && git clone --recursive --depth 1 -b $BOOST_VERSION https://github.com/boostorg/boost \
+    && cd /usr/src/boost \
     && ./bootstrap.sh \
-    && ./b2 --without-python --prefix=/usr -j 4 link=shared runtime-link=shared install \
-    && cd .. && rm -rf ${boost_dir} && ldconfig
+    && ./b2 --with-python=/usr/local/bin/python3 --with-python-version=3.6 --with-python-root=/usr/local/lib/python3.6 \
+        --build-type=minimal --prefix=/usr/local -j 4 link=shared runtime-link=shared install \
+    && rm -rf /usr/src/boost
 
 # Dlib
 DLIB_VERSION=19.14.0
