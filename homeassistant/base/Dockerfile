@@ -61,9 +61,10 @@ RUN apk add --no-cache --virtual .build-dependencies \
     && cd /usr/src \
     && git clone --recursive --shallow-submodules --depth 1 -b $BOOST_VERSION https://github.com/boostorg/boost \
     && cd /usr/src/boost \
-    && ./bootstrap.sh \
-    && ./b2 --with-python=/usr/local/bin/python3 --with-python-version=3.6 --with-python-root=/usr/local/lib/python3.6 \
-        --build-type=minimal --prefix=/usr/local -j 4 link=shared runtime-link=shared install \
+    && ./bootstrap.sh --with-python=/usr/local/bin/python3 \
+    &&  sed -i "s|using python :.*|using python : 3.6 : /usr/local : /usr/local/include/python3.6m ;|" project-config.jam \
+    && exit 0 && ./b2 --with-python --build-type=minimal --prefix=/usr/local \
+        -j 4 link=shared runtime-link=shared install \
     && rm -rf /usr/src/boost
 
 # Dlib
