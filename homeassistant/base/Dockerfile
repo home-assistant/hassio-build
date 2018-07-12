@@ -55,11 +55,11 @@ RUN apk add --no-cache \
     && rm -rf /usr/src/opencv
 
 # Boost python3
-BOOST_VERSION=boost-1.67.0
+ARG BOOST_VERSION=boost-1.67.0
 RUN apk add --no-cache --virtual .build-dependencies \
-        make bison gcc g++ musl-dev linux-header git \
+        make bison gcc g++ musl-dev linux-headers git \
     && cd /usr/src \
-    && git clone --recursive --depth 1 -b $BOOST_VERSION https://github.com/boostorg/boost \
+    && git clone --recursive --shallow-submodules --depth 1 -b $BOOST_VERSION https://github.com/boostorg/boost \
     && cd /usr/src/boost \
     && ./bootstrap.sh \
     && ./b2 --with-python=/usr/local/bin/python3 --with-python-version=3.6 --with-python-root=/usr/local/lib/python3.6 \
@@ -67,7 +67,7 @@ RUN apk add --no-cache --virtual .build-dependencies \
     && rm -rf /usr/src/boost
 
 # Dlib
-DLIB_VERSION=19.14.0
+ARG DLIB_VERSION=19.14.0
 RUN apk add --no-cache --virtual .build-dependencies \
         cmake ncurses make g++ \
     && pip3 install --no-cache-dir dlib==$DLIB_VERSION \
