@@ -1,13 +1,9 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-# Add env
-ENV LANG C.UTF-8
-
 ####
 # Install core
 RUN apk add --no-cache \
-        python3 \
         bsd-compat-headers \
         libgcc \
         libstdc++ \
@@ -36,17 +32,17 @@ RUN apk add --no-cache \
     && rm -rf /usr/src/ssocr
 
 # OpenCV/scipy
-ENV PYTHONPATH /usr/local/lib/python3.6/site-packages
+ARG OPENCV_VERSION=3.3.1
 RUN apk add --no-cache \
         libwebp ffmpeg-libs libgfortran libdc1394 jasper-libs zlib \
         lapack \
     && apk add --no-cache --virtual .build-dependencies \
-        gcc g++ musl-dev python3-dev cmake make ncurses linux-headers \
+        gcc g++ musl-dev cmake make ncurses linux-headers \
         gfortran ffmpeg-dev libwebp-dev lapack-dev \
         git libpng-dev libjpeg-turbo-dev tiff-dev \
         jasper-dev libdc1394-dev zlib-dev \
     && pip3 install --no-cache-dir numpy scipy \
-    && git clone --depth 1 -b 3.3.1 https://github.com/opencv/opencv \
+    && git clone --depth 1 -b $OPENCV_VERSION https://github.com/opencv/opencv \
     && cd opencv \
     && mkdir -p build \
     && cd build \
@@ -57,29 +53,42 @@ RUN apk add --no-cache \
     && make install \
     && apk del .build-dependencies \
     && rm -rf /usr/src/opencv
-    
+
+# Boost python3
+BOOST_VERSION=
+RUN wget https://dl.bintray.com/boostorg/release/${boost_version}/source/${boost_dir}.tar.gz \
+    && tar xfz ${boost_dir}.tar.gz \
+    && rm ${boost_dir}.tar.gz \
+    && cd ${boost_dir} \
+    && ./bootstrap.sh \
+    && ./b2 --without-python --prefix=/usr -j 4 link=shared runtime-link=shared install \
+    && cd .. && rm -rf ${boost_dir} && ldconfig
+
 # Dlib
-RUN apk add --no-cache \
-        boost boost-python3 \
-    && apk add --no-cache --virtual .build-dependencies \
-        boost-dev cmake ncurses make g++ python3-dev \
-    && pip3 install --no-cache-dir dlib \
+DLIB_VERSION=19.14.0
+RUN apk add --no-cache --virtual .build-dependencies \
+        cmake ncurses make g++ \
+    && pip3 install --no-cache-dir dlib==$DLIB_VERSION \
     && apk del .build-dependencies
 
-# OpenALPR
+# Log4Cplus
+ARG LOGCPLUS_VERSION=REL_1_2_0
 RUN apk add --no-cache \
         tesseract-ocr \
     && apk add --no-cache --virtual .build-dependencies \
         cmake ncurses make g++ tesseract-ocr-dev \
         git autoconf automake libtool \
-    && git clone --depth 1 -b REL_1_2_0 https://github.com/log4cplus/log4cplus \
+    && git clone --depth 1 -b $LOGCPLUS_VERSION https://github.com/log4cplus/log4cplus \
     && cd log4cplus \
     && autoreconf -f -i \
     && ./configure --with-working-locale \
     && make \
     && make install \
     && rm -rf /usr/src/log4cplus
-RUN git clone --depth 1 -b v2.3.0 https://github.com/openalpr/openalpr \
+
+# OpenALPR
+ARG OPENALPR_VERSION=v2.3.0
+RUN git clone --depth 1 -b $OPENALPR_VERSION https://github.com/openalpr/openalpr \
     && cd openalpr/src \
     && mkdir -p build \
     && cd build \
@@ -126,7 +135,7 @@ RUN apk add --no-cache \
 RUN apk add --no-cache \
         mariadb-client-libs postgresql-libs freetds libffi \
     && apk add --no-cache --virtual .build-dependencies \
-        gcc g++ musl-dev python3-dev make \
+        gcc g++ musl-dev make \
         mariadb-dev postgresql-dev freetds-dev libffi-dev \
     && pip3 install --no-cache-dir cython \
     && pip3 install --no-cache-dir mysqlclient psycopg2 \
