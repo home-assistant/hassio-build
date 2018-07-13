@@ -4,6 +4,7 @@ FROM $BUILD_FROM
 ####
 # Install core
 RUN apk add --no-cache \
+        bash \
         bsd-compat-headers \
         libgcc \
         libstdc++ \
@@ -32,7 +33,7 @@ RUN apk add --no-cache \
     && rm -rf /usr/src/ssocr
 
 # OpenCV/scipy
-ARG OPENCV_VERSION=3.3.1
+ARG OPENCV_VERSION=3.4.2
 RUN apk add --no-cache \
         libwebp ffmpeg-libs libgfortran libdc1394 jasper-libs zlib \
         lapack \
@@ -53,19 +54,6 @@ RUN apk add --no-cache \
     && make install \
     && apk del .build-dependencies \
     && rm -rf /usr/src/opencv
-
-# Boost python3
-ARG BOOST_VERSION=boost-1.67.0
-RUN apk add --no-cache --virtual .build-dependencies \
-        make bison gcc g++ musl-dev linux-headers git \
-    && cd /usr/src \
-    && git clone --recursive --shallow-submodules --depth 1 -b $BOOST_VERSION https://github.com/boostorg/boost \
-    && cd /usr/src/boost \
-    && ./bootstrap.sh --with-python=/usr/local/bin/python3 \
-    &&  sed -i "s|using python :.*|using python : 3.6 : /usr/local : /usr/local/include/python3.6m ;|" project-config.jam \
-    && exit 0 && ./b2 --with-python --build-type=minimal --prefix=/usr/local \
-        -j 4 link=shared runtime-link=shared install \
-    && rm -rf /usr/src/boost
 
 # Dlib
 ARG DLIB_VERSION=19.14.0
