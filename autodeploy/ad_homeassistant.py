@@ -51,16 +51,16 @@ def run_build(builder, architectures, machines, version):
     generic = ("docker run --rm --privileged -v ~/.docker:/root/.docker "
                "-v /var/run/docker.sock:/var/run/docker.sock "
                "homeassistant/{}-builder "
-               "-r https://github.com/home-assistant/hassio-build "
-               "-t homeassistant/generic --docker-hub homeassistant "
+               "-r https://github.com/home-assistant/hassio-homeassistant "
+               "-t generic --docker-hub homeassistant "
                "--{} --homeassistant {}").format(
                    builder, " --".join(architectures), version)
 
     machine = ("docker run --rm --privileged -v ~/.docker:/root/.docker "
                "-v /var/run/docker.sock:/var/run/docker.sock "
                "homeassistant/{}-builder "
-               "-r https://github.com/home-assistant/hassio-build "
-               "-t homeassistant/machine --docker-hub homeassistant "
+               "-r https://github.com/home-assistant/hassio-homeassistant "
+               "-t machine --docker-hub homeassistant "
                "--homeassistant-machine {}={}").format(
                    builder, version, machines)
 
