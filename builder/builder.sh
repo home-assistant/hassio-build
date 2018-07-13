@@ -87,6 +87,8 @@ Options:
         Build a it self.
     --base <VERSION>
         Build our base images.
+    --base-python <VERSION>
+        Build our base python images.
     --supervisor
         Build a Hass.io supervisor image.
     --hassio-cli <VERSION>
@@ -273,7 +275,7 @@ function build_builder() {
 function build_base_image() {
     local build_arch=$1
     local image="{arch}-base"
-    local build_from=""
+    local build_from="homeassistant/${build_arch}-base"
     local docker_cli=()
 
     # Set type
@@ -281,6 +283,20 @@ function build_base_image() {
 
     # Start build
     run_build "$TARGET/$build_arch" "$DOCKER_HUB" "$image" "$VERSION" \
+        "$build_from" "$build_arch" docker_cli[@]
+}
+
+function build_base_python_image() {
+    local build_arch=$1
+    local image="{arch}-base-python"
+    local build_from=""
+    local docker_cli=()
+
+    # Set type
+    docker_cli+=("--label" "io.hass.type=base")
+
+    # Start build
+    run_build "$TARGET/$VERSION" "$DOCKER_HUB" "$image" "$VERSION" \
         "$build_from" "$build_arch" docker_cli[@]
 }
 
@@ -576,6 +592,11 @@ while [[ $# -gt 0 ]]; do
             VERSION=$2
             shift
             ;;
+        --base-python)
+            BUILD_TYPE="base-python"
+            VERSION=$2
+            shift
+            ;;
         --hassio-cli)
             BUILD_TYPE="cli"
             VERSION=$2
@@ -656,6 +677,8 @@ for arch in "${BUILD_LIST[@]}"; do
         (build_builder "$arch") &
     elif [ "$BUILD_TYPE" == "base" ]; then
     	(build_base_image "$arch") &
+    elif [ "$BUILD_TYPE" == "base-python" ]; then
+    	(build_base_python_image "$arch") &
     elif [ "$BUILD_TYPE" == "cli" ]; then
         (build_hassio_cli "$arch") &
     elif [ "$BUILD_TYPE" == "supervisor" ]; then
