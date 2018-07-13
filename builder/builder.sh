@@ -275,7 +275,7 @@ function build_builder() {
 function build_base_image() {
     local build_arch=$1
     local image="{arch}-base"
-    local build_from="homeassistant/${build_arch}-base"
+    local build_from=""
     local docker_cli=()
 
     # Set type
@@ -289,7 +289,7 @@ function build_base_image() {
 function build_base_python_image() {
     local build_arch=$1
     local image="{arch}-base-python"
-    local build_from=""
+    local build_from="homeassistant/${build_arch}-base"
     local docker_cli=()
 
     # Set type
@@ -399,7 +399,7 @@ function build_homeassistant_base() {
     local build_arch=$1
 
     local image="{arch}-homeassistant-base"
-    local build_from="homeassistant/${build_arch}-base:latest"
+    local build_from="homeassistant/${build_arch}-base-python:3.6"
     local docker_cli=()
     local version=""
 
