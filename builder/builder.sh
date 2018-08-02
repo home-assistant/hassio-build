@@ -454,7 +454,7 @@ function build_homeassistant_landingpage() {
     local docker_cli=()
 
     # Lookup Archs
-    if [[ "$build_machine" =~ ^(.*pi[23]?|.*arm)$ ]]; then
+    if [[ "$build_machine" =~ ^(.*pi[23]?|.*arm|tinker)$ ]]; then
         build_arch="armhf"
     elif [[ "$build_machine" =~ ^(.*x86-64|intel-nuc)$ ]]; then
         build_arch="amd64"
