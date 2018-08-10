@@ -23,7 +23,16 @@ IMAGE=""
 BUILD_LIST=()
 BUILD_TYPE="addon"
 BUILD_TASKS=()
-BUILD_MACHINE=('raspberrypi' 'raspberrypi2' 'raspberrypi3' 'raspberrypi3-64' 'intel-nuc' 'qemux86-64' 'qemux86' 'qemuarm' 'qemuarm-64' 'tinker')
+declare -A BUILD_MACHINE=([qemuarm-64]=aarch64 \
+                          [raspberrypi3-64]=aarch64 \
+                          [intel-nuc]=amd64 \
+                          [qemux86-64]=amd64 \
+                          [qemuarm]=armhf \
+                          [raspberrypi]=armhf \
+                          [raspberrypi2]=armhf \
+                          [raspberrypi3]=armhf \
+                          [tinker]=armhf \
+                          [qemux86]=i386)
 
 
 #### Misc functions ####
@@ -135,7 +144,7 @@ function start_docker() {
         fi
     done
     echo "[INFO] Docker was initialized"
-    
+
     if [ "$DOCKER_LOGIN" == "true" ]; then
         docker login
     fi
@@ -324,7 +333,7 @@ function build_addon() {
     if [ -z "$build_from" ]; then
         build_from="homeassistant/${build_arch}-base:latest"
     fi
-    
+
     # Additional build args
     if [ ! -z "$args" ]; then
         for arg in $args; do
@@ -448,21 +457,11 @@ function build_homeassistant_machine() {
 
 function build_homeassistant_landingpage() {
     local build_machine=$1
+    local build_arch=$2
 
     local build_arch=""
     local image="${build_machine}-homeassistant"
     local docker_cli=()
-
-    # Lookup Archs
-    if [[ "$build_machine" =~ ^(.*pi[23]?|.*arm|tinker)$ ]]; then
-        build_arch="armhf"
-    elif [[ "$build_machine" =~ ^(.*x86-64|intel-nuc)$ ]]; then
-        build_arch="amd64"
-    elif [[ "$build_machine" =~ ^(.*x86)$ ]]; then
-        build_arch="i386"
-    elif [[ "$build_machine" =~ ^(.*arm-64|.*pi3-64)$ ]]; then
-        build_arch="aarch64"
-    fi
     local build_from="homeassistant/${build_arch}-base:latest"
 
     # Set labels
@@ -477,9 +476,23 @@ function build_homeassistant_landingpage() {
 
 function extract_machine_build() {
     local list=$1
-    
+    local array=()
+    local remove=()
+
     if [ "$list" != "ALL" ]; then
-        IFS="," read -ra BUILD_MACHINE <<<"$list"
+        IFS="," read -ra array <<<"$list"
+        echo ${array}
+        for i in "${!BUILD_MACHINE[@]}"; do
+            skip=
+            for j in "${array[@]}"; do
+              [[ $i == $j ]] && { skip=1; break; }
+            done
+            [[ -n $skip ]] || remove+=("$i")
+        done
+
+        for i in "${remove[@]}"; do
+            unset BUILD_MACHINE["$i"]
+        done
     fi
 }
 
@@ -698,12 +711,12 @@ done
 
 # Select machine build
 if [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
-    echo "[INFO] Machine builds: ${BUILD_MACHINE[*]}"
-    for machine in "${BUILD_MACHINE[@]}"; do
+    echo "[INFO] Machine builds: ${!BUILD_MACHINE[@]}"
+    for machine in "${!BUILD_MACHINE[@]}"; do
         if [ "$BUILD_TYPE" == "homeassistant-machine" ]; then
             (build_homeassistant_machine "$machine") &
         elif [ "$BUILD_TYPE" == "homeassistant-landingpage" ]; then
-            (build_homeassistant_landingpage "$machine") &
+            (build_homeassistant_landingpage "$machine" "${BUILD_MACHINE["$machine"]}") &
         fi
         BUILD_TASKS+=($!)
     done
