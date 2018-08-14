@@ -45,13 +45,13 @@ docker run --rm homeassistant/{arch}-builder:latest [options]
 
 Options:
   -h, --help
-        Display this help and exit.
+        Display this help and exit.
 
   Repository / Data
     -r, --repository <REPOSITORY>
-        Set git repository to load data from.
+        Set git repository to load data from.
     -b, --branch <BRANCH>
-        Set git branch for repository.
+        Set git branch for repository.
     -t, --target <PATH_TO_BUILD>
         Set local folder or path inside repository for build.
 
@@ -482,11 +482,11 @@ function extract_machine_build() {
 
     if [ "$list" != "ALL" ]; then
         IFS="," read -ra array <<<"$list"
-        echo ${array}
+        echo "${array}"
         for i in "${!BUILD_MACHINE[@]}"; do
             skip=
             for j in "${array[@]}"; do
-              [[ $i == $j ]] && { skip=1; break; }
+              [[ $i == "$j" ]] && { skip=1; break; }
             done
             [[ -n $skip ]] || remove+=("$i")
         done
@@ -712,7 +712,7 @@ done
 
 # Select machine build
 if [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
-    echo "[INFO] Machine builds: ${!BUILD_MACHINE[@]}"
+    echo "[INFO] Machine builds: ${!BUILD_MACHINE[*]}"
     for machine in "${!BUILD_MACHINE[@]}"; do
         if [ "$BUILD_TYPE" == "homeassistant-machine" ]; then
             (build_homeassistant_machine "$machine") &
