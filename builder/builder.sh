@@ -483,11 +483,10 @@ function extract_machine_build() {
 
     if [ "$list" != "ALL" ]; then
         IFS="," read -ra array <<<"$list"
-        echo "${array}"
         for i in "${!BUILD_MACHINE[@]}"; do
             skip=
             for j in "${array[@]}"; do
-              [[ $i == "$j" ]] && { skip=1; break; }
+                [[ $i == "$j" ]] && { skip=1; break; }
             done
             [[ -n $skip ]] || remove+=("$i")
         done
@@ -713,7 +712,7 @@ done
 
 # Select machine build
 if [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
-    echo "[INFO] Machine builds: ${!BUILD_MACHINE[*]}"
+    echo "[INFO] Machine builds: ${!BUILD_MACHINE[@]}"
     for machine in "${!BUILD_MACHINE[@]}"; do
         if [ "$BUILD_TYPE" == "homeassistant-machine" ]; then
             (build_homeassistant_machine "$machine") &
