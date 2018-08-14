@@ -46,4 +46,5 @@ curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/in
 - qemux86
 - intel-nuc
 - tinker
-- odroidc2
+- odroid-c2
+- odroid-xu
