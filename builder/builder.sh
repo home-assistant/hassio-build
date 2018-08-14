@@ -712,12 +712,12 @@ done
 
 # Select machine build
 if [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
-    echo "[INFO] Machine builds: ${!BUILD_MACHINE[@]}"
+    echo "[INFO] Machine builds: ${!BUILD_MACHINE[*]}"
     for machine in "${!BUILD_MACHINE[@]}"; do
         if [ "$BUILD_TYPE" == "homeassistant-machine" ]; then
             (build_homeassistant_machine "$machine") &
         elif [ "$BUILD_TYPE" == "homeassistant-landingpage" ]; then
-            (build_homeassistant_landingpage "$machine" "${BUILD_MACHINE[$machine]}") &
+            (build_homeassistant_landingpage "$machine" "${BUILD_MACHINE["$machine"]}") &
         fi
         BUILD_TASKS+=($!)
     done
