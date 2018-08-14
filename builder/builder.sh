@@ -461,7 +461,6 @@ function build_homeassistant_landingpage() {
     local build_machine=$1
     local build_arch=$2
 
-    local build_arch=""
     local image="${build_machine}-homeassistant"
     local docker_cli=()
     local build_from="homeassistant/${build_arch}-base:latest"
