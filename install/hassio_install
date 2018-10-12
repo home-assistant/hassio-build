@@ -108,7 +108,7 @@ if [ ! -e "/etc/docker/daemon.json" ]; then
     echo '{"dns": ["8.8.8.8", "8.8.4.4"]}' > /etc/docker/daemon.json
 
     echo "[Info] Restart docker and wait 30sec"
-    systemd restart docker.service && sleep 30
+    systemctl restart docker.service && sleep 30
 fi
 
 ##
