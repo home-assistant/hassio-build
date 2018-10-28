@@ -100,6 +100,8 @@ Options:
         Build our base images.
     --base-python <VERSION>
         Build our base python images.
+    --base-ubuntu <VERSION>
+        Build our base ubuntu images.
     --supervisor
         Build a Hass.io supervisor image.
     --hassio-cli <VERSION>
@@ -310,6 +312,22 @@ function build_base_python_image() {
     run_build "$TARGET/$VERSION" "$DOCKER_HUB" "$image" "$VERSION" \
         "$build_from" "$build_arch" docker_cli[@]
 }
+
+
+function build_base_ubuntu_image() {
+    local build_arch=$1
+    local image="{arch}-base-ubuntu"
+    local build_from=""
+    local docker_cli=()
+
+    # Set type
+    docker_cli+=("--label" "io.hass.type=base")
+
+    # Start build
+    run_build "$TARGET/$build_arch" "$DOCKER_HUB" "$image" "$VERSION" \
+        "$build_from" "$build_arch" docker_cli[@]
+}
+
 
 function build_addon() {
     local build_arch=$1
@@ -610,6 +628,11 @@ while [[ $# -gt 0 ]]; do
             VERSION=$2
             shift
             ;;
+        --base-ubuntu)
+            BUILD_TYPE="base-ubuntu"
+            VERSION=$2
+            shift
+            ;;
         --hassio-cli)
             BUILD_TYPE="cli"
             VERSION=$2
@@ -692,6 +715,8 @@ for arch in "${BUILD_LIST[@]}"; do
     	(build_base_image "$arch") &
     elif [ "$BUILD_TYPE" == "base-python" ]; then
     	(build_base_python_image "$arch") &
+    elif [ "$BUILD_TYPE" == "base-ubuntu" ]; then
+    	(build_base_ubuntu_image "$arch") &
     elif [ "$BUILD_TYPE" == "cli" ]; then
         (build_hassio_cli "$arch") &
     elif [ "$BUILD_TYPE" == "supervisor" ]; then
