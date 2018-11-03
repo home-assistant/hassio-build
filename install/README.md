@@ -10,7 +10,7 @@ bash
 jq
 curl
 avahi-daemon
-dbus-daemon
+dbus
 ```
 
 ## Optional
