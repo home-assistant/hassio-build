@@ -10,14 +10,14 @@ bash
 jq
 curl
 avahi-daemon
-dbus-daemon
+dbus
 ```
 
 ## Optional
 
 ```
 apparmor-utils
-networkmanager
+network-manager
 ```
 
 ## Run
