@@ -23,18 +23,20 @@ IMAGE=""
 BUILD_LIST=()
 BUILD_TYPE="addon"
 BUILD_TASKS=()
-declare -A BUILD_MACHINE=([odroid-c2]="aarch64" \
-                          [qemuarm-64]="aarch64" \
-                          [raspberrypi3-64]="aarch64" \
+declare -A BUILD_MACHINE=(
                           [intel-nuc]="amd64" \
-                          [qemux86-64]="amd64" \
+                          [odroid-c2]="aarch64" \
+                          [odroid-xu]="armhf" \
+                          [orangepi-prime]="aarch64" \
                           [qemuarm]="armhf" \
+                          [qemuarm-64]="aarch64" \
+                          [qemux86]="i386" \
+                          [qemux86-64]="amd64" \
                           [raspberrypi]="armhf" \
                           [raspberrypi2]="armhf" \
                           [raspberrypi3]="armhf" \
-                          [tinker]="armhf" \
-                          [odroid-xu]="armhf" \
-                          [qemux86]="i386")
+                          [raspberrypi3-64]="aarch64" \
+                          [tinker]="armhf" )
 
 
 #### Misc functions ####

@@ -36,15 +36,16 @@ curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/in
 
 ## Supported Machine types
 
+- intel-nuc
+- odroid-c2
+- odroid-xu
+- orangepi-prime
+- qemuarm
+- qemuarm-64
+- qemux86
+- qemux86-64
 - raspberrypi
 - raspberrypi2
 - raspberrypi3
 - raspberrypi3-64
-- qemuarm
-- qemuarm-64
-- qemux86-64
-- qemux86
-- intel-nuc
 - tinker
-- odroid-c2
-- odroid-xu
