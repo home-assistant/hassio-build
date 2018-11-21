@@ -269,9 +269,7 @@ function build_builder() {
     local docker_cli=()
 
     # Select builder image
-    if [ "$build_arch" == "aarch64" ]; then
-        build_from=homeassistant/aarch64-base-ubuntu:16.04
-    elif [ "$build_arch" == "i386" ]; then
+    if [ "$build_arch" == "i386" ]; then
         echo "[ERROR] i386 not supported for builder"
         return 1
     else
