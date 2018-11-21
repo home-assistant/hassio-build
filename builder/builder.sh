@@ -269,13 +269,11 @@ function build_builder() {
     local docker_cli=()
 
     # Select builder image
-    if [ "$build_arch" == "aarch64" ]; then
-        build_from=multiarch/ubuntu-core:arm64-xenial
-    elif [ "$build_arch" == "i386" ]; then
+    if [ "$build_arch" == "i386" ]; then
         echo "[ERROR] i386 not supported for builder"
         return 1
     else
-        build_from=multiarch/ubuntu-core:${build_arch}-xenial
+        build_from=homeassistant/${build_arch}-base-ubuntu:16.04
     fi
 
     # Make version
