@@ -18,8 +18,8 @@ command -v jq > /dev/null 2>&1 || { echo "[Error] Please install jq first"; exit
 command -v curl > /dev/null 2>&1 || { echo "[Error] Please install curl first"; exit 1; }
 command -v avahi-daemon > /dev/null 2>&1 || { echo "[Error] Please install avahi first"; exit 1; }
 command -v dbus-daemon > /dev/null 2>&1 || { echo "[Error] Please install dbus first"; exit 1; }
-command -v apparmor_parser > /dev/null 2>&1 || echo "[Warning] No AppArmor support on Host."
-command -v nmcli > /dev/null 2>&1 || echo "[Warning] No NetworkManager support on Host."
+command -v apparmor_parser > /dev/null 2>&1 || echo "[Warning] No AppArmor support on host."
+command -v nmcli > /dev/null 2>&1 || echo "[Warning] No NetworkManager support on host."
 
 # Parse command line parameters
 while [[ $# > 0 ]]; do
@@ -77,7 +77,7 @@ case $ARCH in
 esac
 
 if [ -z "${HOMEASSISTANT_DOCKER}" ]; then
-    echo "[Error] Found no Home Assistant docker images for this host!"
+    echo "[Error] Found no Home Assistant Docker images for this host!"
 fi
 
 ### Main
@@ -103,17 +103,17 @@ EOF
 ##
 # Check DNS settings
 if [ ! -e "/etc/docker/daemon.json" ]; then
-    echo "[Warning] Create DNS settings for docker to avoid systemd bug!"
+    echo "[Warning] Create DNS settings for Docker to avoid systemd bug!"
     mkdir -p /etc/docker
     echo '{"dns": ["8.8.8.8", "8.8.4.4"]}' > /etc/docker/daemon.json
 
-    echo "[Info] Restart docker and wait 30sec"
+    echo "[Info] Restart Docker and wait 30 seconds"
     systemctl restart docker.service && sleep 30
 fi
 
 ##
 # Pull supervisor image
-echo "[Info] Install supervisor docker"
+echo "[Info] Install supervisor Docker container"
 docker pull "$HASSIO_DOCKER:$HASSIO_VERSION" > /dev/null
 docker tag "$HASSIO_DOCKER:$HASSIO_VERSION" "$HASSIO_DOCKER:latest" > /dev/null
 
