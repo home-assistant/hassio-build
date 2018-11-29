@@ -21,6 +21,8 @@ command -v dbus-daemon > /dev/null 2>&1 || { echo "[Error] Please install dbus f
 command -v apparmor_parser > /dev/null 2>&1 || echo "[Warning] No AppArmor support on host."
 command -v nmcli > /dev/null 2>&1 || echo "[Warning] No NetworkManager support on host."
 
+function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
+
 # Parse command line parameters
 while [[ $# > 0 ]]; do
     arg="$1"
@@ -102,7 +104,8 @@ EOF
 
 ##
 # Check DNS settings
-if [ ! -e "/etc/docker/daemon.json" ]; then
+DOCKER_VERSION="$(docker --version | grep -Po "\d{2}\.\d{2}\.\d")"
+if version_gt "18.09.0" "${DOCKER_VERSION}" && [ ! -e "/etc/docker/daemon.json" ]; then
     echo "[Warning] Create DNS settings for Docker to avoid systemd bug!"
     mkdir -p /etc/docker
     echo '{"dns": ["8.8.8.8", "8.8.4.4"]}' > /etc/docker/daemon.json
