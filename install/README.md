@@ -37,6 +37,10 @@ curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/in
 ## Supported Machine types
 
 - intel-nuc
+- generic-aarch64
+- generic-armhf
+- generic-amd64
+- generic-i386
 - odroid-c2
 - odroid-xu
 - orangepi-prime
