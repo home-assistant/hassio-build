@@ -41,11 +41,10 @@ def get_releases(until=None):
         logging.exception("Can't read releases")
         release_data = []
 
-    release_list = [row['tag_name'] in release_data]
+    release_list = [row['tag_name'] for row in release_data]
     release_list.sort(key=StrictVersion, reverse=True)
 
-    for row in release_list:
-        tag = row['tag_name']
+    for tag in release_list:
         if tag == until:
             break
         yield tag
