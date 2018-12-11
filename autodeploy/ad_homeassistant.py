@@ -100,5 +100,6 @@ if __name__ == '__main__':
             main()
         except Exception:  # pylint: disable=W0703
             logging.exception("Fatal Error on Build System")
+            time.sleep(600)
 
     logging.info("Stop Build System")
