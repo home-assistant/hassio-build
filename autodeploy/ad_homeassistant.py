@@ -1,8 +1,10 @@
 """Automatic deploy Home-Assistant container."""
+from distutils.version import StrictVersion
 import argparse
 import logging
 import subprocess
 import time
+import sys
 
 import requests
 
@@ -39,6 +41,7 @@ def get_releases(until=None):
         logging.exception("Can't read releases")
         release_data = []
 
+    release_data.sort(key=StrictVersion, reverse=True)
     for row in release_data:
         tag = row['tag_name']
         if tag == until:
@@ -65,21 +68,11 @@ def run_build(builder, architectures, machines, version):
                    builder, version, machines)
 
     logging.info("Start generic build of %s", version)
-    run_generic = subprocess.run(
-        generic, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    # Write log
-    with open("generic-{}.log".format(version), "w") as logfile:
-        logfile.write("{}\n{}".format(run_generic.stdout, run_generic.stderr))
+    run_generic = subprocess.run(generic, stdout=sys.stdout, stderr=sys.stderr)
     run_generic.check_returncode()
 
     logging.info("Start generic machine of %s", version)
-    run_machine = subprocess.run(
-        machine, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    # Write log
-    with open("machine-{}.log".format(version), "w") as logfile:
-        logfile.write("{}\n{}".format(run_machine.stdout, run_machine.stderr))
+    run_machine = subprocess.run(machine, , stdout=sys.stdout, stderr=sys.stderr)
     run_machine.check_returncode()
 
 
@@ -101,10 +94,12 @@ def main():
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    try:
-        logging.info("Start Build System")
-        main()
-    except Exception:  # pylint: disable=W0703
-        logging.exception("Fatal Error on Build System")
-    else:
-        logging.info("Stop Build System")
+    while True:
+        try:
+            logging.info("Start Build System")
+            main()
+        except Exception:  # pylint: disable=W0703
+            logging.exception("Fatal Error on Build System")
+            time.sleep(600)
+
+    logging.info("Stop Build System")
