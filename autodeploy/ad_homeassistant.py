@@ -72,7 +72,7 @@ def run_build(builder, architectures, machines, version):
     run_generic.check_returncode()
 
     logging.info("Start generic machine of %s", version)
-    run_machine = subprocess.run(machine, , stdout=sys.stdout, stderr=sys.stderr)
+    run_machine = subprocess.run(machine, stdout=sys.stdout, stderr=sys.stderr)
     run_machine.check_returncode()
 
 
