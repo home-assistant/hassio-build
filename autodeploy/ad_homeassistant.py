@@ -69,11 +69,11 @@ def run_build(builder, architectures, machines, version):
                    builder, version, machines)
 
     logging.info("Start generic build of %s", version)
-    run_generic = subprocess.run(generic, stdout=sys.stdout, stderr=sys.stderr)
+    run_generic = subprocess.run(generic, shell=True, stdout=sys.stdout, stderr=sys.stderr)
     run_generic.check_returncode()
 
     logging.info("Start generic machine of %s", version)
-    run_machine = subprocess.run(machine, stdout=sys.stdout, stderr=sys.stderr)
+    run_machine = subprocess.run(machine, shell=True, stdout=sys.stdout, stderr=sys.stderr)
     run_machine.check_returncode()
 
 
