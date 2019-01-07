@@ -45,6 +45,7 @@ curl -sL https://raw.githubusercontent.com/home-assistant/hassio-build/master/in
 - intel-nuc
 - odroid-c2
 - odroid-xu
+- orangepi-pc2
 - orangepi-prime
 - qemuarm
 - qemuarm-64

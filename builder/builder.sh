@@ -27,6 +27,7 @@ declare -A BUILD_MACHINE=(
                           [intel-nuc]="amd64" \
                           [odroid-c2]="aarch64" \
                           [odroid-xu]="armhf" \
+                          [orangepi-pc2]="aarch64" \
                           [orangepi-prime]="aarch64" \
                           [qemuarm]="armhf" \
                           [qemuarm-64]="aarch64" \
