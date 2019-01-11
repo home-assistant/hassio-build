@@ -102,6 +102,8 @@ Options:
         Build our base images.
     --base-python <VERSION>
         Build our base python images.
+    --base-raspbian <VERSION>
+        Build our base raspbian images.
     --base-ubuntu <VERSION>
         Build our base ubuntu images.
     --supervisor
@@ -633,6 +635,11 @@ while [[ $# -gt 0 ]]; do
             VERSION=$2
             shift
             ;;
+        --base-raspbian)
+            BUILD_TYPE="base-raspbian"
+            VERSION=$2
+            shift
+            ;;
         --hassio-cli)
             BUILD_TYPE="cli"
             VERSION=$2
@@ -717,6 +724,8 @@ for arch in "${BUILD_LIST[@]}"; do
     	(build_base_python_image "$arch") &
     elif [ "$BUILD_TYPE" == "base-ubuntu" ]; then
     	(build_base_ubuntu_image "$arch") &
+    elif [ "$BUILD_TYPE" == "base-raspbian" ]; then
+    	(build_base_raspbian_image "$arch") &
     elif [ "$BUILD_TYPE" == "cli" ]; then
         (build_hassio_cli "$arch") &
     elif [ "$BUILD_TYPE" == "supervisor" ]; then
