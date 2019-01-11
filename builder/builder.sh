@@ -201,9 +201,9 @@ function run_build() {
     local push_images=()
 
     # Overwrites
-    if [ ! -z "$DOCKER_HUB" ]; then repository="$DOCKER_HUB"; fi
-    if [ ! -z "$IMAGE" ]; then image="$IMAGE"; fi
-    if [ ! -z "$VERSION" ]; then version="$VERSION"; fi
+    if [ -n "$DOCKER_HUB" ]; then repository="$DOCKER_HUB"; fi
+    if [ -n "$IMAGE" ]; then image="$IMAGE"; fi
+    if [ -n "$VERSION" ]; then version="$VERSION"; fi
 
     # Replace {arch} with build arch for image
     # shellcheck disable=SC1117
@@ -223,7 +223,7 @@ function run_build() {
     fi
 
     # do we know the arch of build?
-    if [ ! -z "$build_arch" ]; then
+    if [ -n "$build_arch" ]; then
         docker_cli+=("--label" "io.hass.arch=$build_arch")
         docker_cli+=("--build-arg" "BUILD_ARCH=$build_arch")
     fi
@@ -331,6 +331,27 @@ function build_base_ubuntu_image() {
 }
 
 
+function build_base_raspbian_image() {
+    local build_arch=$1
+    local image="{arch}-base-raspbian"
+    local build_from="$VERSION"
+    local docker_cli=()
+
+    # Select builder image
+    if [ "$build_arch" != "armhf" ]; then
+        echo "[ERROR] Only armhf supported for raspbian"
+        return 1
+    fi
+
+    # Set type
+    docker_cli+=("--label" "io.hass.type=base")
+
+    # Start build
+    run_build "$TARGET/$build_arch" "$DOCKER_HUB" "$image" "$VERSION" \
+        "$build_from" "$build_arch" docker_cli[@]
+}
+
+
 function build_addon() {
     local build_arch=$1
 
@@ -357,7 +378,7 @@ function build_addon() {
     fi
 
     # Additional build args
-    if [ ! -z "$args" ]; then
+    if [ -n "$args" ]; then
         for arg in $args; do
             value="$(jq --raw-output ".args.$arg" "$TARGET/build.json")"
             docker_cli+=("--build-arg" "$arg=$value")
@@ -372,7 +393,7 @@ function build_addon() {
     raw_image="$(jq --raw-output '.image // empty' "$TARGET/config.json")"
 
     # Read data from image
-    if [ ! -z "$raw_image" ]; then
+    if [ -n "$raw_image" ]; then
         repository="$(echo "$raw_image" | cut -f 1 -d '/')"
         image="$(echo "$raw_image" | cut -f 2 -d '/')"
     fi
@@ -382,7 +403,7 @@ function build_addon() {
     docker_cli+=("--label" "io.hass.description=$description")
     docker_cli+=("--label" "io.hass.type=addon")
 
-    if [ ! -z "$url" ]; then
+    if [ -n "$url" ]; then
         docker_cli+=("--label" "io.hass.url=$url")
     fi
 
@@ -705,7 +726,7 @@ init_crosscompile
 start_docker
 
 # Load external repository
-if [ ! -z "$GIT_REPOSITORY" ]; then
+if [ -n "$GIT_REPOSITORY" ]; then
     echo "[INFO] Checkout repository $GIT_REPOSITORY"
     git clone --depth 1 --branch "$GIT_BRANCH" "$GIT_REPOSITORY" /data/git 2> /dev/null
     TARGET="/data/git/$TARGET"
