@@ -347,7 +347,7 @@ function build_base_raspbian_image() {
     docker_cli+=("--label" "io.hass.type=base")
 
     # Start build
-    run_build "$TARGET/$build_arch" "$DOCKER_HUB" "$image" "$VERSION" \
+    run_build "$TARGET" "$DOCKER_HUB" "$image" "$VERSION" \
         "$build_from" "$build_arch" docker_cli[@]
 }
 
