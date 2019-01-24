@@ -48,7 +48,7 @@ def get_releases(until=None):
     for tag in release_list:
         if tag == until:
             break
-        build_list.insert(tag, 0)
+        build_list.insert(0, tag)
 
     for tag in build_list:
         yield tag
