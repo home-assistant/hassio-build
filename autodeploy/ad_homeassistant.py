@@ -44,9 +44,13 @@ def get_releases(until=None):
     release_list = [row['tag_name'] for row in release_data]
     release_list.sort(key=StrictVersion, reverse=True)
 
+    build_list = []
     for tag in release_list:
         if tag == until:
             break
+        build_list.insert(tag, 0)
+
+    for tag in build_list:
         yield tag
 
 
