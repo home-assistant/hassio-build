@@ -451,7 +451,7 @@ function build_homeassistant_base() {
     local build_arch=$1
 
     local image="{arch}-homeassistant-base"
-    local build_from="homeassistant/${build_arch}-base-python:3.6"
+    local build_from="homeassistant/${build_arch}-base-python:3.7"
     local docker_cli=()
     local version=""
 
