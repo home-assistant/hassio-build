@@ -399,10 +399,10 @@ function build_addon() {
     url="$(jq --raw-output '.url // empty' "$TARGET/config.json")"
     version="$(jq --raw-output '.version' "$TARGET/config.json")"
     raw_image="$(jq --raw-output '.image // empty' "$TARGET/config.json")"
-    supported_arch=($(jq --raw-output '.arch // empty' "$TARGET/config.json"))
+    mapfile -t supported_arch < <(jq --raw-output '.arch // empty' "$TARGET/config.json")
 
     # Check arch
-    if [[ ! ${supported_arch[@]} =~ ${build_arch} ]];
+    if [[ ! ${supported_arch[*]} =~ ${build_arch} ]]; then
         echo "[ERROR] $build_arch not supported for this add-on"
         return 1
     fi
