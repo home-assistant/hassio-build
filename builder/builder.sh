@@ -26,17 +26,17 @@ BUILD_TASKS=()
 declare -A BUILD_MACHINE=(
                           [intel-nuc]="amd64" \
                           [odroid-c2]="aarch64" \
-                          [odroid-xu]="armhf" \
+                          [odroid-xu]="armv7" \
                           [orangepi-prime]="aarch64" \
                           [qemuarm]="armhf" \
                           [qemuarm-64]="aarch64" \
                           [qemux86]="i386" \
                           [qemux86-64]="amd64" \
                           [raspberrypi]="armhf" \
-                          [raspberrypi2]="armhf" \
-                          [raspberrypi3]="armhf" \
+                          [raspberrypi2]="armv7" \
+                          [raspberrypi3]="armv7" \
                           [raspberrypi3-64]="aarch64" \
-                          [tinker]="armhf" )
+                          [tinker]="armv7" )
 
 
 #### Misc functions ####
@@ -66,7 +66,9 @@ Options:
 
   Architecture
     --armhf
-        Build for arm.
+        Build for arm v6.
+    --armv7
+        Build for arm v7.
     --amd64
         Build for intel/amd 64bit.
     --aarch64
@@ -271,8 +273,8 @@ function build_builder() {
     local docker_cli=()
 
     # Select builder image
-    if [ "$build_arch" == "i386" ]; then
-        echo "[ERROR] i386 not supported for builder"
+    if [ "$build_arch" == "i386" ] || [ "$build_arch" == "armhf" ]; then
+        echo "[ERROR] $build_arch not supported for builder"
         return 1
     else
         build_from=homeassistant/${build_arch}-base-ubuntu:16.04
@@ -322,6 +324,12 @@ function build_base_ubuntu_image() {
     local build_from=""
     local docker_cli=()
 
+    # Select builder image
+    if [ "$build_arch" == "armhf" ]; then
+        echo "[ERROR] $build_arch not supported for ubuntu"
+        return 1
+    fi
+
     # Set type
     docker_cli+=("--label" "io.hass.type=base")
 
@@ -339,7 +347,7 @@ function build_base_raspbian_image() {
 
     # Select builder image
     if [ "$build_arch" != "armhf" ]; then
-        echo "[ERROR] Only armhf supported for raspbian"
+        echo "[ERROR] $build_arch not supported for raspbian"
         return 1
     fi
 
@@ -391,6 +399,13 @@ function build_addon() {
     url="$(jq --raw-output '.url // empty' "$TARGET/config.json")"
     version="$(jq --raw-output '.version' "$TARGET/config.json")"
     raw_image="$(jq --raw-output '.image // empty' "$TARGET/config.json")"
+    mapfile -t supported_arch < <(jq --raw-output '.arch // empty' "$TARGET/config.json")
+
+    # Check arch
+    if [[ ! ${supported_arch[*]} =~ ${build_arch} ]]; then
+        echo "[ERROR] $build_arch not supported for this add-on"
+        return 1
+    fi
 
     # Read data from image
     if [ -n "$raw_image" ]; then
@@ -626,6 +641,9 @@ while [[ $# -gt 0 ]]; do
         --armhf)
             BUILD_LIST+=("armhf")
             ;;
+        --armv7)
+            BUILD_LIST+=("armv7")
+            ;;
         --amd64)
             BUILD_LIST+=("amd64")
             ;;
@@ -636,7 +654,7 @@ while [[ $# -gt 0 ]]; do
             BUILD_LIST+=("aarch64")
             ;;
         --all)
-            BUILD_LIST=("armhf" "amd64" "i386" "aarch64")
+            BUILD_LIST=("armhf" "armv7" "amd64" "i386" "aarch64")
             ;;
         --addon)
             BUILD_TYPE="addon"

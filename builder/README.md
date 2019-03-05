@@ -7,9 +7,9 @@ amd64:
 $ docker pull homeassistant/amd64-builder
 ```
 
-armhf:
+armv7/armhf:
 ```bash
-$ docker pull homeassistant/armhf-builder
+$ docker pull homeassistant/armv7-builder
 ```
 
 aarch64:
