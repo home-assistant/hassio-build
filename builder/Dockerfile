@@ -32,7 +32,6 @@ RUN if [ "$BUILD_ARCH" != "amd64" ]; then exit 0; else \
     && rm -rf /var/lib/apt/lists/*; fi
 
 COPY builder.sh /usr/bin/
-RUN chmod a+x /usr/bin/builder.sh
 
 WORKDIR /data
 ENTRYPOINT ["/usr/bin/builder.sh"]

@@ -661,21 +661,25 @@ while [[ $# -gt 0 ]]; do
             ;;
         --base)
             BUILD_TYPE="base"
+            DOCKER_CACHE="false"
             VERSION=$2
             shift
             ;;
         --base-python)
             BUILD_TYPE="base-python"
+            DOCKER_CACHE="false"
             VERSION=$2
             shift
             ;;
         --base-ubuntu)
             BUILD_TYPE="base-ubuntu"
+            DOCKER_CACHE="false"
             VERSION=$2
             shift
             ;;
         --base-raspbian)
             BUILD_TYPE="base-raspbian"
+            DOCKER_CACHE="false"
             VERSION=$2
             shift
             ;;
