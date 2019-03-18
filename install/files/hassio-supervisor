@@ -23,6 +23,7 @@ HASSIO_CONTAINER_ID=$(docker inspect --format='{{.Image}}' hassio_supervisor || 
 runSupervisor() {
     docker rm --force hassio_supervisor || true
     docker run --name hassio_supervisor \
+        --privileged \
         $APPARMOR \
         --security-opt seccomp=unconfined \
         -v /var/run/docker.sock:/var/run/docker.sock \
