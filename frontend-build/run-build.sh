@@ -12,7 +12,6 @@ script/bootstrap
 # build frontend
 cd hassio
 ./script/build_hassio
-gzip -f -k -9 build-es5/*
 
 # Copy old frontend
 cp -rf build-es5/* ../../hassio/api/panel/
