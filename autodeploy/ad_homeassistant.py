@@ -87,24 +87,28 @@ def main():
 
     latest_build = args.version
     while True:
-        for release in get_releases(latest_build):
-            run_build(args.builder, args.architectures, args.machines, release)
-            latest_build = release
-            logging.info("Build of release %s done", release)
+        try:
+            for release in get_releases(latest_build):
+                run_build(args.builder, args.architectures, args.machines, release)
+                latest_build = release
+                logging.info("Build of release %s done", release)
 
-        # Wait 10 min before
-        time.sleep(600)
+        except KeyboardInterrupt:
+            logging.warning("Canceled by User")
+            return
+
+        except Exception:  # pylint: disable=W0703
+            logging.exception("Fatal Error on Build System")
+
+        finally:
+            time.sleep(600)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    while True:
-        try:
-            logging.info("Start Build System")
-            main()
-        except Exception:  # pylint: disable=W0703
-            logging.exception("Fatal Error on Build System")
-            time.sleep(600)
-
-    logging.info("Stop Build System")
+    try:
+        logging.info("Start Build System")
+        main()
+    finally:
+        logging.info("Stop Build System")
