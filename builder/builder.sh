@@ -707,6 +707,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --homeassistant-base)
             BUILD_TYPE="homeassistant-base"
+            DOCKER_PULL=false
             ;;
         --homeassistant)
             BUILD_TYPE="homeassistant"
