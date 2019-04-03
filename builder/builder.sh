@@ -8,18 +8,19 @@ set -e
 
 DOCKER_TIMEOUT=20
 DOCKER_PID=-1
-DOCKER_HUB=""
-DOCKER_CACHE="true"
-DOCKER_LATEST="true"
-DOCKER_PUSH="true"
-DOCKER_LOGIN="false"
-DOCKER_LOCAL="false"
-CROSSBUILD_CLEANUP="true"
-GIT_REPOSITORY=""
+DOCKER_HUB=
+DOCKER_CACHE=true
+DOCKER_LATEST=true
+DOCKER_PUSH=true
+DOCKER_LOGIN=false
+DOCKER_LOCAL=false
+DOCKER_PULL=true
+CROSSBUILD_CLEANUP=true
+GIT_REPOSITORY=
 GIT_BRANCH="master"
-TARGET=""
-VERSION=""
-IMAGE=""
+TARGET=
+VERSION=
+IMAGE=
 BUILD_LIST=()
 BUILD_TYPE="addon"
 BUILD_TASKS=()
@@ -85,6 +86,8 @@ Options:
        Do not tag images as latest.
     --no-cache
        Disable cache for the build (from latest).
+    --no-pull
+       Disable pull latest FROM image version.
     -d, --docker-hub <DOCKER_REPOSITORY>
        Set or overwrite the docker repository.
     --docker-login
@@ -230,9 +233,14 @@ function run_build() {
         docker_cli+=("--build-arg" "BUILD_ARCH=$build_arch")
     fi
 
+    # Use latest FROM image?
+    if [ "$DOCKER_PULL" == "true" ]; then
+        docker_cli+=("--pull");
+    fi
+
     # Build image
     echo "[INFO] Run build for $repository/$image:$version"
-    docker build --pull -t "$repository/$image:$version" \
+    docker build -t "$repository/$image:$version" \
         --label "io.hass.version=$version" \
         --build-arg "BUILD_FROM=$build_from" \
         --build-arg "BUILD_VERSION=$version" \
@@ -620,23 +628,26 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --no-latest)
-            DOCKER_LATEST="false"
+            DOCKER_LATEST=false
+            ;;
+        --no-pull)
+            DOCKER_PULL=false
             ;;
         --test)
-            DOCKER_PUSH="false"
+            DOCKER_PUSH=false
             ;;
         --no-cache)
-            DOCKER_CACHE="false"
+            DOCKER_CACHE=false
             ;;
         -d|--docker-hub)
             DOCKER_HUB=$2
             shift
             ;;
         --docker-login)
-            DOCKER_LOGIN="true"
+            DOCKER_LOGIN=true
             ;;
         --no-crossbuild-cleanup)
-            CROSSBUILD_CLEANUP="false"
+            CROSSBUILD_CLEANUP=false
             ;;
         --armhf)
             BUILD_LIST+=("armhf")
@@ -661,25 +672,25 @@ while [[ $# -gt 0 ]]; do
             ;;
         --base)
             BUILD_TYPE="base"
-            DOCKER_CACHE="false"
+            DOCKER_CACHE=false
             VERSION=$2
             shift
             ;;
         --base-python)
             BUILD_TYPE="base-python"
-            DOCKER_CACHE="false"
+            DOCKER_CACHE=false
             VERSION=$2
             shift
             ;;
         --base-ubuntu)
             BUILD_TYPE="base-ubuntu"
-            DOCKER_CACHE="false"
+            DOCKER_CACHE=false
             VERSION=$2
             shift
             ;;
         --base-raspbian)
             BUILD_TYPE="base-raspbian"
-            DOCKER_CACHE="false"
+            DOCKER_CACHE=false
             VERSION=$2
             shift
             ;;
@@ -696,24 +707,25 @@ while [[ $# -gt 0 ]]; do
             ;;
         --homeassistant-base)
             BUILD_TYPE="homeassistant-base"
+            DOCKER_PULL=false
             ;;
         --homeassistant)
             BUILD_TYPE="homeassistant"
-            DOCKER_CACHE="false"
+            DOCKER_CACHE=false
             VERSION=$2
             shift
             ;;
         --homeassistant-landingpage)
             BUILD_TYPE="homeassistant-landingpage"
-            DOCKER_CACHE="false"
-            DOCKER_LATEST="false"
+            DOCKER_CACHE=false
+            DOCKER_LATEST=false
             VERSION="landingpage"
             extract_machine_build "$2"
             shift
             ;;
         --homeassistant-machine)
             BUILD_TYPE="homeassistant-machine"
-            DOCKER_CACHE="false"
+            DOCKER_CACHE=false
             VERSION="$(echo "$2" | cut -d '=' -f 1)"
             extract_machine_build "$(echo "$2" | cut -d '=' -f 2)"
             shift
