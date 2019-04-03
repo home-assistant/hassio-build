@@ -701,9 +701,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         --builder)
             BUILD_TYPE="builder"
+            DOCKER_PULL=false
             ;;
         --supervisor)
             BUILD_TYPE="supervisor"
+            DOCKER_PULL=false
             ;;
         --homeassistant-base)
             BUILD_TYPE="homeassistant-base"
