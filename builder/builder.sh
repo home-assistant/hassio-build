@@ -183,7 +183,7 @@ function stop_docker() {
                 sleep 1
                 endtime=$(date +%s)
             else
-                echo "[ERROR] Timeout while waiting for container docker to die"
+                bashio::log.error "Timeout while waiting for container docker to die"
                 exit 1
             fi
         done
@@ -283,7 +283,7 @@ function build_builder() {
 
     # Select builder image
     if [ "$build_arch" == "i386" ] || [ "$build_arch" == "armhf" ]; then
-        echo "[ERROR] $build_arch not supported for builder"
+        bashio::log.error "$build_arch not supported for builder"
         return 1
     else
         build_from=homeassistant/${build_arch}-base-ubuntu:16.04
@@ -335,7 +335,7 @@ function build_base_ubuntu_image() {
 
     # Select builder image
     if [ "$build_arch" == "armhf" ]; then
-        echo "[ERROR] $build_arch not supported for ubuntu"
+        bashio::log.error "$build_arch not supported for ubuntu"
         return 1
     fi
 
@@ -356,7 +356,7 @@ function build_base_raspbian_image() {
 
     # Select builder image
     if [ "$build_arch" != "armhf" ]; then
-        echo "[ERROR] $build_arch not supported for raspbian"
+        bashio::log.error "$build_arch not supported for raspbian"
         return 1
     fi
 
@@ -412,7 +412,7 @@ function build_addon() {
 
     # Check arch
     if [[ ! ${supported_arch[*]} =~ ${build_arch} ]]; then
-        echo "[ERROR] $build_arch not supported for this add-on"
+        bashio::log.error "$build_arch not supported for this add-on"
         return 1
     fi
 
