@@ -14,8 +14,8 @@ DOCKER_LATEST=true
 DOCKER_PUSH=true
 DOCKER_LOGIN=false
 DOCKER_LOCAL=false
-DOCKER_PULL=true
 CROSSBUILD_CLEANUP=true
+SELF_CACHE=false
 GIT_REPOSITORY=
 GIT_BRANCH="master"
 TARGET=
@@ -86,8 +86,8 @@ Options:
        Do not tag images as latest.
     --no-cache
        Disable cache for the build (from latest).
-    --no-pull
-       Disable pull latest FROM image version.
+    --self-cache
+       Use same tag as cache tag instead latest.
     -d, --docker-hub <DOCKER_REPOSITORY>
        Set or overwrite the docker repository.
     --docker-login
@@ -203,6 +203,7 @@ function run_build() {
     local docker_cli=("${!7}")
 
     local push_images=()
+    local cache_tag="latest"
 
     # Overwrites
     if [ -n "$DOCKER_HUB" ]; then repository="$DOCKER_HUB"; fi
@@ -215,9 +216,13 @@ function run_build() {
 
     # Init Cache
     if [ "$DOCKER_CACHE" == "true" ]; then
-        bashio::log.info "Init cache for $repository/$image:$version"
-        if docker pull "$repository/$image:latest" > /dev/null 2>&1; then
-            docker_cli+=("--cache-from" "$repository/$image:latest")
+        if [ "$SELF_CACHE" == "true" ]; then
+            cache_tag="$version"
+        fi
+
+        bashio::log.info "Init cache for $repository/$image:$version with tag $cache_tag"
+        if docker pull "$repository/$image:$cache_tag" > /dev/null 2>&1; then
+            docker_cli+=("--cache-from" "$repository/$image:$cache_tag")
         else
             docker_cli+=("--no-cache")
             bashio::log.warning "No cache image found. Cache is disabled for build"
@@ -232,14 +237,9 @@ function run_build() {
         docker_cli+=("--build-arg" "BUILD_ARCH=$build_arch")
     fi
 
-    # Use latest FROM image?
-    if [ "$DOCKER_PULL" == "true" ]; then
-        docker_cli+=("--pull");
-    fi
-
     # Build image
     bashio::log.info "Run build for $repository/$image:$version"
-    docker build -t "$repository/$image:$version" \
+    docker build --pull -t "$repository/$image:$version" \
         --label "io.hass.version=$version" \
         --build-arg "BUILD_FROM=$build_from" \
         --build-arg "BUILD_VERSION=$version" \
@@ -631,14 +631,14 @@ while [[ $# -gt 0 ]]; do
         --no-latest)
             DOCKER_LATEST=false
             ;;
-        --no-pull)
-            DOCKER_PULL=false
-            ;;
         --test)
             DOCKER_PUSH=false
             ;;
         --no-cache)
             DOCKER_CACHE=false
+            ;;
+        --self-cache)
+            SELF_CACHE=true
             ;;
         -d|--docker-hub)
             DOCKER_HUB=$2
@@ -673,25 +673,25 @@ while [[ $# -gt 0 ]]; do
             ;;
         --base)
             BUILD_TYPE="base"
-            DOCKER_CACHE=false
+            SELF_CACHE=true
             VERSION=$2
             shift
             ;;
         --base-python)
             BUILD_TYPE="base-python"
-            DOCKER_CACHE=false
+            SELF_CACHE=true
             VERSION=$2
             shift
             ;;
         --base-ubuntu)
             BUILD_TYPE="base-ubuntu"
-            DOCKER_CACHE=false
+            SELF_CACHE=true
             VERSION=$2
             shift
             ;;
         --base-raspbian)
             BUILD_TYPE="base-raspbian"
-            DOCKER_CACHE=false
+            SELF_CACHE=true
             VERSION=$2
             shift
             ;;
@@ -702,15 +702,12 @@ while [[ $# -gt 0 ]]; do
             ;;
         --builder)
             BUILD_TYPE="builder"
-            DOCKER_PULL=false
             ;;
         --supervisor)
             BUILD_TYPE="supervisor"
-            DOCKER_PULL=false
             ;;
         --homeassistant-base)
             BUILD_TYPE="homeassistant-base"
-            DOCKER_PULL=false
             ;;
         --homeassistant)
             BUILD_TYPE="homeassistant"
