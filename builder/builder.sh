@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bashio
 ######################
 # Hass.io Build-env
 ######################
@@ -125,7 +125,7 @@ Options:
         Build the machine based image for a release.
 EOF
 
-    exit 1
+    bashio::exit.nok
 }
 
 #### Docker functions ####
@@ -135,16 +135,16 @@ function start_docker() {
     local endtime
 
     if [ -S "/var/run/docker.sock" ]; then
-        echo "[INFO] Use host docker setup with '/var/run/docker.sock'"
+        bashio::log.info "Use host docker setup with '/var/run/docker.sock'"
         DOCKER_LOCAL="true"
         return 0
     fi
 
-    echo "[INFO] Starting docker."
+    bashio::log.info "Starting docker."
     dockerd 2> /dev/null &
     DOCKER_PID=$!
 
-    echo "[INFO] Waiting for docker to initialize..."
+    bashio::log.info "Waiting for docker to initialize..."
     starttime="$(date +%s)"
     endtime="$(date +%s)"
     until docker info >/dev/null 2>&1; do
@@ -152,11 +152,10 @@ function start_docker() {
             sleep 1
             endtime=$(date +%s)
         else
-            echo "[ERROR] Timeout while waiting for docker to come up"
-            exit 1
+            bashio::exit.nok "Timeout while waiting for docker to come up"
         fi
     done
-    echo "[INFO] Docker was initialized"
+    bashio::log.info "Docker was initialized"
 
     if [ "$DOCKER_LOGIN" == "true" ]; then
         docker login
@@ -172,7 +171,7 @@ function stop_docker() {
         return 0
     fi
 
-    echo "[INFO] Stopping in container docker..."
+    bashio::log.info "Stopping in container docker..."
     if [ "$DOCKER_PID" -gt 0 ] && kill -0 "$DOCKER_PID" 2> /dev/null; then
         starttime="$(date +%s)"
         endtime="$(date +%s)"
@@ -189,7 +188,7 @@ function stop_docker() {
             fi
         done
     else
-        echo "[WARN] Your host might have been left with unreleased resources"
+        bashio::log.warning "Your host might have been left with unreleased resources"
     fi
 }
 
@@ -216,12 +215,12 @@ function run_build() {
 
     # Init Cache
     if [ "$DOCKER_CACHE" == "true" ]; then
-        echo "[INFO] Init cache for $repository/$image:$version"
+        bashio::log.info "Init cache for $repository/$image:$version"
         if docker pull "$repository/$image:latest" > /dev/null 2>&1; then
             docker_cli+=("--cache-from" "$repository/$image:latest")
         else
             docker_cli+=("--no-cache")
-            echo "[WARN] No cache image found. Cache is disabled for build"
+            bashio::log.warning "No cache image found. Cache is disabled for build"
         fi
     else
         docker_cli+=("--no-cache")
@@ -239,7 +238,7 @@ function run_build() {
     fi
 
     # Build image
-    echo "[INFO] Run build for $repository/$image:$version"
+    bashio::log.info "Run build for $repository/$image:$version"
     docker build -t "$repository/$image:$version" \
         --label "io.hass.version=$version" \
         --build-arg "BUILD_FROM=$build_from" \
@@ -248,7 +247,7 @@ function run_build() {
         "$build_dir"
 
     push_images+=("$repository/$image:$version")
-    echo "[INFO] Finish build for $repository/$image:$version"
+    bashio::log.info "Finish build for $repository/$image:$version"
 
     # Tag latest
     if [ "$DOCKER_LATEST" == "true" ]; then
@@ -259,12 +258,14 @@ function run_build() {
     # Push images
     if [ "$DOCKER_PUSH" == "true" ]; then
         for i in "${push_images[@]}"; do
-            echo "[INFO] Start upload $i"
-            if docker push "$i" > /dev/null 2>&1; then
-                echo "[INFO] Upload success"
-            else
-                echo "[WARN] Upload fail!"
-            fi
+            while true; do
+                bashio::log.info "Start upload $i"
+                if docker push "$i" > /dev/null 2>&1; then
+                    bashio::log.info "Upload success"
+                    break
+                fi
+                bashio::log.warning "Upload fail!"
+            done
         done
     fi
 }
@@ -563,22 +564,22 @@ function extract_machine_build() {
 #### initialized cross-build ####
 
 function init_crosscompile() {
-    echo "[INFO] Setup crosscompiling feature"
+    bashio::log.info "Setup crosscompiling feature"
     (
         mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
         update-binfmts --enable qemu-arm
         update-binfmts --enable qemu-aarch64
-    ) > /dev/null 2>&1 || echo "[WARN] Can't enable crosscompiling feature"
+    ) > /dev/null 2>&1 || bashio::log.warning "Can't enable crosscompiling feature"
 }
 
 
 function clean_crosscompile() {
     if [ "$CROSSBUILD_CLEANUP" == "false" ]; then
-        echo "[INFO] Skeep crosscompiling cleanup"
+        bashio::log.info "Skeep crosscompiling cleanup"
         return 0
     fi
 
-    echo "[INFO] Clean crosscompiling feature"
+    bashio::log.info "Clean crosscompiling feature"
     if [ -f /proc/sys/fs/binfmt_misc ]; then
         umount /proc/sys/fs/binfmt_misc || true
     fi
@@ -586,7 +587,7 @@ function clean_crosscompile() {
     (
         update-binfmts --disable qemu-arm
         update-binfmts --disable qemu-aarch64
-    ) > /dev/null 2>&1 || echo "[WARN] No crosscompiling feature found for cleanup"
+    ) > /dev/null 2>&1 || bashio::log.warning "No crosscompiling feature found for cleanup"
 }
 
 #### Error handling ####
@@ -595,7 +596,7 @@ function error_handling() {
     stop_docker
     clean_crosscompile
 
-    exit 1
+    bashio::exit.nok "Abort by User"
 }
 trap 'error_handling' SIGINT SIGTERM
 
@@ -734,7 +735,7 @@ while [[ $# -gt 0 ]]; do
             ;;
 
         *)
-            echo "[WARN] $0 : Argument '$1' unknown will be Ignoring"
+            bashio::log.warning "$0 : Argument '$1' unknown will be Ignoring"
             ;;
     esac
     shift
@@ -742,14 +743,12 @@ done
 
 # Check if an architecture is available
 if [ "${#BUILD_LIST[@]}" -eq 0 ] && ! [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
-    echo "[ERROR] You need select an architecture for build!"
-    exit 1
+    bashio::exit.nok "You need select an architecture for build!"
 fi
 
 # Check other args
 if [ "$BUILD_TYPE" != "addon" ] && [ -z "$DOCKER_HUB" ]; then
-    echo "[ERROR] Please set a docker hub!"
-    exit 1
+    bashio::exit.nok "Please set a docker hub!"
 fi
 
 
@@ -763,13 +762,13 @@ start_docker
 
 # Load external repository
 if [ -n "$GIT_REPOSITORY" ]; then
-    echo "[INFO] Checkout repository $GIT_REPOSITORY"
+    bashio::log.info "Checkout repository $GIT_REPOSITORY"
     git clone --depth 1 --branch "$GIT_BRANCH" "$GIT_REPOSITORY" /data/git 2> /dev/null
     TARGET="/data/git/$TARGET"
 fi
 
 # Select arch build
-echo "[INFO] Run $BUILD_TYPE build for: ${BUILD_LIST[*]}"
+bashio::log.info "Run $BUILD_TYPE build for: ${BUILD_LIST[*]}"
 for arch in "${BUILD_LIST[@]}"; do
     if [ "$BUILD_TYPE" == "addon" ]; then
         (build_addon "$arch") &
@@ -794,15 +793,14 @@ for arch in "${BUILD_LIST[@]}"; do
     elif [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
         continue  # Handled in the loop below
     else
-        echo "Invalid build type: $BUILD_TYPE"
-        exit 1
+        bashio::exit.nok "Invalid build type: $BUILD_TYPE"
     fi
     BUILD_TASKS+=($!)
 done
 
 # Select machine build
 if [[ "$BUILD_TYPE" =~ ^homeassistant-(machine|landingpage)$ ]]; then
-    echo "[INFO] Machine builds: ${!BUILD_MACHINE[*]}"
+    bashio::log.info "Machine builds: ${!BUILD_MACHINE[*]}"
     for machine in "${!BUILD_MACHINE[@]}"; do
         machine_arch="${BUILD_MACHINE["$machine"]}"
         if [ "$BUILD_TYPE" == "homeassistant-machine" ]; then
@@ -821,4 +819,4 @@ wait "${BUILD_TASKS[@]}"
 clean_crosscompile
 stop_docker
 
-exit 0
+bashio::exit.ok
