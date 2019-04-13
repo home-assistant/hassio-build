@@ -21,6 +21,7 @@ GIT_BRANCH="master"
 TARGET=
 VERSION=
 IMAGE=
+RELEASE=
 BUILD_LIST=()
 BUILD_TYPE="addon"
 BUILD_TASKS=()
@@ -61,9 +62,11 @@ Options:
 
   Version/Image handling
     -v, --version <VERSION>
-        Overwrite version/tag of build
+        Overwrite version/tag of build.
     -i, --image <IMAGE_NAME>
-        Overwrite image name of build / support {arch}
+        Overwrite image name of build / support {arch}.
+    --release <VERSION>
+        Additional version information like for base images.
 
   Architecture
     --armhf
@@ -307,6 +310,9 @@ function build_base_image() {
 
     # Set type
     docker_cli+=("--label" "io.hass.type=base")
+    docker_cli+=("--label" "io.hass.base.version=$RELEASE")
+    docker_cli+=("--label" "io.hass.base.name=alpine")
+    docker_cli+=("--label" "io.hass.base.image=$DOCKER_HUB/$image")
 
     # Start build
     run_build "$TARGET/$build_arch" "$DOCKER_HUB" "$image" "$VERSION" \
@@ -321,6 +327,9 @@ function build_base_python_image() {
 
     # Set type
     docker_cli+=("--label" "io.hass.type=base")
+    docker_cli+=("--label" "io.hass.base.version=$RELEASE")
+    docker_cli+=("--label" "io.hass.base.name=python")
+    docker_cli+=("--label" "io.hass.base.image=$DOCKER_HUB/$image")
 
     # Start build
     run_build "$TARGET/$VERSION" "$DOCKER_HUB" "$image" "$VERSION" \
@@ -342,6 +351,9 @@ function build_base_ubuntu_image() {
 
     # Set type
     docker_cli+=("--label" "io.hass.type=base")
+    docker_cli+=("--label" "io.hass.base.version=$RELEASE")
+    docker_cli+=("--label" "io.hass.base.name=ubuntu")
+    docker_cli+=("--label" "io.hass.base.image=$DOCKER_HUB/$image")
 
     # Start build
     run_build "$TARGET/$build_arch" "$DOCKER_HUB" "$image" "$VERSION" \
@@ -363,6 +375,9 @@ function build_base_raspbian_image() {
 
     # Set type
     docker_cli+=("--label" "io.hass.type=base")
+    docker_cli+=("--label" "io.hass.base.version=$RELEASE")
+    docker_cli+=("--label" "io.hass.base.name=raspbian")
+    docker_cli+=("--label" "io.hass.base.image=$DOCKER_HUB/$image")
 
     # Start build
     run_build "$TARGET" "$DOCKER_HUB" "$image" "$VERSION" \
@@ -623,6 +638,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         -v|--version)
             VERSION=$2
+            shift
+            ;;
+        --release)
+            RELEASE=$2
             shift
             ;;
         -i|--image)
