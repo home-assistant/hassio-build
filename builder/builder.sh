@@ -258,13 +258,14 @@ function run_build() {
     # Push images
     if [ "$DOCKER_PUSH" == "true" ]; then
         for i in "${push_images[@]}"; do
-            while true; do
+            for j in {1..25}; do
                 bashio::log.info "Start upload $i"
                 if docker push "$i" > /dev/null 2>&1; then
-                    bashio::log.info "Upload success"
+                    bashio::log.info "Upload success after $j"
                     break
                 fi
-                bashio::log.warning "Upload fail!"
+                bashio::log.warning "Upload fail on $j"
+                sleep 15
             done
         done
     fi
